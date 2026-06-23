@@ -41,9 +41,14 @@ O tracker é **plugável** (ver [`docs/standards/issue-trackers.md`](../../docs/
    - GitHub/GitLab: procurar `## Critérios de aceite` / `## Acceptance Criteria` ou task list no `body`.
    - Ausente: acionar `product-planner` para redigir a partir da descrição e marcar **"a confirmar"**
      (não inventar requisito firme).
-5. Gravar o documento e **atualizar o backlog** em `docs/features/README.md` (linha com `key`,
-   link do item, status).
-6. Rodar `scripts/validate-architecture.ps1` (consistência de docs).
+5. **Detectar o tipo da história**: se algum `label`/tag estiver em `storyKinds.technicalLabels`
+   (`.claude/tracker.config.json`), tratar como **técnica** → usar
+   `templates/historia-tecnica-template.md` e encaminhar para `/create-project` e/ou
+   `/approve-architecture` (sem use cases de negócio). Caso contrário, **negócio** → `feature-template.md`.
+6. Gravar o documento e **atualizar o backlog** em `docs/features/README.md` (linha com `key`,
+   link do item, status, tipo).
+7. Rodar `scripts/validate-architecture.ps1` (consistência de docs).
+8. Se `taskSync.enabled`, sugerir `/sync-tasks` para criar as atividades no tracker após o planejamento.
 
 ## Lote
 Para vários itens, repetir os passos por id. (Filtros de listagem por sprint/label dependem do provider;

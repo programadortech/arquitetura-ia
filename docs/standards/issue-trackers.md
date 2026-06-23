@@ -70,5 +70,22 @@ qualquer que seja o tracker.
 - O arquivo de feature usa a `key` (`GH-`/`AZ-`/`GL-`) como id canônico.
 - Commits e PRs referenciam o item original para fechar/relacionar (ex.: `#42` no GitHub).
 
-Ver [ADR-0010](../adr/0010-pluggable-issue-trackers.md). Adapter implementado em
-`scripts/import-tracker-issue.ps1`.
+## Write-back de tasks (escrita no tracker)
+Além de ler histórias, a abstração **escreve** as atividades planejadas de volta no tracker como
+itens-filho — ver [ADR-0011](../adr/0011-task-writeback-tracker.md). A skill `/sync-tasks` deriva as tasks
+do documento de arquitetura e chama `scripts/push-tracker-tasks.ps1`:
+- **Azure DevOps:** work items do tipo `taskSync.azureTaskType` (default `Task`) com link de parentesco.
+- **GitHub/GitLab:** checklist `- [ ]` anexada ao corpo/descrição da issue.
+
+Controlado por `taskSync.enabled`. A credencial precisa ter permissão de **escrita** no tracker.
+
+## Tipos de história (negócio / técnica)
+Uma história importada é classificada por label/tag — ver
+[ADR-0012](../adr/0012-story-types-business-technical.md):
+- **Técnica** se tiver algum label de `storyKinds.technicalLabels`
+  (default: `historia-tecnica`, `tecnica`, `tech`, `arquitetura`, `infra`) → usa
+  `templates/historia-tecnica-template.md` e segue para `/create-project` / `/approve-architecture`.
+- **Negócio** caso contrário → `templates/feature-template.md`.
+
+Ver [ADR-0010](../adr/0010-pluggable-issue-trackers.md). Adapters em
+`scripts/import-tracker-issue.ps1` (leitura) e `scripts/push-tracker-tasks.ps1` (escrita de tasks).

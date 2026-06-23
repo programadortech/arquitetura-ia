@@ -22,6 +22,9 @@ Transforma uma definição de feature em um design técnico aprovado mais quaisq
 8. **Observabilidade**: lista de spans, métricas, eventos de logs estruturados + nomes das propriedades.
 9. Registre novas decisões transversais como ADRs via `templates/adr-template.md`.
 10. Escreva `docs/architecture/<feature>.md` a partir de `templates/architecture-template.md`.
+11. **Sincronizar tasks no tracker**: se a história veio de um tracker e `taskSync.enabled`
+    (`.claude/tracker.config.json`), acionar `/sync-tasks` para criar as atividades planejadas como
+    itens-filho/checklist da história (Azure/GitHub/GitLab). Refletir o plano no documento.
 
 ## Suggested agents
 `solution-architect` (líder), consultando `oracle-dba-reviewer`, `observability-engineer`,

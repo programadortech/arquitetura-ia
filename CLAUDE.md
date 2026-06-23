@@ -24,6 +24,8 @@ Quando o usuário pedir um dos itens a seguir, **invoque a skill correspondente*
 |---|---|
 | "crie um projeto com nome X" | `/create-project` |
 | "importe a história / issue #N" | `/import-story` |
+| "crie uma história técnica de setup/arquitetura" | `/create-tech-story` |
+| "crie as tasks da história N no azure" | `/sync-tasks` |
 | "crie uma feature Y" | `/create-feature` |
 | "abra arquitetura da feature Z" | `/approve-architecture` |
 | "implemente o use case W" | `/create-usecase` |
@@ -52,6 +54,8 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Mensageria / filas | Providers plugáveis: Kafka, SQS, RabbitMQ, MQTT | [ADR-0008](docs/adr/0008-pluggable-queue-providers.md) |
 | Testes | Unitários + Integração + Arquitetura | [ADR-0009](docs/adr/0009-testing-strategy.md) |
 | Tracker de histórias | Plugável: GitHub Issues / Azure DevOps / GitLab (via config) | [ADR-0010](docs/adr/0010-pluggable-issue-trackers.md) |
+| Tasks no tracker | Write-back das atividades planejadas como itens-filho da história | [ADR-0011](docs/adr/0011-task-writeback-tracker.md) |
+| Tipos de história | Negócio e Técnica (arquitetura/infra/setup) | [ADR-0012](docs/adr/0012-story-types-business-technical.md) |
 
 ## Layout padrão da solução (projetos gerados)
 

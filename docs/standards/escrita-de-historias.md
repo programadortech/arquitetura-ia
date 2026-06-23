@@ -162,6 +162,32 @@ Cenário: Serviço de crédito indisponível
 | NFR de observabilidade | Spans, métricas e logs estruturados |
 | Dependências/Integrações | Ports + adapters (Oracle, filas, APIs) |
 
+## Histórias técnicas (arquitetura / infra / setup)
+
+Nem todo trabalho é feature de negócio. Para **setup do projeto, arquitetura base, pipeline,
+observabilidade, segurança transversal**, crie uma **história técnica** (ver
+[ADR-0012](../adr/0012-story-types-business-technical.md)):
+
+- **Marque o tipo:** adicione a tag/label `historia-tecnica` (ou `tecnica`/`tech`/`arquitetura`/`infra`)
+  no work item — é assim que a importação reconhece o tipo.
+- **Critérios de aceite são técnicos e verificáveis**, não Given/When/Then de negócio. Exemplos:
+  ```
+  - A solução compila com -warnaserror
+  - Testes de arquitetura (NetArchTest) verdes (regra de dependência respeitada)
+  - Observabilidade base (Serilog + OpenTelemetry via OTLP) configurada
+  - Health checks expostos; configuração externalizada (sem segredos no código)
+  - ADRs base registrados
+  ```
+- **Description**: foque em objetivo técnico, motivação (o que destrava para o negócio), escopo e
+  NFRs transversais (segurança, observabilidade, resiliência).
+- Downstream: a IA encaminha para `/create-project` (setup) e/ou `/approve-architecture` (arquitetura
+  base) — **sem** gerar casos de uso de negócio. Template: `templates/historia-tecnica-template.md`.
+
+## Tasks no tracker
+Ao planejar a implementação, a IA cria as **tasks** (atividades) como itens-filho da história no
+Azure DevOps (ver [ADR-0011](../adr/0011-task-writeback-tracker.md)). Os POs/devs acompanham o progresso
+direto no board, com as tasks ligadas à User Story.
+
 ## Anti-padrões (evitar)
 - Critérios vagos ("funcionar corretamente", "ser rápido") sem valor mensurável.
 - História sem Acceptance Criteria, ou critérios que não são testáveis.
