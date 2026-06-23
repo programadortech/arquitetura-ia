@@ -23,6 +23,7 @@ Quando o usuário pedir um dos itens a seguir, **invoque a skill correspondente*
 | Intenção do usuário | Skill |
 |---|---|
 | "crie um projeto com nome X" | `/create-project` |
+| "importe a história / issue #N" | `/import-story` |
 | "crie uma feature Y" | `/create-feature` |
 | "abra arquitetura da feature Z" | `/approve-architecture` |
 | "implemente o use case W" | `/create-usecase` |
