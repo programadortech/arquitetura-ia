@@ -32,7 +32,10 @@ param(
 $ErrorActionPreference = "Stop"
 
 if (-not (Test-Path $TasksFile)) { throw "Arquivo de tasks não encontrado: $TasksFile" }
-$tasks = @(Get-Content $TasksFile -Raw | ConvertFrom-Json)
+# Lê como UTF-8 explicitamente (PowerShell 5.1 usaria ANSI e corromperia acentos).
+# Usa a forma de argumento do ConvertFrom-Json (o padrão "@(... | ConvertFrom-Json)" colapsa o array no PS 5.1).
+$tasksRaw = [System.IO.File]::ReadAllText((Resolve-Path $TasksFile), [System.Text.Encoding]::UTF8)
+$tasks = @(ConvertFrom-Json $tasksRaw)
 if ($tasks.Count -eq 0) { Write-Output "[INFO] Nenhuma task para criar."; exit 0 }
 
 $localCfg = ".claude/tracker.config.local.json"
@@ -62,11 +65,12 @@ function Push-Azure {
     )
     if ($t.description) { $patch += @{ op = "add"; path = "/fields/System.Description"; value = $t.description } }
     $patch += @{ op = "add"; path = "/relations/-"; value = @{ rel = "System.LinkTypes.Hierarchy-Reverse"; url = $parentUrl } }
-    $body = $patch | ConvertTo-Json -Depth 6
     $type = [uri]::EscapeDataString("`$$taskType")  # vira %24Task
     $uri = "https://dev.azure.com/$orgEnc/$projEnc/_apis/wit/workitems/$type`?api-version=7.1"
-    $h = @{ Authorization = "Basic $auth"; "Content-Type" = "application/json-patch+json" }
-    $r = Invoke-RestMethod -Method Post -Headers $h -Uri $uri -Body $body
+    $h = @{ Authorization = "Basic $auth" }
+    # Envia o corpo em UTF-8 explicitamente (PowerShell 5.1 usa Latin-1 por padrão e corromperia acentos).
+    $bodyBytes = [Text.Encoding]::UTF8.GetBytes(($patch | ConvertTo-Json -Depth 6))
+    $r = Invoke-RestMethod -Method Post -Headers $h -Uri $uri -Body $bodyBytes -ContentType "application/json-patch+json; charset=utf-8"
     $created += [pscustomobject]@{ id = $r.id; title = $t.title }
     Write-Output "  [OK] Task #$($r.id): $($t.title)"
   }
