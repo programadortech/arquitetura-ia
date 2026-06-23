@@ -116,6 +116,9 @@ Api ──▶ Application ──▶ Domain
 6. Logs são **estruturados** (message templates + propriedades), nunca concatenados como string.
 7. Segredos nunca vão para o código-fonte. Use configuration providers / variáveis de ambiente.
 8. Respeite os hooks — se um hook bloquear uma ação, corrija a causa, não o contorne.
+9. **Mantenha a documentação sempre atualizada** (faz parte do "Done"): ao mudar fluxo, skills, padrões,
+   stack ou opções, atualize `docs/guia/index.html`, o `CLAUDE.md`, os índices afetados e o `docs/PRODUCT.md`.
+   Toda nova decisão tem ADR. Documentação desatualizada é defeito.
 
 ## Checklist de qualidade (todo PR)
 

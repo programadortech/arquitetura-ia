@@ -186,16 +186,17 @@
     <a href="#fluxo">1. Visão do fluxo</a>
     <a href="#stack">2. Stack obrigatória</a>
     <a href="#banco">3. Banco de dados (plugável)</a>
-    <a href="#tipos">4. Tipos de história</a>
-    <a href="#tracker">5. Integração com tracker</a>
-    <a href="#tasks">6. Write-back de tasks</a>
-    <a href="#agentes">7. Agentes (papéis)</a>
-    <a href="#skills">8. Skills (comandos)</a>
-    <a href="#passo-a-passo">9. Passo a passo</a>
-    <a href="#execucao">10. Modos de execução</a>
-    <a href="#po">11. Guia do PO</a>
-    <a href="#gates">12. Gates &amp; comandos</a>
-    <a href="#faq">13. FAQ</a>
+    <a href="#padroes">4. Padrões da aplicação</a>
+    <a href="#tipos">5. Tipos de história</a>
+    <a href="#tracker">6. Integração com tracker</a>
+    <a href="#tasks">7. Write-back de tasks</a>
+    <a href="#agentes">8. Agentes (papéis)</a>
+    <a href="#skills">9. Skills (comandos)</a>
+    <a href="#passo-a-passo">10. Passo a passo</a>
+    <a href="#execucao">11. Modos de execução</a>
+    <a href="#po">12. Guia do PO</a>
+    <a href="#gates">13. Gates &amp; comandos</a>
+    <a href="#faq">14. FAQ</a>
   </aside>
 
   <main>
@@ -209,9 +210,13 @@
         <span class="pill s">Clean Architecture</span>
         <span class="pill">UseCase Dispatcher (sem MediatR pago)</span>
         <span class="pill s">Banco plugável: Oracle · SQL Server · PostgreSQL · MySQL</span>
+        <span class="pill s">Result/Notification + Envelope</span>
+        <span class="pill">OpenAPI (Scalar + Swagger)</span>
+        <span class="pill s">Integrações plugáveis (catálogo)</span>
+        <span class="pill">API Gateway (YARP, opcional)</span>
         <span class="pill">Serilog + OpenTelemetry</span>
         <span class="pill">Polly</span>
-        <span class="pill">Hangfire</span>
+        <span class="pill">Hangfire (opcional)</span>
         <span class="pill">Kafka · SQS · RabbitMQ · MQTT</span>
         <span class="pill">Azure DevOps · GitHub · GitLab</span>
       </div>
@@ -247,12 +252,17 @@
           <tr><td>Banco (plugável)</td><td>Oracle / SQL Server / PostgreSQL / MySQL (EF Core; padrão Oracle)</td><td>ADR-0013</td></tr>
           <tr><td>Logging / Telemetria</td><td>Serilog + OpenTelemetry (OTLP → Seq / Grafana Loki / Collector)</td><td>ADR-0005</td></tr>
           <tr><td>Resiliência</td><td>Polly (retry, circuit breaker, timeout)</td><td>ADR-0006</td></tr>
-          <tr><td>Jobs</td><td>Hangfire</td><td>ADR-0007</td></tr>
+          <tr><td>Tratamento de erros</td><td>Result/Notification + envelope <code>ApiResponse</code> + middleware global</td><td>ADR-0014</td></tr>
+          <tr><td>Documentação de API</td><td>OpenAPI nativo + UI plugável (Scalar + Swagger)</td><td>ADR-0015</td></tr>
+          <tr><td>Integrações</td><td>Plugáveis + catálogo (e-mail/SMS/storage/pagamentos)</td><td>ADR-0016</td></tr>
+          <tr><td>API Gateway</td><td>Opcional (YARP)</td><td>ADR-0017</td></tr>
+          <tr><td>Jobs</td><td>Hangfire — <b>opcional</b> (default none)</td><td>ADR-0018 · 0007</td></tr>
           <tr><td>Filas</td><td>Plugáveis: Kafka / SQS / RabbitMQ / MQTT</td><td>ADR-0008</td></tr>
           <tr><td>Testes</td><td>Unitários + Integração + Arquitetura</td><td>ADR-0009</td></tr>
           <tr><td>Tracker de histórias</td><td>Plugável: GitHub / Azure DevOps / GitLab</td><td>ADR-0010</td></tr>
           <tr><td>Tasks no tracker</td><td>Write-back das atividades como itens-filho</td><td>ADR-0011</td></tr>
           <tr><td>Tipos de história</td><td>Negócio e Técnica</td><td>ADR-0012</td></tr>
+          <tr><td>Layout</td><td>Monorepo: produto em <code>src/</code> + fábrica embutida; contexto em <code>docs/PRODUCT.md</code></td><td>ADR-0019</td></tr>
         </table>
       </div>
       <div class="callout"><b>Regra de dependência (inegociável):</b> <code>Domain</code> não depende de nada; <code>Application</code> só de <code>Domain</code> (define ports); <code>Infrastructure</code> implementa as ports; <code>Api</code> só compõe a DI. Os testes de arquitetura impõem isso.</div>
@@ -294,8 +304,46 @@
       <div class="callout"><b>Convenções:</b> Oracle em <code>UPPER_SNAKE_CASE</code>; PostgreSQL/MySQL em <code>snake_case</code>; SQL Server em PascalCase/snake_case (consistente). Detalhes e equivalências de tipos em <code>docs/standards/database.md</code>.</div>
     </section>
 
+    <section id="padroes">
+      <h2><span class="num">4</span> Padrões da aplicação</h2>
+      <p class="sub">Como a API trata erros, se documenta, integra serviços externos e (opcional) expõe um gateway. Tudo plugável e selecionável no <code>/create-project</code>.</p>
+
+      <h3>Tratamento de erros — Result/Notification + Envelope</h3>
+      <p>Falhas de <b>negócio</b> são <b>dados</b> (não <code>throw</code>): use cases retornam <code>Result&lt;T&gt;</code> acumulando <code>Notification</code>. A API responde sempre no mesmo <b>envelope</b>; exceção inesperada cai num <b>middleware global</b> (ADR-0014).</p>
+      <div class="code"><button class="copy">copiar</button><pre><span class="tok-c">// Toda resposta no mesmo formato — fácil para o front</span>
+{
+  <span class="tok-s">"success"</span>: <span class="tok-k">true</span>,
+  <span class="tok-s">"data"</span>: { <span class="tok-c">/* payload, ou null */</span> },
+  <span class="tok-s">"errors"</span>: [ { <span class="tok-s">"code"</span>: <span class="tok-s">"credito.insuficiente"</span>, <span class="tok-s">"message"</span>: <span class="tok-s">"..."</span>, <span class="tok-s">"type"</span>: <span class="tok-s">"Validation"</span> } ],
+  <span class="tok-s">"traceId"</span>: <span class="tok-s">"0HN..."</span>,
+  <span class="tok-s">"timestamp"</span>: <span class="tok-s">"2026-06-23T12:00:00Z"</span>
+}</pre></div>
+      <div class="callout"><b>Fluxo:</b> negócio → <code>Result.Failure</code> → envelope 4xx · sucesso → <code>Result.Success</code> → 2xx · exceção → middleware → 500. Detalhe em <code>docs/standards/error-handling.md</code>.</div>
+
+      <h3>Documentação de API (plugável)</h3>
+      <p>OpenAPI nativo do .NET 10 + UI selecionável. Default: <b>Scalar</b> (<code>/scalar</code>) <b>+ Swagger</b> (<code>/swagger</code>); ReDoc opcional (ADR-0015).</p>
+
+      <h3>Integrações plugáveis (catálogo)</h3>
+      <p>E-mail, SMS, storage, pagamentos… entram por <b>porta</b> (Application) + <b>adapter</b> por provedor (Infrastructure), selecionados por config. A escolha do provedor vem do <b>catálogo</b> <code>docs/integrations/</code>, que os <b>agentes consultam</b> para decidir (ADR-0016).</p>
+      <div class="grid cols-4">
+        <div class="role"><div class="ic">✉️</div><b>E-mail</b><span><code>IEmailSender</code> · SMTP · SendGrid · Postmark · SES · Mailgun</span></div>
+        <div class="role"><div class="ic">📱</div><b>SMS</b><span><code>ISmsSender</code> · Twilio · SNS · Zenvia · Infobip</span></div>
+        <div class="role"><div class="ic">🗂️</div><b>Storage</b><span><code>IFileStorage</code> · Local · S3 · Blob · GCS · MinIO</span></div>
+        <div class="role"><div class="ic">💳</div><b>Pagamentos</b><span><code>IPaymentGateway</code> · Stripe · Pagar.me · Mercado Pago · Adyen</span></div>
+      </div>
+      <p style="margin-top:12px">Adicione/troque com <code class="cmd">/create-integration</code>.</p>
+
+      <h3>API Gateway (opcional) e Jobs (opcional)</h3>
+      <div class="grid cols-2">
+        <div class="card"><b>API Gateway — YARP</b><p style="color:var(--muted);margin:.4rem 0 0">Opção <code>gateway: yarp</code> gera <code>&lt;Produto&gt;.Gateway</code> dando <b>uma URL única</b> ao front (ADR-0017). Default: sem gateway.</p></div>
+        <div class="card"><b>Jobs — Hangfire</b><p style="color:var(--muted);margin:.4rem 0 0">Opção <code>jobs: hangfire</code> (default <b>none</b>): projeto nasce leve; liga jobs só quando precisar (ADR-0018).</p></div>
+      </div>
+
+      <div class="callout ok"><b>Layout monorepo:</b> a solução vive na raiz em <code>src/</code> + <code>tests/</code>; a fábrica (<code>.claude</code>, <code>templates</code>, <code>scripts</code>, <code>docs</code>) convive ao lado e o contexto do produto persiste em <code>docs/PRODUCT.md</code> (ADR-0019).</div>
+    </section>
+
     <section id="tipos">
-      <h2><span class="num">4</span> Tipos de história</h2>
+      <h2><span class="num">5</span> Tipos de história</h2>
       <p class="sub">Nem todo trabalho é feature de negócio. O template reconhece dois tipos.</p>
       <div class="grid cols-2">
         <div class="card">
@@ -313,7 +361,7 @@
     </section>
 
     <section id="tracker">
-      <h2><span class="num">5</span> Integração com o tracker</h2>
+      <h2><span class="num">6</span> Integração com o tracker</h2>
       <p class="sub">As histórias vêm de um tracker plugável. Trocar de origem é mudança de configuração, não de fluxo.</p>
       <div class="tbl-wrap">
         <table>
@@ -338,7 +386,7 @@
     </section>
 
     <section id="tasks">
-      <h2><span class="num">6</span> Write-back de tasks</h2>
+      <h2><span class="num">7</span> Write-back de tasks</h2>
       <p class="sub">Ao planejar a implementação, o agente cria as atividades de volta no tracker — ligadas à história.</p>
       <div class="grid cols-3">
         <div class="role"><div class="ic">🔵</div><b>Azure DevOps</b><span>Work items <code>Task</code> filhos da User Story (link de parentesco). Aparecem no board sob a história.</span></div>
@@ -349,7 +397,7 @@
     </section>
 
     <section id="agentes">
-      <h2><span class="num">7</span> Agentes (papéis)</h2>
+      <h2><span class="num">8</span> Agentes (papéis)</h2>
       <p class="sub">Papéis especializados que a IA assume. Dentro de cada skill, eles rodam em sequência automaticamente — você não conduz agente por agente.</p>
       <div class="grid cols-3">
         <div class="role"><div class="ic">🧭</div><b>product-planner</b><span>Transforma o pedido em história com critérios de aceite testáveis.</span></div>
@@ -365,7 +413,7 @@
     </section>
 
     <section id="skills">
-      <h2><span class="num">8</span> Skills (comandos)</h2>
+      <h2><span class="num">9</span> Skills (comandos)</h2>
       <p class="sub">Cada intenção em português dispara uma skill. Você fala naturalmente; a tabela mostra o gatilho.</p>
       <div class="grid cols-2">
         <div class="skill"><code class="cmd">/create-project</code><span>"crie um projeto com nome X" — esqueleto completo da solução.</span></div>
@@ -377,15 +425,16 @@
         <div class="skill"><code class="cmd">/sync-tasks</code><span>"crie as tasks da história N" — write-back no tracker.</span></div>
         <div class="skill"><code class="cmd">/create-usecase</code><span>"implemente o use case W" — ponta a ponta.</span></div>
         <div class="skill"><code class="cmd">/create-db-script</code><span>"crie um script de banco/Oracle…" — migração versionada (4 bancos).</span></div>
-        <div class="skill"><code class="cmd">/create-job</code><span>"crie um job…" — Hangfire idempotente.</span></div>
+        <div class="skill"><code class="cmd">/create-job</code><span>"crie um job…" — Hangfire idempotente (jobs opcionais).</span></div>
         <div class="skill"><code class="cmd">/create-queue-provider</code><span>"crie um provider de fila Kafka" — mensageria plugável.</span></div>
+        <div class="skill"><code class="cmd">/create-integration</code><span>"adicione uma integração de e-mail" — porta + adapter do catálogo.</span></div>
         <div class="skill"><code class="cmd">/create-tests</code><span>"crie os testes…" — unit + integração + arquitetura.</span></div>
         <div class="skill"><code class="cmd">/review-pr</code><span>"revise o PR" — revisão multiperspectiva + gates.</span></div>
       </div>
     </section>
 
     <section id="passo-a-passo">
-      <h2><span class="num">9</span> Passo a passo prático</h2>
+      <h2><span class="num">10</span> Passo a passo prático</h2>
       <p class="sub">Do zero ao PR. O exemplo usa Azure DevOps como tracker.</p>
       <div class="step-timeline">
         <div class="t"><b>0 · Pré-requisitos</b><p>.NET 10 SDK, Git, Docker (para o banco/filas nos testes), e a credencial do tracker em variável de ambiente (<code>AZDO_PAT</code>).</p></div>
@@ -399,7 +448,7 @@
     </section>
 
     <section id="execucao">
-      <h2><span class="num">10</span> Modos de execução</h2>
+      <h2><span class="num">11</span> Modos de execução</h2>
       <p class="sub">Você escolhe quanto a IA encadeia sozinha entre as etapas.</p>
       <div class="grid cols-3">
         <div class="card"><h3 style="margin-top:0">Por etapa</h3><p style="color:var(--muted)">Uma frase por vez; você revisa entre cada passo. <b>Padrão recomendado.</b></p></div>
@@ -410,7 +459,7 @@
     </section>
 
     <section id="po">
-      <h2><span class="num">11</span> Guia do Product Owner</h2>
+      <h2><span class="num">12</span> Guia do Product Owner</h2>
       <p class="sub">Como escrever histórias no Azure DevOps para que sejam importáveis e implementáveis pela IA.</p>
       <h3>Campo <b>Description</b></h3>
       <div class="code"><button class="copy">copiar</button><pre>História
@@ -441,7 +490,7 @@ Cenário: Bloqueio por crédito insuficiente
     </section>
 
     <section id="gates">
-      <h2><span class="num">12</span> Gates &amp; comandos</h2>
+      <h2><span class="num">13</span> Gates &amp; comandos</h2>
       <p class="sub">Qualidade automatizada antes de cada PR.</p>
       <div class="code"><button class="copy">copiar</button><pre><span class="tok-c"># Build e testes</span>
 dotnet build -warnaserror
@@ -457,7 +506,11 @@ pwsh scripts/validate-pr.ps1     <span class="tok-c"># gate agregado</span></pre
     </section>
 
     <section id="faq">
-      <h2><span class="num">13</span> FAQ</h2>
+      <h2><span class="num">14</span> FAQ</h2>
+      <h3>A documentação fica sempre atualizada?</h3>
+      <p style="color:var(--muted)">Sim — é <b>regra</b>: ao mudar fluxo, skills, padrões ou stack, a IA atualiza este guia, o <code>CLAUDE.md</code>, os índices e o <code>docs/PRODUCT.md</code>. Está no checklist de qualidade (parte do "Done"). Documentação desatualizada é tratada como defeito.</p>
+      <h3>Como a IA escolhe um provedor de integração (e-mail/SMS/…)?</h3>
+      <p style="color:var(--muted)">Pelo <b>catálogo</b> <code>docs/integrations/&lt;categoria&gt;</code>: os agentes leem prós/contras e a recomendação, decidem o provedor e registram a escolha. Implementam por porta + adapter plugável (config + secrets em env).</p>
       <h3>Preciso ficar conduzindo agente por agente?</h3>
       <p style="color:var(--muted)">Não. Dentro de cada skill os agentes rodam em sequência sozinhos. Você só decide quanto encadear <b>entre</b> as etapas (ver Modos de execução).</p>
       <h3>Onde ficam as histórias?</h3>

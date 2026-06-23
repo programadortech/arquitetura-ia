@@ -47,4 +47,7 @@ Copie os itens relevantes para a descrição do PR (`templates/pr-template.md`).
 ## Docs
 - [ ] Docs de feature/arquitetura atualizados.
 - [ ] ADR adicionado se uma decisão foi tomada.
+- [ ] **Guia atualizado** (`docs/guia/index.html`) se o fluxo/skills/padrões/stack mudaram.
+- [ ] **`docs/PRODUCT.md`** atualizado (estado, decisões, integrações ativas) ao concluir feature.
+- [ ] Índices afetados atualizados (`docs/adr/README.md`, `docs/standards/README.md`).
 - [ ] Descrição do PR completa (`templates/pr-template.md`).
