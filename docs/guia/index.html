@@ -8,9 +8,9 @@
 <style>
   :root {
     --bg: #0b1020; --bg-soft: #11182e; --card: #151d36; --card-2: #1b2542;
-    --border: #25304f; --text: #e6ecff; --muted: #9fb0d6; --muted-2: #6f80a8;
-    --accent: #2aa3e0; --accent-2: #3ddc97; --cyan: #38d3ee; --brand: #1496d6;
-    --grad: linear-gradient(120deg, #1496d6 0%, #38d3ee 60%, #3ddc97 100%);
+    --border: #24324f; --text: #e8eeff; --muted: #9fb2da; --muted-2: #6f82ad;
+    --accent: #2a9fe0; --accent-2: #38d3ee; --cyan: #4cc6f2; --brand: #1187c9;
+    --grad: linear-gradient(120deg, #0e6fb0 0%, #1187c9 45%, #46c4ef 100%);
     --code-bg: #0a0f1e; --shadow: 0 10px 40px -12px rgba(0,0,0,.6);
     --radius: 16px;
   }
@@ -38,8 +38,10 @@
   }
   .top-inner { max-width: 1200px; margin: 0 auto; padding: 12px 22px; display: flex; align-items: center; gap: 14px; }
   .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: .2px; }
-  .logo2a { display: grid; place-items: center; filter: drop-shadow(0 4px 12px rgba(20,150,214,.4)); }
-  .logo2a svg { height: 40px; width: auto; display: block; }
+  body::before { content:""; position: fixed; top:0; left:0; right:0; height: 3px; background: var(--grad); z-index: 60; }
+  .logo2a { display: grid; place-items: center; }
+  .logo2a img { height: 42px; width: auto; display: block; border-radius: 8px;
+    filter: drop-shadow(0 6px 16px rgba(17,135,201,.45)); }
   .brand small { display:block; font-weight: 500; color: var(--muted); font-size: 11px; }
   .top nav { margin-left: auto; display: flex; gap: 6px; align-items: center; }
   .top nav a { color: var(--muted); padding: 7px 12px; border-radius: 9px; font-size: 14px; }
@@ -64,8 +66,9 @@
     overflow: hidden; box-shadow: var(--shadow); }
   .hero::after { content:""; position:absolute; inset:auto -60px -80px auto; width: 320px; height: 320px;
     background: var(--grad); filter: blur(90px); opacity:.25; border-radius: 50%; }
-  .hero .hero-logo { position: absolute; top: 32px; right: 36px; opacity: .95; }
-  .hero .hero-logo svg { height: 92px; width: auto; }
+  .hero .hero-logo { position: absolute; top: 30px; right: 36px; }
+  .hero .hero-logo img { height: 120px; width: auto; border-radius: 14px;
+    filter: drop-shadow(0 14px 34px rgba(17,135,201,.45)); }
   .hero h1 { font-size: clamp(28px, 4vw, 44px); margin: 0 0 10px; line-height: 1.12; position: relative; }
   .hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .hero p.lead { font-size: 18px; color: var(--muted); max-width: 720px; margin: 0 0 22px; position: relative; }
@@ -138,7 +141,9 @@
   .step-timeline .t p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 
   footer { border-top: 1px solid var(--border); color: var(--muted); text-align:center; padding: 30px; font-size: 13px; }
-  footer .logo2a svg { height: 44px; margin-bottom: 10px; }
+  footer .footer-logo { display: inline-block; margin-bottom: 12px; }
+  footer .footer-logo img { height: 70px; width: auto; border-radius: 12px;
+    filter: drop-shadow(0 8px 22px rgba(17,135,201,.4)); }
 
   @media (max-width: 920px) {
     .shell { grid-template-columns: 1fr; }
@@ -156,14 +161,7 @@
 <header class="top">
   <div class="top-inner">
     <div class="brand">
-      <span class="logo2a" aria-label="2A Always Ahead">
-        <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" role="img">
-          <path d="M20,0 H80 a20,20 0 0 1 20,20 V110 a20,20 0 0 1 -20,20 H0 V20 a20,20 0 0 1 20,-20 Z" fill="#1496d6"/>
-          <path d="M38,26 L70,43 L38,60 Z" fill="#ffffff"/>
-          <text x="50" y="92" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#ffffff">2A</text>
-          <text x="50" y="112" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.5" fill="#ffffff">ALWAYS AHEAD</text>
-        </svg>
-      </span>
+      <span class="logo2a"><img src="assets/logo-2a.png" alt="2A — Always Ahead" /></span>
       <div>Template Corporativo · 2A<small>C# · Oracle · Clean Architecture · IA</small></div>
     </div>
     <nav>
@@ -199,14 +197,7 @@
 
   <main>
     <div class="hero" id="intro">
-      <span class="hero-logo" aria-hidden="true">
-        <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20,0 H80 a20,20 0 0 1 20,20 V110 a20,20 0 0 1 -20,20 H0 V20 a20,20 0 0 1 20,-20 Z" fill="#1496d6"/>
-          <path d="M38,26 L70,43 L38,60 Z" fill="#ffffff"/>
-          <text x="50" y="92" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#ffffff">2A</text>
-          <text x="50" y="112" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.5" fill="#ffffff">ALWAYS AHEAD</text>
-        </svg>
-      </span>
+      <span class="hero-logo"><img src="assets/logo-2a.png" alt="2A — Always Ahead" /></span>
       <h1>Da <span class="grad">história</span> ao <span class="grad">código</span>, com IA e governança.</h1>
       <p class="lead">Este repositório é uma <b>fábrica de scaffolding corporativo</b>: padrões, agentes, skills e automações
       que geram e evoluem projetos .NET reais — partindo das histórias no seu tracker até o Pull Request, sempre dentro da Clean Architecture.</p>
@@ -476,14 +467,7 @@ pwsh scripts/validate-pr.ps1     <span class="tok-c"># gate agregado</span></pre
 </div>
 
 <footer>
-  <div class="logo2a" style="display:inline-grid">
-    <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" aria-label="2A Always Ahead">
-      <path d="M20,0 H80 a20,20 0 0 1 20,20 V110 a20,20 0 0 1 -20,20 H0 V20 a20,20 0 0 1 20,-20 Z" fill="#1496d6"/>
-      <path d="M38,26 L70,43 L38,60 Z" fill="#ffffff"/>
-      <text x="50" y="92" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#ffffff">2A</text>
-      <text x="50" y="112" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.5" fill="#ffffff">ALWAYS AHEAD</text>
-    </svg>
-  </div>
+  <div class="footer-logo"><img src="assets/logo-2a.png" alt="2A — Always Ahead" /></div>
   <div>Template Corporativo · 2A — Always Ahead · C# / Oracle / Clean Architecture · gerado e mantido com Claude Code ·
   <a href="https://github.com/programadortech/arquitetura-ia" target="_blank" rel="noopener">programadortech/arquitetura-ia</a></div>
 </footer>
