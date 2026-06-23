@@ -40,6 +40,9 @@ param(
 $ErrorActionPreference = "Stop"
 
 # ---- configuração ------------------------------------------------------------
+# Prefere o override local (fora do git) quando o ConfigPath não foi informado explicitamente.
+$localCfg = ".claude/tracker.config.local.json"
+if (-not $PSBoundParameters.ContainsKey('ConfigPath') -and (Test-Path $localCfg)) { $ConfigPath = $localCfg }
 $cfg = $null
 if (Test-Path $ConfigPath) { $cfg = Get-Content $ConfigPath -Raw | ConvertFrom-Json }
 if (-not $Provider) {

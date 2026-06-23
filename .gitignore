@@ -32,6 +32,7 @@ packages/
 !packages/build/
 
 ## Secrets & local config (never commit)
+.claude/tracker.config.local.json
 .env
 *.env
 appsettings.Secrets.json

@@ -35,6 +35,8 @@ if (-not (Test-Path $TasksFile)) { throw "Arquivo de tasks não encontrado: $Tas
 $tasks = @(Get-Content $TasksFile -Raw | ConvertFrom-Json)
 if ($tasks.Count -eq 0) { Write-Output "[INFO] Nenhuma task para criar."; exit 0 }
 
+$localCfg = ".claude/tracker.config.local.json"
+if (-not $PSBoundParameters.ContainsKey('ConfigPath') -and (Test-Path $localCfg)) { $ConfigPath = $localCfg }
 $cfg = $null
 if (Test-Path $ConfigPath) { $cfg = Get-Content $ConfigPath -Raw | ConvertFrom-Json }
 if (-not $Provider) {
