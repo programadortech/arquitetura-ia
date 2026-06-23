@@ -13,6 +13,7 @@ Todo adapter de tracker retorna o **mesmo** objeto, independente da origem:
   "provider": "github | azure | gitlab",
   "key": "GH-42 | AZ-1234 | GL-7",
   "number": 42,
+  "workItemType": "Product Backlog Item | User Story | Feature | Bug | Task | null",
   "title": "...",
   "body": "...",
   "acceptanceCriteriaRaw": "... (campo dedicado quando o provider tem; senão null)",
@@ -20,9 +21,17 @@ Todo adapter de tracker retorna o **mesmo** objeto, independente da origem:
   "milestone": "Sprint 5 / IterationPath",
   "assignees": ["..."],
   "url": "https://...",
-  "state": "open | active | closed"
+  "state": "open | active | closed",
+  "parent":   { "id": 11247, "title": "...", "type": "Product Backlog Item" },
+  "children": [ { "id": 12080, "title": "...", "type": "Task", "state": "..." } ]
 }
 ```
+
+### Hierarquia: a história manda, a task é apoio
+A **história** (User Story / PBI / Feature) carrega os critérios de aceite e dirige tudo; as **tasks** são
+itens-filho. O adapter resolve `parent` e `children` (no Azure, via relações de hierarquia). A skill
+`/import-story` é **centrada na história**: se receber uma task, sobe para o `parent`; os `children` entram
+como contexto do recorte já planejado e evitam que o `/sync-tasks` duplique tasks existentes.
 
 A skill [`/import-story`](../../.claude/skills/import-story/SKILL.md) consome esse contrato e gera
 `docs/features/<KEY>-<slug>.md` no formato de `templates/feature-template.md` — sempre igual,

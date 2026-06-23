@@ -71,11 +71,13 @@ function Get-GitHubIssue([string]$repo, [string]$num) {
     $j = & gh issue view $num --repo $repo --json number,title,body,labels,milestone,assignees,url,state | ConvertFrom-Json
     return [pscustomobject]@{
       provider = "github"; key = "GH-$($j.number)"; number = $j.number
+      workItemType = $null
       title = $j.title; body = $j.body; acceptanceCriteriaRaw = $null
       labels = @($j.labels | ForEach-Object { $_.name })
       milestone = $(if ($j.milestone) { $j.milestone.title } else { $null })
       assignees = @($j.assignees | ForEach-Object { $_.login })
       url = $j.url; state = $j.state
+      parent = $null; children = @()
     }
   }
   if (-not $env:GITHUB_TOKEN) { throw "github: instale o gh CLI ou defina GITHUB_TOKEN." }
@@ -83,11 +85,13 @@ function Get-GitHubIssue([string]$repo, [string]$num) {
   $i = Invoke-RestMethod -Headers $h -Uri "https://api.github.com/repos/$repo/issues/$num"
   [pscustomobject]@{
     provider = "github"; key = "GH-$($i.number)"; number = $i.number
+    workItemType = $null
     title = $i.title; body = $i.body; acceptanceCriteriaRaw = $null
     labels = @($i.labels | ForEach-Object { $_.name })
     milestone = $(if ($i.milestone) { $i.milestone.title } else { $null })
     assignees = @($i.assignees | ForEach-Object { $_.login })
     url = $i.html_url; state = $i.state
+    parent = $null; children = @()
   }
 }
 
@@ -98,17 +102,44 @@ function Get-AzureWorkItem([string]$org, [string]$project, [string]$wid) {
   $h = @{ Authorization = "Basic $auth" }
   $orgEnc = [uri]::EscapeDataString($org)
   $projEnc = [uri]::EscapeDataString($project)
-  $uri = "https://dev.azure.com/$orgEnc/$projEnc/_apis/wit/workitems/$wid`?api-version=7.1"
+  # $expand=relations traz a hierarquia (parent/children) do work item.
+  $uri = "https://dev.azure.com/$orgEnc/$projEnc/_apis/wit/workitems/$wid`?`$expand=relations&api-version=7.1"
   $w = Invoke-RestMethod -Headers $h -Uri $uri
   $f = $w.fields
+
+  # Resolve parent (Hierarchy-Reverse) e filhos/tasks (Hierarchy-Forward) a partir das relations.
+  $parentId = $null; $childIds = @()
+  foreach ($rel in $w.relations) {
+    $relId = ($rel.url -split '/')[-1]
+    if ($rel.rel -eq 'System.LinkTypes.Hierarchy-Reverse') { $parentId = [int]$relId }
+    elseif ($rel.rel -eq 'System.LinkTypes.Hierarchy-Forward') { $childIds += [int]$relId }
+  }
+  # Busca títulos/tipos de parent + filhos em lote.
+  $lookup = @{}
+  $allIds = @(); if ($parentId) { $allIds += $parentId }; $allIds += $childIds
+  if ($allIds.Count -gt 0) {
+    $buri = "https://dev.azure.com/$orgEnc/$projEnc/_apis/wit/workitems`?ids=$($allIds -join ',')&fields=System.Id,System.Title,System.WorkItemType,System.State&api-version=7.1"
+    $batch = Invoke-RestMethod -Headers $h -Uri $buri
+    foreach ($it in $batch.value) { $lookup[[int]$it.id] = $it.fields }
+  }
+  $parent = $null
+  if ($parentId) {
+    $parent = [pscustomobject]@{ id = $parentId; title = $lookup[$parentId].'System.Title'; type = $lookup[$parentId].'System.WorkItemType' }
+  }
+  $children = @($childIds | ForEach-Object {
+    [pscustomobject]@{ id = $_; title = $lookup[$_].'System.Title'; type = $lookup[$_].'System.WorkItemType'; state = $lookup[$_].'System.State' }
+  })
+
   [pscustomobject]@{
     provider = "azure"; key = "AZ-$($w.id)"; number = $w.id
+    workItemType = $f.'System.WorkItemType'
     title = $f.'System.Title'; body = $f.'System.Description'
     acceptanceCriteriaRaw = $f.'Microsoft.VSTS.Common.AcceptanceCriteria'   # HTML
     labels = @($(if ($f.'System.Tags') { ($f.'System.Tags' -split ';').Trim() } else { @() }))
     milestone = $f.'System.IterationPath'
     assignees = @($(if ($f.'System.AssignedTo') { $f.'System.AssignedTo'.displayName } else { @() }))
     url = "https://dev.azure.com/$orgEnc/$projEnc/_workitems/edit/$($w.id)"; state = $f.'System.State'
+    parent = $parent; children = $children
   }
 }
 
@@ -120,11 +151,13 @@ function Get-GitLabIssue([string]$baseUrl, [string]$projectId, [string]$iid) {
   $i = Invoke-RestMethod -Headers $h -Uri "$baseUrl/api/v4/projects/$projectId/issues/$iid"
   [pscustomobject]@{
     provider = "gitlab"; key = "GL-$($i.iid)"; number = $i.iid
+    workItemType = $null
     title = $i.title; body = $i.description; acceptanceCriteriaRaw = $null
     labels = @($i.labels)
     milestone = $(if ($i.milestone) { $i.milestone.title } else { $null })
     assignees = @($i.assignees | ForEach-Object { $_.username })
     url = $i.web_url; state = $i.state
+    parent = $null; children = @()
   }
 }
 
