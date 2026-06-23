@@ -64,6 +64,7 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Jobs em background | **Opcional** (Hangfire) — `jobs: hangfire \| none` (default none) | [ADR-0018](docs/adr/0018-optional-hangfire-jobs.md) · [ADR-0007](docs/adr/0007-jobs-hangfire.md) |
 | Mensageria / filas | Providers plugáveis: Kafka, SQS, RabbitMQ, MQTT | [ADR-0008](docs/adr/0008-pluggable-queue-providers.md) |
 | Banco de dados | Plugável: Oracle / SQL Server / PostgreSQL / MySQL | [ADR-0013](docs/adr/0013-pluggable-database-providers.md) |
+| Acesso a dados | EF Core **ou** Dapper (selecionável), ambos com **Unit of Work** | [ADR-0020](docs/adr/0020-data-access-efcore-or-dapper-uow.md) |
 | Testes | Unitários + Integração + Arquitetura | [ADR-0009](docs/adr/0009-testing-strategy.md) |
 | Tracker de histórias | Plugável: GitHub Issues / Azure DevOps / GitLab (via config) | [ADR-0010](docs/adr/0010-pluggable-issue-trackers.md) |
 | Tasks no tracker | Write-back das atividades planejadas como itens-filho da história | [ADR-0011](docs/adr/0011-task-writeback-tracker.md) |
@@ -89,8 +90,10 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 └── <Produto>.sln
 ```
 
-Opções do `/create-project`: `db` (oracle|sqlserver|postgresql|mysql) · `queue` (kafka|sqs|rabbitmq|mqtt) ·
-`jobs` (hangfire|none, default none) · `apidocs` (scalar,swagger|…) · `gateway` (yarp|none, default none).
+Opções do `/create-project`: `db` (oracle|sqlserver|postgresql|mysql) · `dataaccess` (efcore|dapper, default efcore) ·
+`queue` (kafka|sqs|rabbitmq|mqtt) · `jobs` (hangfire|none, default none) · `apidocs` (scalar,swagger|…) ·
+`gateway` (yarp|none, default none). Ambos os ORMs têm **Unit of Work** (ver
+[ADR-0020](docs/adr/0020-data-access-efcore-or-dapper-uow.md)).
 
 ## A regra de dependência (inegociável)
 

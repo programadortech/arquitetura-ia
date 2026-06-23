@@ -9,9 +9,12 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
-  <ItemGroup Label="Banco de dados (apenas o provider escolhido é referenciado pelo projeto)">
+  <ItemGroup Label="Banco de dados (apenas o provider/ORM escolhido é referenciado pelo projeto)">
+    <!-- EF Core (dataaccess=efcore) -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.*" />
+    <!-- Dapper (dataaccess=dapper) -->
+    <PackageVersion Include="Dapper" Version="2.*" />
     <!-- Oracle (padrão) -->
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.*" />
     <PackageVersion Include="Oracle.EntityFrameworkCore" Version="9.*" />

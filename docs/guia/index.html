@@ -278,6 +278,16 @@
         <div class="role"><div class="ic">🐬</div><b>MySQL</b><span><code>Pomelo.EntityFrameworkCore.MySql</code></span></div>
       </div>
 
+      <h3>Acesso a dados: EF Core ou Dapper (com Unit of Work)</h3>
+      <p>Selecionável (<code>dataaccess: efcore | dapper</code>, default <code>efcore</code>), <b>ortogonal ao banco</b>. Ambos expõem o mesmo contrato na Application — <code>IUnitOfWork</code> + repositórios — e têm <b>Unit of Work</b> (transação por caso de uso). ADR-0020.</p>
+      <div class="grid cols-2">
+        <div class="card"><b>EF Core</b> <span style="color:var(--muted)">(default)</span><p style="color:var(--muted);margin:.4rem 0 0">Change tracking, migrations, produtividade. <code>EfUnitOfWork</code> envolve o <code>DbContext</code>.</p></div>
+        <div class="card"><b>Dapper</b><p style="color:var(--muted);margin:.4rem 0 0">SQL explícito, performance, controle fino. <code>DapperUnitOfWork</code> (conexão + transação); <code>SaveChangesAsync</code> = commit.</p></div>
+      </div>
+      <div class="code"><button class="copy">copiar</button><pre><span class="tok-c">// fluxo uniforme no caso de uso (EF ou Dapper)</span>
+<span class="tok-k">await</span> _pedidos.AddAsync(pedido, ct);
+<span class="tok-k">await</span> _unitOfWork.SaveChangesAsync(ct);   <span class="tok-c">// EF: persiste · Dapper: commit</span></pre></div>
+
       <h3>Como escolher</h3>
       <p>No <b>scaffolding</b> do projeto (parâmetro do <code>/create-project</code>, padrão <code>oracle</code>):</p>
       <div class="code"><button class="copy">copiar</button><pre>crie um projeto com nome Billing com banco PostgreSQL e fila RabbitMQ</pre></div>

@@ -17,10 +17,50 @@ Ver [ADR-0013](../adr/0013-pluggable-database-providers.md). Padrão recomendado
 | **PostgreSQL** | `Npgsql.EntityFrameworkCore.PostgreSQL` | `Npgsql` |
 | **MySQL** | `Pomelo.EntityFrameworkCore.MySql` | `MySqlConnector` |
 
-## Regras de acesso (todos os providers)
-- Acesso somente por **repositórios** que implementam ports da Application. Nenhum tipo de banco
+## Acesso a dados: EF Core ou Dapper (com Unit of Work)
+O **acesso a dados é selecionável** — `dataaccess: efcore | dapper` no `/create-project` (default `efcore`),
+**ortogonal** ao provider. Ambos expõem o **mesmo contrato** na Application (ver
+[ADR-0020](../adr/0020-data-access-efcore-or-dapper-uow.md)):
+
+```csharp
+// Application/Ports/Persistence
+public interface IUnitOfWork
+{
+    Task BeginTransactionAsync(CancellationToken ct);
+    Task<int> SaveChangesAsync(CancellationToken ct);   // EF: persiste tracking · Dapper: commit
+    Task CommitAsync(CancellationToken ct);
+    Task RollbackAsync(CancellationToken ct);
+}
+
+public interface IPedidoRepository   // um repositório por agregado (também é port)
+{
+    Task<Pedido?> GetByIdAsync(Guid id, CancellationToken ct);
+    Task AddAsync(Pedido pedido, CancellationToken ct);
+    void Update(Pedido pedido);
+}
+```
+
+| | **EF Core** (default) | **Dapper** |
+|---|---|---|
+| Tracking | Sim (muda e `SaveChanges` persiste) | Não — SQL explícito executa na transação |
+| Migrations | EF migrations possível (ou scripts em `db/<provider>`) | Scripts em `db/<provider>` |
+| `IUnitOfWork` | wrap do `DbContext` (`SaveChangesAsync`, transação via `Database`) | wrap de `IDbConnection` + `IDbTransaction`; `SaveChangesAsync` = `Commit` |
+| Repositório | usa `DbSet<T>` | usa `connection.QueryAsync/ExecuteAsync` na transação do UoW |
+| Quando preferir | produtividade, domínio rico | performance, SQL fino, leituras pesadas |
+
+**Fluxo no caso de uso (uniforme):**
+```csharp
+await _pedidos.AddAsync(pedido, ct);
+await _unitOfWork.SaveChangesAsync(ct);   // EF: persiste · Dapper: commit da transação
+return Result.Success();
+```
+Opcional: um **`TransactionBehavior`** no pipeline do dispatcher envolve cada caso de uso (begin → handler →
+commit/rollback), igual para EF e Dapper.
+
+## Regras de acesso (todos os providers e ambos os ORMs)
+- Acesso somente por **repositórios** que implementam ports da Application. Nenhum tipo de banco/ORM
   vaza para Application/Domain.
-- **Sempre parametrizado** (bind variables / parâmetros). Nunca concatenar input em SQL.
+- **Sempre parametrizado** (bind variables / parâmetros). Nunca concatenar input em SQL (vale p/ Dapper também).
 - Conexões de pool; `await using`; passar `CancellationToken`.
 - Resiliência: chamadas ao banco usam a pipeline Polly `database` (timeout + retry transitório + breaker)
   — ver [resilience.md](resilience.md).

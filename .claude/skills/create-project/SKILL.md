@@ -10,9 +10,11 @@ Gera um esqueleto de solução completo e compilável, nomeado conforme o projet
 ## Inputs
 - **ProjectName** (obrigatório) — PascalCase, ex: `Billing`, `OrderManagement`.
 - Opcional: **banco de dados** (oracle | sqlserver | postgresql | mysql), padrão `oracle`.
+- Opcional: **acesso a dados** (efcore | dapper), padrão `efcore` — ambos com Unit of Work (ver `docs/standards/database.md`).
 - Opcional: provedor de fila padrão (Kafka | SQS | RabbitMQ | MQTT), padrão `RabbitMQ`.
+- Opcional: **jobs** (hangfire | none), padrão `none` · **apidocs** (scalar,swagger) · **gateway** (yarp | none), padrão `none`.
 
-Se ProjectName estiver faltando, peça antes de prosseguir.
+Se ProjectName estiver faltando, peça antes de prosseguir. Confirme as opções (ou use os defaults).
 
 ## Steps
 1. Confirme o ProjectName e a pasta de destino (`<ProjectName>/` na raiz do repositório ou um caminho que o usuário fornecer).
@@ -23,10 +25,15 @@ Se ProjectName estiver faltando, peça antes de prosseguir.
 3. Adicione a estrutura base de infraestrutura (sem lógica de negócio):
    - Application: `IUseCase<TRequest,TResponse>`, `IUseCaseDispatcher`, implementação `UseCaseDispatcher`,
      e a extensão de DI `AddApplication()` (veja `docs/standards/usecase-dispatcher.md`).
-   - Infrastructure: registro de Serilog + OpenTelemetry, registro de políticas Polly, `DbContext` base com o
-     **provider EF Core do banco escolhido** (Oracle/SQL Server/PostgreSQL/MySQL — veja
-     `docs/standards/database.md`), configuração do Hangfire, a abstração de fila plugável
-     (`IQueuePublisher`/`IQueueConsumer`) com o provedor selecionado (veja `docs/standards/queue-providers.md`).
+   - Application: além do dispatcher, as ports de persistência `IUnitOfWork` + repositórios e o
+     **Result/Notification** (ver `docs/standards/error-handling.md`).
+   - Infrastructure: Serilog + OpenTelemetry, políticas Polly, e o **acesso a dados escolhido**:
+     - **efcore** → `AppDbContext` (provider do banco) + `EfUnitOfWork`;
+     - **dapper** → `IDbConnection` + `DapperUnitOfWork` (transação) — ambos com Unit of Work (`docs/standards/database.md`).
+     Mais: **Hangfire só se `jobs=hangfire`**, abstração de fila plugável (`IQueuePublisher`/`IQueueConsumer`),
+     e adapters de integração conforme o catálogo (`docs/integrations/`).
+   - Api: host ASP.NET Core, DI, health checks, OTLP, **envelope `ApiResponse` + middleware global de exceções**,
+     **OpenAPI** (Scalar + Swagger), e `gateway` YARP opcional.
    - Api: host mínimo ASP.NET Core, composition root de DI, health checks, configuração do exportador OTLP.
 4. Adicione `global.json` (fixe o SDK do .NET 10), `Directory.Build.props`, `Directory.Packages.props`
    (gerenciamento central de pacotes), `.editorconfig`, `.gitignore`.

@@ -24,5 +24,6 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0017](0017-optional-api-gateway-yarp.md) | API Gateway opcional (YARP) | Aceito |
 | [0018](0018-optional-hangfire-jobs.md) | Jobs (Hangfire) opcional no scaffold | Aceito |
 | [0019](0019-product-monorepo-src-layout.md) | Produto no monorepo (solução em src/) | Aceito |
+| [0020](0020-data-access-efcore-or-dapper-uow.md) | Acesso a dados plugável — EF Core ou Dapper, com Unit of Work | Aceito |
 
-> Próximo número livre: **0020**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+> Próximo número livre: **0021**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
