@@ -51,6 +51,7 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Jobs em background | Hangfire | [ADR-0007](docs/adr/0007-jobs-hangfire.md) |
 | Mensageria / filas | Providers plugáveis: Kafka, SQS, RabbitMQ, MQTT | [ADR-0008](docs/adr/0008-pluggable-queue-providers.md) |
 | Testes | Unitários + Integração + Arquitetura | [ADR-0009](docs/adr/0009-testing-strategy.md) |
+| Tracker de histórias | Plugável: GitHub Issues / Azure DevOps / GitLab (via config) | [ADR-0010](docs/adr/0010-pluggable-issue-trackers.md) |
 
 ## Layout padrão da solução (projetos gerados)
 

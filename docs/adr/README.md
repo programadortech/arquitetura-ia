@@ -14,5 +14,6 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0007](0007-jobs-hangfire.md) | Jobs em background com Hangfire | Aceito |
 | [0008](0008-pluggable-queue-providers.md) | Provedores de fila plugáveis | Aceito |
 | [0009](0009-testing-strategy.md) | Estratégia de testes | Aceito |
+| [0010](0010-pluggable-issue-trackers.md) | Trackers de histórias plugáveis (GitHub / Azure DevOps / GitLab) | Aceito |
 
-> Próximo número livre: **0010**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+> Próximo número livre: **0011**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.

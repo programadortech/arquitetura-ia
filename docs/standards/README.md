@@ -11,4 +11,5 @@ o padrão ou registrando um novo ADR — nunca por divergência silenciosa.
 - [queue-providers.md](queue-providers.md) — Kafka/SQS/RabbitMQ/MQTT plugáveis.
 - [jobs.md](jobs.md) — jobs em background/agendados com Hangfire.
 - [testing.md](testing.md) — testes unitários + integração + arquitetura.
+- [issue-trackers.md](issue-trackers.md) — trackers de histórias plugáveis (GitHub / Azure DevOps / GitLab).
 - [quality-checklist.md](quality-checklist.md) — o gate por PR.
