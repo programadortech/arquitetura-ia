@@ -1,0 +1,52 @@
+## .NET
+bin/
+obj/
+out/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.user
+*.suo
+*.userprefs
+project.lock.json
+artifacts/
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.DotSettings.user
+
+## Build / test results
+TestResults/
+[Cc]overage*/
+*.coverage
+*.coveragexml
+*.trx
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+!packages/build/
+
+## Secrets & local config (never commit)
+.env
+*.env
+appsettings.Secrets.json
+appsettings.*.local.json
+secrets.json
+*.pfx
+*.pem
+*.key
+id_rsa*
+
+## Logs / temp
+*.log
+logs/
+*.tmp
+
+## OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,14 @@
+# Normalização de fim de linha
+* text=auto
+
+# Shell scripts precisam de LF para rodar em Unix/CI
+*.sh text eol=lf
+
+# PowerShell e arquivos Windows usam CRLF
+*.ps1 text eol=crlf
+
+# Tipos binários comuns (não normalizar)
+*.png binary
+*.jpg binary
+*.pfx binary
+*.dll binary
