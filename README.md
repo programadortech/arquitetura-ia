@@ -4,6 +4,10 @@ Uma **fábrica de templates e scaffolding** (não um sistema de negócio) para g
 corporativos com arquitetura, observabilidade, resiliência, mensageria e disciplina de qualidade consistentes.
 
 > Leia o [`CLAUDE.md`](CLAUDE.md) primeiro — é o documento de governança de como este repositório é usado.
+>
+> 📖 **Guia visual do processo (HTML):** abra [`docs/guia/index.html`](docs/guia/index.html) no navegador —
+> documentação moderna e completa de todo o fluxo (histórias → arquitetura → código → PR), agentes, skills,
+> tipos de história, integração com tracker e guia do PO.
 
 ## O que tem aqui dentro
 ```

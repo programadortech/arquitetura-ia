@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Guia · Template Corporativo (C# / Oracle / Clean Architecture)</title>
+<style>
+  :root {
+    --bg: #0b1020; --bg-soft: #11182e; --card: #151d36; --card-2: #1b2542;
+    --border: #25304f; --text: #e6ecff; --muted: #9fb0d6; --muted-2: #6f80a8;
+    --accent: #7c8cff; --accent-2: #3ddc97; --cyan: #38d3ee;
+    --grad: linear-gradient(120deg, #7c8cff 0%, #38d3ee 60%, #3ddc97 100%);
+    --code-bg: #0a0f1e; --shadow: 0 10px 40px -12px rgba(0,0,0,.6);
+    --radius: 16px;
+  }
+  [data-theme="light"] {
+    --bg: #f5f7fc; --bg-soft: #eef2fb; --card: #ffffff; --card-2: #f3f6fd;
+    --border: #e1e7f5; --text: #16203a; --muted: #4a5878; --muted-2: #7888aa;
+    --code-bg: #0e1426; --shadow: 0 12px 38px -16px rgba(30,50,110,.28);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 86px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace; font-size: .9em; }
+
+  /* Header */
+  header.top {
+    position: sticky; top: 0; z-index: 50; backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .top-inner { max-width: 1200px; margin: 0 auto; padding: 14px 22px; display: flex; align-items: center; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: .2px; }
+  .brand .logo {
+    width: 34px; height: 34px; border-radius: 10px; background: var(--grad);
+    display: grid; place-items: center; color: #06122a; font-weight: 900; box-shadow: var(--shadow);
+  }
+  .brand small { display:block; font-weight: 500; color: var(--muted); font-size: 11px; }
+  .top nav { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  .top nav a { color: var(--muted); padding: 7px 12px; border-radius: 9px; font-size: 14px; }
+  .top nav a:hover { color: var(--text); background: var(--card); text-decoration: none; }
+  .btn-ghost { cursor: pointer; border: 1px solid var(--border); background: var(--card);
+    color: var(--text); border-radius: 10px; padding: 7px 11px; font-size: 14px; }
+  .btn-ghost:hover { border-color: var(--accent); }
+  .menu-toggle { display: none; }
+
+  /* Layout */
+  .shell { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 256px 1fr; gap: 32px; padding: 28px 22px 80px; }
+  aside.toc { position: sticky; top: 86px; align-self: start; max-height: calc(100vh - 110px); overflow:auto; }
+  aside.toc h4 { color: var(--muted-2); text-transform: uppercase; letter-spacing: .12em; font-size: 11px; margin: 18px 0 8px; }
+  aside.toc a { display: block; color: var(--muted); padding: 6px 12px; border-radius: 8px; font-size: 14px; border-left: 2px solid transparent; }
+  aside.toc a:hover { color: var(--text); background: var(--card); text-decoration: none; }
+  aside.toc a.active { color: var(--text); background: var(--card); border-left-color: var(--accent); font-weight: 600; }
+  main { min-width: 0; }
+
+  /* Hero */
+  .hero { position: relative; border: 1px solid var(--border); border-radius: 24px; padding: 44px 40px;
+    background: radial-gradient(1200px 400px at 100% -10%, rgba(124,140,255,.18), transparent 60%), var(--card);
+    overflow: hidden; box-shadow: var(--shadow); }
+  .hero::after { content:""; position:absolute; inset:auto -60px -80px auto; width: 320px; height: 320px;
+    background: var(--grad); filter: blur(90px); opacity:.25; border-radius: 50%; }
+  .hero h1 { font-size: clamp(28px, 4vw, 44px); margin: 0 0 10px; line-height: 1.12; }
+  .hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p.lead { font-size: 18px; color: var(--muted); max-width: 720px; margin: 0 0 22px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill { font-size: 12.5px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--card-2); color: var(--muted); }
+  .pill.s { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); color: var(--text); }
+
+  section { margin-top: 52px; scroll-margin-top: 86px; }
+  section > h2 { font-size: 26px; margin: 0 0 6px; display:flex; align-items:center; gap:12px; }
+  section > h2 .num { font-size: 13px; font-weight: 800; color: #06122a; background: var(--grad);
+    width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; }
+  section > p.sub { color: var(--muted); margin: 4px 0 20px; }
+  h3 { font-size: 18px; margin: 26px 0 10px; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; }
+  .grid { display: grid; gap: 16px; }
+  .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  .role { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; transition: .2s; }
+  .role:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .role .ic { width: 38px; height: 38px; border-radius: 10px; display:grid; place-items:center; font-size:18px;
+    background: var(--card-2); border: 1px solid var(--border); margin-bottom: 10px; }
+  .role b { display:block; font-size: 15px; }
+  .role span { color: var(--muted); font-size: 13.5px; }
+
+  .skill { display:flex; gap: 12px; align-items:flex-start; background: var(--card); border:1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; }
+  .skill code.cmd { color: var(--cyan); font-weight: 700; white-space: nowrap; }
+  .skill span { color: var(--muted); font-size: 13.5px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; overflow: hidden; border-radius: 12px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--card-2); color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; }
+  tr:last-child td { border-bottom: none; }
+  .tbl-wrap { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+
+  /* code blocks */
+  .code { position: relative; background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px;
+    margin: 14px 0; }
+  .code pre { margin: 0; padding: 16px 18px; overflow-x: auto; color: #d6e2ff; }
+  .code .copy { position:absolute; top: 8px; right: 8px; cursor:pointer; font-size: 12px; color: var(--muted);
+    background: var(--card); border:1px solid var(--border); border-radius: 8px; padding: 4px 9px; }
+  .code .copy:hover { color: var(--text); border-color: var(--accent); }
+  .tok-c { color: #5d6f99; } /* comment */
+  .tok-k { color: #7c8cff; } /* keyword */
+  .tok-s { color: #3ddc97; } /* string */
+
+  /* flow diagram */
+  .flow { display: grid; gap: 10px; }
+  .flow .step { display:flex; align-items:center; gap: 14px; background: var(--card); border:1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; }
+  .flow .step .n { width: 30px; height: 30px; border-radius: 50%; display:grid; place-items:center; flex: 0 0 auto;
+    background: var(--grad); color:#06122a; font-weight: 800; font-size: 14px; }
+  .flow .step .cmd { color: var(--cyan); font-weight: 700; }
+  .flow .step small { color: var(--muted); display:block; }
+  .flow .arrow { text-align:center; color: var(--muted-2); font-size: 18px; line-height: 1; }
+
+  .callout { border-left: 3px solid var(--accent); background: var(--card-2); border-radius: 0 12px 12px 0;
+    padding: 14px 18px; margin: 16px 0; }
+  .callout.warn { border-left-color: #ffb454; }
+  .callout.ok { border-left-color: var(--accent-2); }
+  .callout b { color: var(--text); }
+
+  .step-timeline { position: relative; margin-left: 8px; padding-left: 26px; border-left: 2px dashed var(--border); }
+  .step-timeline .t { position: relative; margin-bottom: 22px; }
+  .step-timeline .t::before { content:""; position:absolute; left: -34px; top: 3px; width: 14px; height:14px;
+    border-radius: 50%; background: var(--grad); box-shadow: 0 0 0 4px var(--bg); }
+  .step-timeline .t b { font-size: 15.5px; }
+  .step-timeline .t p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+
+  footer { border-top: 1px solid var(--border); color: var(--muted); text-align:center; padding: 30px; font-size: 13px; }
+
+  @media (max-width: 920px) {
+    .shell { grid-template-columns: 1fr; }
+    aside.toc { position: fixed; inset: 64px 0 auto 0; background: var(--bg-soft); border-bottom:1px solid var(--border);
+      max-height: 0; overflow: hidden; padding: 0 22px; transition: max-height .3s; z-index: 40; }
+    aside.toc.open { max-height: 70vh; overflow:auto; padding: 12px 22px; }
+    .menu-toggle { display: inline-flex; }
+    .top nav .hide-sm { display: none; }
+    .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="logo">⌬</div>
+      <div>Template Corporativo<small>C# · Oracle · Clean Architecture · IA</small></div>
+    </div>
+    <nav>
+      <a class="hide-sm" href="#fluxo">Fluxo</a>
+      <a class="hide-sm" href="#agentes">Agentes</a>
+      <a class="hide-sm" href="#skills">Skills</a>
+      <a class="hide-sm" href="#passo-a-passo">Passo a passo</a>
+      <a class="hide-sm" href="https://github.com/programadortech/arquitetura-ia" target="_blank" rel="noopener">GitHub ↗</a>
+      <button class="btn-ghost" id="themeBtn" title="Alternar tema">◐</button>
+      <button class="btn-ghost menu-toggle" id="menuBtn" title="Menu">☰</button>
+    </nav>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="toc" id="toc">
+    <h4>Conteúdo</h4>
+    <a href="#intro">Introdução</a>
+    <a href="#fluxo">1. Visão do fluxo</a>
+    <a href="#stack">2. Stack obrigatória</a>
+    <a href="#tipos">3. Tipos de história</a>
+    <a href="#tracker">4. Integração com tracker</a>
+    <a href="#tasks">5. Write-back de tasks</a>
+    <a href="#agentes">6. Agentes (papéis)</a>
+    <a href="#skills">7. Skills (comandos)</a>
+    <a href="#passo-a-passo">8. Passo a passo</a>
+    <a href="#execucao">9. Modos de execução</a>
+    <a href="#po">10. Guia do PO</a>
+    <a href="#gates">11. Gates & comandos</a>
+    <a href="#faq">12. FAQ</a>
+  </aside>
+
+  <main>
+    <div class="hero" id="intro">
+      <h1>Da <span class="grad">história</span> ao <span class="grad">código</span>, com IA e governança.</h1>
+      <p class="lead">Este repositório é uma <b>fábrica de scaffolding corporativo</b>: padrões, agentes, skills e automações
+      que geram e evoluem projetos .NET reais — partindo das histórias no seu tracker até o Pull Request, sempre dentro da Clean Architecture.</p>
+      <div class="pills">
+        <span class="pill s">.NET 10</span>
+        <span class="pill s">Clean Architecture</span>
+        <span class="pill">UseCase Dispatcher (sem MediatR pago)</span>
+        <span class="pill">Oracle</span>
+        <span class="pill">Serilog + OpenTelemetry</span>
+        <span class="pill">Polly</span>
+        <span class="pill">Hangfire</span>
+        <span class="pill">Kafka · SQS · RabbitMQ · MQTT</span>
+        <span class="pill">Azure DevOps · GitHub · GitLab</span>
+      </div>
+    </div>
+
+    <section id="fluxo">
+      <h2><span class="num">1</span> Visão do fluxo</h2>
+      <p class="sub">Cada etapa é um pedido em linguagem natural que dispara uma skill. Você só conduz os checkpoints; os agentes rodam em sequência dentro de cada etapa.</p>
+      <div class="flow">
+        <div class="step"><span class="n">1</span><div><code class="cmd">/import-story</code> ou <code class="cmd">/create-feature</code><small>A história entra (do Azure/GitHub/GitLab) e vira um documento versionado em <code>docs/features/</code>.</small></div></div>
+        <div class="arrow">↓</div>
+        <div class="step"><span class="n">2</span><div><code class="cmd">/approve-architecture</code><small>Desenha a solução (camadas, casos de uso, modelo Oracle, mensageria, jobs), registra ADRs e <b>cria as tasks no tracker</b>.</small></div></div>
+        <div class="arrow">↓</div>
+        <div class="step"><span class="n">3</span><div><code class="cmd">/create-usecase</code> · <code class="cmd">/create-oracle-script</code> · <code class="cmd">/create-job</code> · <code class="cmd">/create-queue-provider</code><small>Implementação seguindo a regra de dependência.</small></div></div>
+        <div class="arrow">↓</div>
+        <div class="step"><span class="n">4</span><div><code class="cmd">/create-tests</code><small>Testes unitários, de integração e de arquitetura — um por critério de aceite.</small></div></div>
+        <div class="arrow">↓</div>
+        <div class="step"><span class="n">5</span><div><code class="cmd">/review-pr</code><small>Revisão multiperspectiva + gates; abre o PR que referencia e fecha o item do tracker.</small></div></div>
+      </div>
+    </section>
+
+    <section id="stack">
+      <h2><span class="num">2</span> Stack obrigatória</h2>
+      <p class="sub">Decisões fixas do template — cada uma tem um ADR explicando o porquê.</p>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Preocupação</th><th>Decisão</th><th>ADR</th></tr>
+          <tr><td>Linguagem / runtime</td><td>C# / .NET 10 (LTS)</td><td>ADR-0001</td></tr>
+          <tr><td>Arquitetura</td><td>Clean Architecture (Domain → Application → Infrastructure → Api)</td><td>ADR-0002</td></tr>
+          <tr><td>Casos de uso</td><td>Dispatcher próprio (<code>IUseCase</code> + <code>IUseCaseDispatcher</code>) — sem MediatR pago</td><td>ADR-0003</td></tr>
+          <tr><td>Banco</td><td>Oracle (<code>Oracle.ManagedDataAccess.Core</code> / EF Core)</td><td>ADR-0004</td></tr>
+          <tr><td>Logging / Telemetria</td><td>Serilog + OpenTelemetry (OTLP → Seq / Grafana Loki / Collector)</td><td>ADR-0005</td></tr>
+          <tr><td>Resiliência</td><td>Polly (retry, circuit breaker, timeout)</td><td>ADR-0006</td></tr>
+          <tr><td>Jobs</td><td>Hangfire</td><td>ADR-0007</td></tr>
+          <tr><td>Filas</td><td>Plugáveis: Kafka / SQS / RabbitMQ / MQTT</td><td>ADR-0008</td></tr>
+          <tr><td>Testes</td><td>Unitários + Integração + Arquitetura</td><td>ADR-0009</td></tr>
+          <tr><td>Tracker de histórias</td><td>Plugável: GitHub / Azure DevOps / GitLab</td><td>ADR-0010</td></tr>
+          <tr><td>Tasks no tracker</td><td>Write-back das atividades como itens-filho</td><td>ADR-0011</td></tr>
+          <tr><td>Tipos de história</td><td>Negócio e Técnica</td><td>ADR-0012</td></tr>
+        </table>
+      </div>
+      <div class="callout"><b>Regra de dependência (inegociável):</b> <code>Domain</code> não depende de nada; <code>Application</code> só de <code>Domain</code> (define ports); <code>Infrastructure</code> implementa as ports; <code>Api</code> só compõe a DI. Os testes de arquitetura impõem isso.</div>
+    </section>
+
+    <section id="tipos">
+      <h2><span class="num">3</span> Tipos de história</h2>
+      <p class="sub">Nem todo trabalho é feature de negócio. O template reconhece dois tipos.</p>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3 style="margin-top:0">💼 Negócio</h3>
+          <p style="color:var(--muted)">Valor para o usuário. Critérios de aceite comportamentais (Given/When/Then).</p>
+          <p>Skill: <code class="cmd">/create-feature</code> · Fluxo: <code>/approve-architecture</code> → <code>/create-usecase</code></p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">🏗️ Técnica</h3>
+          <p style="color:var(--muted)">Plataforma/arquitetura: setup do projeto, arquitetura base, pipeline, observabilidade. Critérios de aceite técnicos.</p>
+          <p>Skill: <code class="cmd">/create-tech-story</code> · Fluxo: <code>/create-project</code> e/ou <code>/approve-architecture</code> (sem use cases de negócio)</p>
+        </div>
+      </div>
+      <div class="callout"><b>Como a IA reconhece:</b> uma história importada é <b>técnica</b> se tiver uma tag/label de <code>storyKinds.technicalLabels</code> (default: <code>historia-tecnica</code>, <code>tecnica</code>, <code>tech</code>, <code>arquitetura</code>, <code>infra</code>).</div>
+    </section>
+
+    <section id="tracker">
+      <h2><span class="num">4</span> Integração com o tracker</h2>
+      <p class="sub">As histórias vêm de um tracker plugável. Trocar de origem é mudança de configuração, não de fluxo.</p>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Provider</th><th>Mecanismo</th><th>Credencial (variável de ambiente)</th></tr>
+          <tr><td>Azure DevOps</td><td>REST <code>dev.azure.com</code> (Work Items)</td><td><code>AZDO_PAT</code> (Work Items: Read &amp; Write)</td></tr>
+          <tr><td>GitHub</td><td><code>gh</code> CLI ou REST <code>api.github.com</code></td><td><code>GITHUB_TOKEN</code> (escopo <code>repo</code>)</td></tr>
+          <tr><td>GitLab</td><td>REST <code>/api/v4</code></td><td><code>GITLAB_TOKEN</code> (<code>read_api</code> / <code>api</code>)</td></tr>
+        </table>
+      </div>
+      <h3>Configuração — <code>.claude/tracker.config.json</code></h3>
+      <div class="code"><button class="copy">copiar</button><pre><span class="tok-c">// Segredos NUNCA aqui — só variáveis de ambiente.</span>
+{
+  <span class="tok-s">"provider"</span>: <span class="tok-s">"azure"</span>,
+  <span class="tok-s">"azure"</span>: { <span class="tok-s">"org"</span>: <span class="tok-s">"minha-org"</span>, <span class="tok-s">"project"</span>: <span class="tok-s">"MeuProjeto"</span> },
+  <span class="tok-s">"github"</span>: { <span class="tok-s">"repo"</span>: <span class="tok-s">""</span> },
+  <span class="tok-s">"gitlab"</span>: { <span class="tok-s">"host"</span>: <span class="tok-s">"https://gitlab.com"</span>, <span class="tok-s">"projectId"</span>: <span class="tok-s">""</span> },
+  <span class="tok-s">"taskSync"</span>: { <span class="tok-s">"enabled"</span>: <span class="tok-k">true</span>, <span class="tok-s">"azureTaskType"</span>: <span class="tok-s">"Task"</span> },
+  <span class="tok-s">"storyKinds"</span>: { <span class="tok-s">"technicalLabels"</span>: [<span class="tok-s">"historia-tecnica"</span>, <span class="tok-s">"tecnica"</span>, <span class="tok-s">"arquitetura"</span>] }
+}</pre></div>
+      <p>Importar: <b>"importe o work item 1234"</b> → gera <code>docs/features/AZ-1234-&lt;slug&gt;.md</code> com problema, contexto e critérios de aceite, e atualiza o backlog.</p>
+    </section>
+
+    <section id="tasks">
+      <h2><span class="num">5</span> Write-back de tasks</h2>
+      <p class="sub">Ao planejar a implementação, o agente cria as atividades de volta no tracker — ligadas à história.</p>
+      <div class="grid cols-3">
+        <div class="role"><div class="ic">🔵</div><b>Azure DevOps</b><span>Work items <code>Task</code> filhos da User Story (link de parentesco). Aparecem no board sob a história.</span></div>
+        <div class="role"><div class="ic">⚫</div><b>GitHub</b><span>Checklist <code>- [ ]</code> anexada ao corpo da issue.</span></div>
+        <div class="role"><div class="ic">🟠</div><b>GitLab</b><span>Checklist anexada à descrição da issue.</span></div>
+      </div>
+      <div class="callout ok"><b>Automático:</b> o passo final de <code>/approve-architecture</code> chama <code>/sync-tasks</code> quando <code>taskSync.enabled</code> está ligado. As tasks saem do plano (Domain → Application → Infra → Api → Testes → Observabilidade).</div>
+    </section>
+
+    <section id="agentes">
+      <h2><span class="num">6</span> Agentes (papéis)</h2>
+      <p class="sub">Papéis especializados que a IA assume. Dentro de cada skill, eles rodam em sequência automaticamente — você não conduz agente por agente.</p>
+      <div class="grid cols-3">
+        <div class="role"><div class="ic">🧭</div><b>product-planner</b><span>Transforma o pedido em história com critérios de aceite testáveis.</span></div>
+        <div class="role"><div class="ic">🏛️</div><b>solution-architect</b><span>Desenha a solução na Clean Architecture; produz arquitetura e ADRs.</span></div>
+        <div class="role"><div class="ic">💻</div><b>backend-developer</b><span>Implementa domínio, use cases, adapters, endpoints.</span></div>
+        <div class="role"><div class="ic">🗄️</div><b>oracle-dba-reviewer</b><span>SQL/migrações Oracle seguros, reversíveis e performáticos.</span></div>
+        <div class="role"><div class="ic">🧪</div><b>qa-tester</b><span>Pirâmide de testes; cobre cada critério de aceite.</span></div>
+        <div class="role"><div class="ic">📈</div><b>observability-engineer</b><span>Logs estruturados, spans e métricas (Serilog + OTel).</span></div>
+        <div class="role"><div class="ic">🛡️</div><b>security-reviewer</b><span>Secrets, injection, authz, exposição de dados.</span></div>
+        <div class="role"><div class="ic">⚙️</div><b>devops-engineer</b><span>Build, CI/CD, containers, infraestrutura de jobs/filas.</span></div>
+        <div class="role"><div class="ic">🎯</div><b>tech-lead-reviewer</b><span>Correção + aderência a padrões/ADRs antes do merge.</span></div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <h2><span class="num">7</span> Skills (comandos)</h2>
+      <p class="sub">Cada intenção em português dispara uma skill. Você fala naturalmente; a tabela mostra o gatilho.</p>
+      <div class="grid cols-2">
+        <div class="skill"><code class="cmd">/create-project</code><span>"crie um projeto com nome X" — esqueleto completo da solução.</span></div>
+        <div class="skill"><code class="cmd">/import-story</code><span>"importe o work item 1234" — traz a história do tracker.</span></div>
+        <div class="skill"><code class="cmd">/create-tech-story</code><span>"crie uma história técnica de setup" — arquitetura/infra.</span></div>
+        <div class="skill"><code class="cmd">/create-feature</code><span>"crie uma feature Y" — define história de negócio.</span></div>
+        <div class="skill"><code class="cmd">/approve-architecture</code><span>"abra arquitetura da feature Z" — design + ADRs + tasks.</span></div>
+        <div class="skill"><code class="cmd">/sync-tasks</code><span>"crie as tasks da história N" — write-back no tracker.</span></div>
+        <div class="skill"><code class="cmd">/create-usecase</code><span>"implemente o use case W" — ponta a ponta.</span></div>
+        <div class="skill"><code class="cmd">/create-oracle-script</code><span>"crie um script Oracle…" — migração versionada.</span></div>
+        <div class="skill"><code class="cmd">/create-job</code><span>"crie um job…" — Hangfire idempotente.</span></div>
+        <div class="skill"><code class="cmd">/create-queue-provider</code><span>"crie um provider de fila Kafka" — mensageria plugável.</span></div>
+        <div class="skill"><code class="cmd">/create-tests</code><span>"crie os testes…" — unit + integração + arquitetura.</span></div>
+        <div class="skill"><code class="cmd">/review-pr</code><span>"revise o PR" — revisão multiperspectiva + gates.</span></div>
+      </div>
+    </section>
+
+    <section id="passo-a-passo">
+      <h2><span class="num">8</span> Passo a passo prático</h2>
+      <p class="sub">Do zero ao PR. O exemplo usa Azure DevOps como tracker.</p>
+      <div class="step-timeline">
+        <div class="t"><b>0 · Pré-requisitos</b><p>.NET 10 SDK, Git, Docker (para Oracle/filas nos testes), e a credencial do tracker em variável de ambiente (<code>AZDO_PAT</code>).</p></div>
+        <div class="t"><b>1 · Crie o projeto</b><p>Diga: <i>"crie um projeto com nome Billing usando fila RabbitMQ"</i>. Gera a solução, builda vazia e passa nos testes de arquitetura.</p></div>
+        <div class="t"><b>2 · Traga a história</b><p>Diga: <i>"importe o work item 1234"</i>. Gera <code>docs/features/AZ-1234-&lt;slug&gt;.md</code> com os critérios de aceite. (Ou <i>"crie uma feature…"</i> do zero.)</p></div>
+        <div class="t"><b>3 · Aprove a arquitetura</b><p>Diga: <i>"abra arquitetura da feature AZ-1234"</i>. Produz o design, os ADRs e cria as <b>tasks no Azure</b> ligadas à história.</p></div>
+        <div class="t"><b>4 · Implemente</b><p>Diga: <i>"implemente o use case ConfirmarCobranca"</i>. Domain → Application → Infrastructure → Api, com Polly, OTel e logs estruturados.</p></div>
+        <div class="t"><b>5 · Teste</b><p>Diga: <i>"crie os testes da feature AZ-1234"</i>. Cada critério de aceite vira ≥1 teste.</p></div>
+        <div class="t"><b>6 · Revise e abra o PR</b><p>Diga: <i>"revise o PR"</i>. Roda os gates e os revisores; o PR referencia <code>#1234</code> e fecha o work item.</p></div>
+      </div>
+    </section>
+
+    <section id="execucao">
+      <h2><span class="num">9</span> Modos de execução</h2>
+      <p class="sub">Você escolhe quanto a IA encadeia sozinha entre as etapas.</p>
+      <div class="grid cols-3">
+        <div class="card"><h3 style="margin-top:0">Por etapa</h3><p style="color:var(--muted)">Uma frase por vez; você revisa entre cada passo. <b>Padrão recomendado.</b></p></div>
+        <div class="card"><h3 style="margin-top:0">Até um checkpoint</h3><p style="color:var(--muted)"><i>"crie a feature e abra a arquitetura, depois pare para eu aprovar"</i>.</p></div>
+        <div class="card"><h3 style="margin-top:0">Ponta a ponta</h3><p style="color:var(--muted)"><i>"crie a feature e leve até o PR sem parar"</i>.</p></div>
+      </div>
+      <div class="callout"><b>Dica:</b> pare nos dois pontos onde a decisão é sua — <b>feature</b> (o quê) e <b>arquitetura</b> (o como). Depois, código → testes → review pode correr em sequência.</div>
+    </section>
+
+    <section id="po">
+      <h2><span class="num">10</span> Guia do Product Owner</h2>
+      <p class="sub">Como escrever histórias no Azure DevOps para que sejam importáveis e implementáveis pela IA.</p>
+      <h3>Campo <b>Description</b></h3>
+      <div class="code"><button class="copy">copiar</button><pre>História
+Como &lt;persona&gt;, quero &lt;objetivo&gt;, para &lt;benefício&gt;.
+
+Regras de negócio
+- &lt;regra clara e verificável&gt;
+
+Requisitos não funcionais
+- Performance / Segurança-PII / Confiabilidade / Observabilidade
+
+Dependências / Integrações
+- &lt;sistema, fila, API&gt;</pre></div>
+      <h3>Campo <b>Acceptance Criteria</b> (vira teste)</h3>
+      <div class="code"><button class="copy">copiar</button><pre>Cenário: Confirmação dentro do limite
+  Dado um cliente com limite disponível de 1000
+  E um pedido no valor de 800
+  Quando o analista confirma o pedido
+  Então o pedido fica "Confirmado"
+
+Cenário: Bloqueio por crédito insuficiente
+  Dado um cliente com limite de 500
+  E um pedido de 800
+  Quando o analista confirma
+  Então a confirmação é recusada com "Crédito insuficiente"</pre></div>
+      <div class="callout warn"><b>Definition of Ready:</b> Title claro · Description com regras de negócio e NFRs · Acceptance Criteria em Given/When/Then cobrindo sucesso + validação + erro · estimada e priorizada.</div>
+      <p>Documento completo no repositório: <code>docs/standards/escrita-de-historias.md</code>. Dica: salve esse formato como <b>Work Item Template</b> do time no Azure DevOps.</p>
+    </section>
+
+    <section id="gates">
+      <h2><span class="num">11</span> Gates &amp; comandos</h2>
+      <p class="sub">Qualidade automatizada antes de cada PR.</p>
+      <div class="code"><button class="copy">copiar</button><pre><span class="tok-c"># Build e testes</span>
+dotnet build -warnaserror
+dotnet test
+
+<span class="tok-c"># Gates de validação (PowerShell)</span>
+pwsh scripts/validate-clean-architecture.ps1
+pwsh scripts/validate-architecture.ps1
+pwsh scripts/validate-oracle-scripts.ps1
+pwsh scripts/validate-tests.ps1
+pwsh scripts/validate-pr.ps1     <span class="tok-c"># gate agregado</span></pre></div>
+      <div class="callout"><b>Hooks (automáticos):</b> <code>pre-task-check</code> lembra os padrões · <code>post-edit-check</code> sinaliza violações de layering/log/MediatR · <code>dangerous-command-blocker</code> bloqueia DDL destrutivo, force-push e exfiltração de segredos.</div>
+    </section>
+
+    <section id="faq">
+      <h2><span class="num">12</span> FAQ</h2>
+      <h3>Preciso ficar conduzindo agente por agente?</h3>
+      <p style="color:var(--muted)">Não. Dentro de cada skill os agentes rodam em sequência sozinhos. Você só decide quanto encadear <b>entre</b> as etapas (ver Modos de execução).</p>
+      <h3>Onde ficam as histórias?</h3>
+      <p style="color:var(--muted)">Como documentos versionados em <code>docs/features/</code>, geradas do tracker (<code>/import-story</code>) ou do zero (<code>/create-feature</code>). É de lá que a IA lê para implementar.</p>
+      <h3>E os segredos (PAT/tokens)?</h3>
+      <p style="color:var(--muted)">Nunca no código nem no <code>tracker.config.json</code> — somente em variáveis de ambiente.</p>
+      <h3>Posso trocar de tracker depois?</h3>
+      <p style="color:var(--muted)">Sim. Mude <code>provider</code> no <code>tracker.config.json</code>; o fluxo e os agentes permanecem iguais.</p>
+    </section>
+  </main>
+</div>
+
+<footer>
+  Template Corporativo · C# / Oracle / Clean Architecture · gerado e mantido com Claude Code ·
+  <a href="https://github.com/programadortech/arquitetura-ia" target="_blank" rel="noopener">programadortech/arquitetura-ia</a>
+</footer>
+
+<script>
+  // Tema claro/escuro (persistente)
+  const root = document.documentElement, tbtn = document.getElementById('themeBtn');
+  const saved = localStorage.getItem('guia-theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  tbtn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); localStorage.setItem('guia-theme', next);
+  });
+
+  // Menu mobile
+  const toc = document.getElementById('toc'), mbtn = document.getElementById('menuBtn');
+  mbtn.addEventListener('click', () => toc.classList.toggle('open'));
+  toc.addEventListener('click', e => { if (e.target.tagName === 'A') toc.classList.remove('open'); });
+
+  // Copiar código
+  document.querySelectorAll('.code .copy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pre = btn.parentElement.querySelector('pre');
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        const t = btn.textContent; btn.textContent = 'copiado ✓';
+        setTimeout(() => btn.textContent = t, 1400);
+      });
+    });
+  });
+
+  // Destaque do item ativo no índice
+  const links = [...document.querySelectorAll('aside.toc a')];
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(en.target.id); if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('section[id]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
