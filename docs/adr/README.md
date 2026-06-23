@@ -18,5 +18,11 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0011](0011-task-writeback-tracker.md) | Write-back de tasks para o tracker | Aceito |
 | [0012](0012-story-types-business-technical.md) | Tipos de história — negócio e técnica | Aceito |
 | [0013](0013-pluggable-database-providers.md) | Bancos de dados relacionais plugáveis (Oracle / SQL Server / PostgreSQL / MySQL) | Aceito |
+| [0014](0014-error-handling-result-notification.md) | Tratamento de erros — Result/Notification + Envelope + middleware | Aceito |
+| [0015](0015-pluggable-api-documentation.md) | Documentação de API plugável (OpenAPI + Scalar/Swagger) | Aceito |
+| [0016](0016-pluggable-integrations-catalog.md) | Integrações plugáveis + catálogo (docs/integrations) | Aceito |
+| [0017](0017-optional-api-gateway-yarp.md) | API Gateway opcional (YARP) | Aceito |
+| [0018](0018-optional-hangfire-jobs.md) | Jobs (Hangfire) opcional no scaffold | Aceito |
+| [0019](0019-product-monorepo-src-layout.md) | Produto no monorepo (solução em src/) | Aceito |
 
-> Próximo número livre: **0014**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+> Próximo número livre: **0020**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.

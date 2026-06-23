@@ -9,8 +9,12 @@ o padrão ou registrando um novo ADR — nunca por divergência silenciosa.
 - [oracle.md](oracle.md) — notas específicas do provider Oracle.
 - [observability.md](observability.md) — Serilog + OpenTelemetry, logs estruturados, exportação OTLP.
 - [resilience.md](resilience.md) — políticas Polly (timeout/retry/circuit breaker).
+- [error-handling.md](error-handling.md) — Result/Notification + envelope `ApiResponse` + middleware global.
+- [api-documentation.md](api-documentation.md) — OpenAPI plugável (Scalar / Swagger / ReDoc).
+- [integrations.md](integrations.md) — integrações plugáveis + catálogo (docs/integrations).
+- [api-gateway.md](api-gateway.md) — API Gateway opcional (YARP).
 - [queue-providers.md](queue-providers.md) — Kafka/SQS/RabbitMQ/MQTT plugáveis.
-- [jobs.md](jobs.md) — jobs em background/agendados com Hangfire.
+- [jobs.md](jobs.md) — jobs em background/agendados com Hangfire (opcional).
 - [testing.md](testing.md) — testes unitários + integração + arquitetura.
 - [issue-trackers.md](issue-trackers.md) — trackers de histórias plugáveis (GitHub / Azure DevOps / GitLab).
 - [escrita-de-historias.md](escrita-de-historias.md) — padrão de escrita de histórias para POs (Azure DevOps).

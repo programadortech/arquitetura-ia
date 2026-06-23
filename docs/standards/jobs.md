@@ -1,7 +1,10 @@
-# Padrão: Jobs em Background (Hangfire)
+# Padrão: Jobs em Background (Hangfire — opcional)
 
-Trabalho em background e agendado usa **Hangfire** com armazenamento em **Oracle**. Os jobs são finos: resolvem o
-dispatcher e executam um caso de uso. **Sem lógica de negócio nos jobs.**
+> **Opcional** no scaffold (`jobs: hangfire | none`, default `none` — ver
+> [ADR-0018](../adr/0018-optional-hangfire-jobs.md)). Este padrão vale quando os jobs estão **habilitados**.
+
+Trabalho em background e agendado usa **Hangfire** com armazenamento no **banco do projeto** (provider
+plugável). Os jobs são finos: resolvem o dispatcher e executam um caso de uso. **Sem lógica de negócio nos jobs.**
 
 ## Tipos de job
 - **Fire-and-forget** — enfileire a partir de um caso de uso/adapter via `IBackgroundJobClient.Enqueue(...)`.

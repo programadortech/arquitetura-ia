@@ -1,20 +1,25 @@
-# CLAUDE.md — Template Corporativo (C# / Oracle / Clean Architecture)
+# CLAUDE.md — Monorepo do Produto (C# / Clean Architecture) + Fábrica
 
-> Este repositório é uma **fábrica de templates / scaffolding corporativo**, não um sistema de negócio.
-> Ele contém os padrões, agentes, skills, hooks, documentos e templates usados para
-> gerar e evoluir projetos reais sob demanda.
+> Este repositório é o **monorepo do produto**: o código vive na raiz em `src/` + `tests/`, e a
+> **fábrica** (padrões, agentes, skills, hooks, templates) convive ao lado para **gerar e evoluir** o
+> produto com contexto persistente. Ver [ADR-0019](docs/adr/0019-product-monorepo-src-layout.md).
 
 ## O que este repositório é
 
-Este é um **meta-repositório**. Ele **não** contém código de negócio. Em vez disso, ele fornece:
+Um **monorepo**: **produto** (`src/`, `tests/`) + **fábrica** que o constrói/evolui:
 
-- **Padrões** (`docs/standards/`) — as regras vinculantes que todo projeto gerado deve seguir.
-- **Agentes** (`.claude/agents/`) — papéis especializados que o Claude assume para planejar, construir e revisar.
+- **Produto** (`src/`, `tests/`, `<Produto>.sln`) — a solução .NET em Clean Architecture (criada por `/create-project`).
+- **Contexto do produto** (`docs/PRODUCT.md`) — visão, estado, decisões-chave e convenções. **Leia primeiro** ao evoluir o produto.
+- **Padrões** (`docs/standards/`) — regras vinculantes que o produto segue.
+- **Agentes** (`.claude/agents/`) — papéis especializados para planejar, construir e revisar.
 - **Skills** (`.claude/skills/`) — procedimentos executáveis invocados com `/skill-name`.
-- **Hooks** (`.claude/hooks/`) — gates de qualidade automatizados conectados via `.claude/settings.json`.
-- **Templates** (`templates/`) — os documentos e formatos de código a partir dos quais novos artefatos são gerados.
-- **Scripts de validação** (`scripts/`) — verificações em PowerShell para arquitetura, Oracle, testes e PRs.
-- **Docs de arquitetura e ADRs** (`docs/`) — o registro de design duradouro.
+- **Hooks** (`.claude/hooks/`) — gates de qualidade via `.claude/settings.json`.
+- **Templates** (`templates/`) — formatos a partir dos quais novos artefatos são gerados.
+- **Catálogo de integrações** (`docs/integrations/`) — provedores plugáveis (e-mail/SMS/storage/pagamentos) que os agentes consultam para decidir.
+- **Scripts de validação** (`scripts/`) — verificações em PowerShell (arquitetura, banco, testes, PRs).
+- **ADRs** (`docs/adr/`) — o registro de design duradouro.
+
+> Para iniciar um **produto diferente**, clone este repo como *starter* e limpe `src/`/`tests/` e os docs do produto.
 
 ## Como você (Claude) deve usá-lo
 
@@ -33,6 +38,7 @@ Quando o usuário pedir um dos itens a seguir, **invoque a skill correspondente*
 | "crie um script de banco / Oracle …" | `/create-db-script` |
 | "crie um job …" | `/create-job` |
 | "crie um provider de fila …" | `/create-queue-provider` |
+| "adicione uma integração (e-mail/SMS/…)" | `/create-integration` |
 | "crie os testes …" | `/create-tests` |
 | "revise o PR …" | `/review-pr` |
 
@@ -51,33 +57,40 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Logging | Serilog, logs estruturados | [ADR-0005](docs/adr/0005-observability-stack.md) |
 | Telemetria | OpenTelemetry (traces, métricas, logs) → OTLP Collector / Seq / Grafana Loki | [ADR-0005](docs/adr/0005-observability-stack.md) |
 | Resiliência | Polly (retry, circuit breaker, timeout) | [ADR-0006](docs/adr/0006-resilience-polly.md) |
-| Jobs em background | Hangfire | [ADR-0007](docs/adr/0007-jobs-hangfire.md) |
+| Tratamento de erros | Result/Notification + envelope `ApiResponse` + middleware global (sem `throw` para negócio) | [ADR-0014](docs/adr/0014-error-handling-result-notification.md) |
+| Documentação de API | OpenAPI nativo + UI plugável (Scalar + Swagger, default) | [ADR-0015](docs/adr/0015-pluggable-api-documentation.md) |
+| Integrações | Plugáveis + catálogo `docs/integrations/` (e-mail/SMS/storage/pagamentos) | [ADR-0016](docs/adr/0016-pluggable-integrations-catalog.md) |
+| API Gateway | Opcional (YARP) — `gateway: yarp \| none` | [ADR-0017](docs/adr/0017-optional-api-gateway-yarp.md) |
+| Jobs em background | **Opcional** (Hangfire) — `jobs: hangfire \| none` (default none) | [ADR-0018](docs/adr/0018-optional-hangfire-jobs.md) · [ADR-0007](docs/adr/0007-jobs-hangfire.md) |
 | Mensageria / filas | Providers plugáveis: Kafka, SQS, RabbitMQ, MQTT | [ADR-0008](docs/adr/0008-pluggable-queue-providers.md) |
+| Banco de dados | Plugável: Oracle / SQL Server / PostgreSQL / MySQL | [ADR-0013](docs/adr/0013-pluggable-database-providers.md) |
 | Testes | Unitários + Integração + Arquitetura | [ADR-0009](docs/adr/0009-testing-strategy.md) |
 | Tracker de histórias | Plugável: GitHub Issues / Azure DevOps / GitLab (via config) | [ADR-0010](docs/adr/0010-pluggable-issue-trackers.md) |
 | Tasks no tracker | Write-back das atividades planejadas como itens-filho da história | [ADR-0011](docs/adr/0011-task-writeback-tracker.md) |
 | Tipos de história | Negócio e Técnica (arquitetura/infra/setup) | [ADR-0012](docs/adr/0012-story-types-business-technical.md) |
+| Layout | Monorepo: produto em `src/` + fábrica embutida; contexto em `docs/PRODUCT.md` | [ADR-0019](docs/adr/0019-product-monorepo-src-layout.md) |
 
 ## Layout padrão da solução (projetos gerados)
 
-Todo projeto criado via `/create-project` produz:
+`/create-project` cria a solução **na raiz do monorepo** (não em subpasta):
 
 ```
-<ProjectName>/
+/ (raiz do monorepo)
 ├── src/
-│   ├── <ProjectName>.Domain/            # Entities, value objects, domain events, sem dependências
-│   ├── <ProjectName>.Application/        # Use cases, contratos do dispatcher, ports (interfaces)
-│   ├── <ProjectName>.Infrastructure/     # Adapters de Oracle, mensageria, Hangfire, Polly, OTel
-│   └── <ProjectName>.Api/                # Host ASP.NET Core, composition root de DI, endpoints
-├── tests/
-│   ├── <ProjectName>.UnitTests/
-│   ├── <ProjectName>.IntegrationTests/
-│   └── <ProjectName>.ArchitectureTests/
-├── db/
-│   └── <provider>/                       # oracle|sqlserver|postgresql|mysql — migração e seed versionados
-├── docs/                                 # arquitetura, features e ADRs por projeto
-└── <ProjectName>.sln
+│   ├── <Produto>.Domain/            # Entities, value objects, domain events, sem dependências
+│   ├── <Produto>.Application/        # Use cases, dispatcher, ports, Result/Notification
+│   ├── <Produto>.Infrastructure/     # Adapters de banco, mensageria, integrações, Polly, OTel
+│   ├── <Produto>.Api/                # Host ASP.NET Core, DI, endpoints, envelope, middleware, OpenAPI
+│   └── <Produto>.Gateway/            # (opcional, YARP) ponto único de entrada para o front
+├── tests/  (UnitTests · IntegrationTests · ArchitectureTests)
+├── db/<provider>/                    # migração e seed versionados (provider plugável)
+├── docs/                             # PRODUCT.md, features, architecture, adr, standards, integrations
+├── .claude/ · templates/ · scripts/  # a fábrica (tooling)
+└── <Produto>.sln
 ```
+
+Opções do `/create-project`: `db` (oracle|sqlserver|postgresql|mysql) · `queue` (kafka|sqs|rabbitmq|mqtt) ·
+`jobs` (hangfire|none, default none) · `apidocs` (scalar,swagger|…) · `gateway` (yarp|none, default none).
 
 ## A regra de dependência (inegociável)
 
