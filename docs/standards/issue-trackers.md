@@ -63,6 +63,9 @@ qualquer que seja o tracker.
   template equivalente no GitLab/Azure).
 - Se não houver critérios, o `product-planner` redige a partir da descrição e marca como **"a confirmar"**.
 
+> Para a entrada vir sempre completa, os POs devem seguir o
+> [padrão de escrita de histórias](escrita-de-historias.md).
+
 ## Rastreabilidade
 - O arquivo de feature usa a `key` (`GH-`/`AZ-`/`GL-`) como id canônico.
 - Commits e PRs referenciam o item original para fechar/relacionar (ex.: `#42` no GitHub).

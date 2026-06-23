@@ -12,4 +12,5 @@ o padrão ou registrando um novo ADR — nunca por divergência silenciosa.
 - [jobs.md](jobs.md) — jobs em background/agendados com Hangfire.
 - [testing.md](testing.md) — testes unitários + integração + arquitetura.
 - [issue-trackers.md](issue-trackers.md) — trackers de histórias plugáveis (GitHub / Azure DevOps / GitLab).
+- [escrita-de-historias.md](escrita-de-historias.md) — padrão de escrita de histórias para POs (Azure DevOps).
 - [quality-checklist.md](quality-checklist.md) — o gate por PR.
