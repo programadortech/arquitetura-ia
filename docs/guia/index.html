@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Guia do Template Corporativo · publicado via GitHub Pages -->
+<!-- Guia do Template Corporativo · 2A Always Ahead · publicado via GitHub Pages -->
 <html lang="pt-BR" data-theme="dark">
 <head>
 <meta charset="UTF-8" />
@@ -9,8 +9,8 @@
   :root {
     --bg: #0b1020; --bg-soft: #11182e; --card: #151d36; --card-2: #1b2542;
     --border: #25304f; --text: #e6ecff; --muted: #9fb0d6; --muted-2: #6f80a8;
-    --accent: #7c8cff; --accent-2: #3ddc97; --cyan: #38d3ee;
-    --grad: linear-gradient(120deg, #7c8cff 0%, #38d3ee 60%, #3ddc97 100%);
+    --accent: #2aa3e0; --accent-2: #3ddc97; --cyan: #38d3ee; --brand: #1496d6;
+    --grad: linear-gradient(120deg, #1496d6 0%, #38d3ee 60%, #3ddc97 100%);
     --code-bg: #0a0f1e; --shadow: 0 10px 40px -12px rgba(0,0,0,.6);
     --radius: 16px;
   }
@@ -36,12 +36,10 @@
     background: color-mix(in srgb, var(--bg) 80%, transparent);
     border-bottom: 1px solid var(--border);
   }
-  .top-inner { max-width: 1200px; margin: 0 auto; padding: 14px 22px; display: flex; align-items: center; gap: 16px; }
+  .top-inner { max-width: 1200px; margin: 0 auto; padding: 12px 22px; display: flex; align-items: center; gap: 14px; }
   .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: .2px; }
-  .brand .logo {
-    width: 34px; height: 34px; border-radius: 10px; background: var(--grad);
-    display: grid; place-items: center; color: #06122a; font-weight: 900; box-shadow: var(--shadow);
-  }
+  .logo2a { display: grid; place-items: center; filter: drop-shadow(0 4px 12px rgba(20,150,214,.4)); }
+  .logo2a svg { height: 40px; width: auto; display: block; }
   .brand small { display:block; font-weight: 500; color: var(--muted); font-size: 11px; }
   .top nav { margin-left: auto; display: flex; gap: 6px; align-items: center; }
   .top nav a { color: var(--muted); padding: 7px 12px; border-radius: 9px; font-size: 14px; }
@@ -57,27 +55,29 @@
   aside.toc h4 { color: var(--muted-2); text-transform: uppercase; letter-spacing: .12em; font-size: 11px; margin: 18px 0 8px; }
   aside.toc a { display: block; color: var(--muted); padding: 6px 12px; border-radius: 8px; font-size: 14px; border-left: 2px solid transparent; }
   aside.toc a:hover { color: var(--text); background: var(--card); text-decoration: none; }
-  aside.toc a.active { color: var(--text); background: var(--card); border-left-color: var(--accent); font-weight: 600; }
+  aside.toc a.active { color: var(--text); background: var(--card); border-left-color: var(--brand); font-weight: 600; }
   main { min-width: 0; }
 
   /* Hero */
   .hero { position: relative; border: 1px solid var(--border); border-radius: 24px; padding: 44px 40px;
-    background: radial-gradient(1200px 400px at 100% -10%, rgba(124,140,255,.18), transparent 60%), var(--card);
+    background: radial-gradient(1200px 400px at 100% -10%, rgba(20,150,214,.20), transparent 60%), var(--card);
     overflow: hidden; box-shadow: var(--shadow); }
   .hero::after { content:""; position:absolute; inset:auto -60px -80px auto; width: 320px; height: 320px;
     background: var(--grad); filter: blur(90px); opacity:.25; border-radius: 50%; }
-  .hero h1 { font-size: clamp(28px, 4vw, 44px); margin: 0 0 10px; line-height: 1.12; }
+  .hero .hero-logo { position: absolute; top: 32px; right: 36px; opacity: .95; }
+  .hero .hero-logo svg { height: 92px; width: auto; }
+  .hero h1 { font-size: clamp(28px, 4vw, 44px); margin: 0 0 10px; line-height: 1.12; position: relative; }
   .hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .hero p.lead { font-size: 18px; color: var(--muted); max-width: 720px; margin: 0 0 22px; }
-  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hero p.lead { font-size: 18px; color: var(--muted); max-width: 720px; margin: 0 0 22px; position: relative; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; position: relative; }
   .pill { font-size: 12.5px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
     background: var(--card-2); color: var(--muted); }
-  .pill.s { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); color: var(--text); }
+  .pill.s { border-color: color-mix(in srgb, var(--brand) 50%, var(--border)); color: var(--text); }
 
   section { margin-top: 52px; scroll-margin-top: 86px; }
   section > h2 { font-size: 26px; margin: 0 0 6px; display:flex; align-items:center; gap:12px; }
   section > h2 .num { font-size: 13px; font-weight: 800; color: #06122a; background: var(--grad);
-    width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; }
+    width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; flex: 0 0 auto; }
   section > p.sub { color: var(--muted); margin: 4px 0 20px; }
   h3 { font-size: 18px; margin: 26px 0 10px; }
 
@@ -85,6 +85,7 @@
   .grid { display: grid; gap: 16px; }
   .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
   .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
 
   .role { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; transition: .2s; }
   .role:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
@@ -111,9 +112,7 @@
   .code .copy { position:absolute; top: 8px; right: 8px; cursor:pointer; font-size: 12px; color: var(--muted);
     background: var(--card); border:1px solid var(--border); border-radius: 8px; padding: 4px 9px; }
   .code .copy:hover { color: var(--text); border-color: var(--accent); }
-  .tok-c { color: #5d6f99; } /* comment */
-  .tok-k { color: #7c8cff; } /* keyword */
-  .tok-s { color: #3ddc97; } /* string */
+  .tok-c { color: #5d6f99; } .tok-k { color: #5cc8ff; } .tok-s { color: #3ddc97; }
 
   /* flow diagram */
   .flow { display: grid; gap: 10px; }
@@ -125,7 +124,7 @@
   .flow .step small { color: var(--muted); display:block; }
   .flow .arrow { text-align:center; color: var(--muted-2); font-size: 18px; line-height: 1; }
 
-  .callout { border-left: 3px solid var(--accent); background: var(--card-2); border-radius: 0 12px 12px 0;
+  .callout { border-left: 3px solid var(--brand); background: var(--card-2); border-radius: 0 12px 12px 0;
     padding: 14px 18px; margin: 16px 0; }
   .callout.warn { border-left-color: #ffb454; }
   .callout.ok { border-left-color: var(--accent-2); }
@@ -139,6 +138,7 @@
   .step-timeline .t p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 
   footer { border-top: 1px solid var(--border); color: var(--muted); text-align:center; padding: 30px; font-size: 13px; }
+  footer .logo2a svg { height: 44px; margin-bottom: 10px; }
 
   @media (max-width: 920px) {
     .shell { grid-template-columns: 1fr; }
@@ -147,7 +147,8 @@
     aside.toc.open { max-height: 70vh; overflow:auto; padding: 12px 22px; }
     .menu-toggle { display: inline-flex; }
     .top nav .hide-sm { display: none; }
-    .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+    .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    .hero .hero-logo { display: none; }
   }
 </style>
 </head>
@@ -155,14 +156,21 @@
 <header class="top">
   <div class="top-inner">
     <div class="brand">
-      <div class="logo">⌬</div>
-      <div>Template Corporativo<small>C# · Oracle · Clean Architecture · IA</small></div>
+      <span class="logo2a" aria-label="2A Always Ahead">
+        <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" role="img">
+          <path d="M20,0 H80 a20,20 0 0 1 20,20 V110 a20,20 0 0 1 -20,20 H0 V20 a20,20 0 0 1 20,-20 Z" fill="#1496d6"/>
+          <path d="M38,26 L70,43 L38,60 Z" fill="#ffffff"/>
+          <text x="50" y="92" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#ffffff">2A</text>
+          <text x="50" y="112" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.5" fill="#ffffff">ALWAYS AHEAD</text>
+        </svg>
+      </span>
+      <div>Template Corporativo · 2A<small>C# · Oracle · Clean Architecture · IA</small></div>
     </div>
     <nav>
       <a class="hide-sm" href="#fluxo">Fluxo</a>
+      <a class="hide-sm" href="#banco">Banco</a>
       <a class="hide-sm" href="#agentes">Agentes</a>
       <a class="hide-sm" href="#skills">Skills</a>
-      <a class="hide-sm" href="#passo-a-passo">Passo a passo</a>
       <a class="hide-sm" href="https://github.com/programadortech/arquitetura-ia" target="_blank" rel="noopener">GitHub ↗</a>
       <button class="btn-ghost" id="themeBtn" title="Alternar tema">◐</button>
       <button class="btn-ghost menu-toggle" id="menuBtn" title="Menu">☰</button>
@@ -176,20 +184,29 @@
     <a href="#intro">Introdução</a>
     <a href="#fluxo">1. Visão do fluxo</a>
     <a href="#stack">2. Stack obrigatória</a>
-    <a href="#tipos">3. Tipos de história</a>
-    <a href="#tracker">4. Integração com tracker</a>
-    <a href="#tasks">5. Write-back de tasks</a>
-    <a href="#agentes">6. Agentes (papéis)</a>
-    <a href="#skills">7. Skills (comandos)</a>
-    <a href="#passo-a-passo">8. Passo a passo</a>
-    <a href="#execucao">9. Modos de execução</a>
-    <a href="#po">10. Guia do PO</a>
-    <a href="#gates">11. Gates & comandos</a>
-    <a href="#faq">12. FAQ</a>
+    <a href="#banco">3. Banco de dados (plugável)</a>
+    <a href="#tipos">4. Tipos de história</a>
+    <a href="#tracker">5. Integração com tracker</a>
+    <a href="#tasks">6. Write-back de tasks</a>
+    <a href="#agentes">7. Agentes (papéis)</a>
+    <a href="#skills">8. Skills (comandos)</a>
+    <a href="#passo-a-passo">9. Passo a passo</a>
+    <a href="#execucao">10. Modos de execução</a>
+    <a href="#po">11. Guia do PO</a>
+    <a href="#gates">12. Gates &amp; comandos</a>
+    <a href="#faq">13. FAQ</a>
   </aside>
 
   <main>
     <div class="hero" id="intro">
+      <span class="hero-logo" aria-hidden="true">
+        <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20,0 H80 a20,20 0 0 1 20,20 V110 a20,20 0 0 1 -20,20 H0 V20 a20,20 0 0 1 20,-20 Z" fill="#1496d6"/>
+          <path d="M38,26 L70,43 L38,60 Z" fill="#ffffff"/>
+          <text x="50" y="92" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#ffffff">2A</text>
+          <text x="50" y="112" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.5" fill="#ffffff">ALWAYS AHEAD</text>
+        </svg>
+      </span>
       <h1>Da <span class="grad">história</span> ao <span class="grad">código</span>, com IA e governança.</h1>
       <p class="lead">Este repositório é uma <b>fábrica de scaffolding corporativo</b>: padrões, agentes, skills e automações
       que geram e evoluem projetos .NET reais — partindo das histórias no seu tracker até o Pull Request, sempre dentro da Clean Architecture.</p>
@@ -197,7 +214,7 @@
         <span class="pill s">.NET 10</span>
         <span class="pill s">Clean Architecture</span>
         <span class="pill">UseCase Dispatcher (sem MediatR pago)</span>
-        <span class="pill">Oracle · SQL Server · PostgreSQL · MySQL</span>
+        <span class="pill s">Banco plugável: Oracle · SQL Server · PostgreSQL · MySQL</span>
         <span class="pill">Serilog + OpenTelemetry</span>
         <span class="pill">Polly</span>
         <span class="pill">Hangfire</span>
@@ -212,7 +229,7 @@
       <div class="flow">
         <div class="step"><span class="n">1</span><div><code class="cmd">/import-story</code> ou <code class="cmd">/create-feature</code><small>A história entra (do Azure/GitHub/GitLab) e vira um documento versionado em <code>docs/features/</code>.</small></div></div>
         <div class="arrow">↓</div>
-        <div class="step"><span class="n">2</span><div><code class="cmd">/approve-architecture</code><small>Desenha a solução (camadas, casos de uso, modelo Oracle, mensageria, jobs), registra ADRs e <b>cria as tasks no tracker</b>.</small></div></div>
+        <div class="step"><span class="n">2</span><div><code class="cmd">/approve-architecture</code><small>Desenha a solução (camadas, casos de uso, modelo de dados, mensageria, jobs), registra ADRs e <b>cria as tasks no tracker</b>.</small></div></div>
         <div class="arrow">↓</div>
         <div class="step"><span class="n">3</span><div><code class="cmd">/create-usecase</code> · <code class="cmd">/create-db-script</code> · <code class="cmd">/create-job</code> · <code class="cmd">/create-queue-provider</code><small>Implementação seguindo a regra de dependência.</small></div></div>
         <div class="arrow">↓</div>
@@ -231,7 +248,7 @@
           <tr><td>Linguagem / runtime</td><td>C# / .NET 10 (LTS)</td><td>ADR-0001</td></tr>
           <tr><td>Arquitetura</td><td>Clean Architecture (Domain → Application → Infrastructure → Api)</td><td>ADR-0002</td></tr>
           <tr><td>Casos de uso</td><td>Dispatcher próprio (<code>IUseCase</code> + <code>IUseCaseDispatcher</code>) — sem MediatR pago</td><td>ADR-0003</td></tr>
-          <tr><td>Banco</td><td>Plugável: Oracle / SQL Server / PostgreSQL / MySQL (EF Core; padrão Oracle)</td><td>ADR-0013</td></tr>
+          <tr><td>Banco (plugável)</td><td>Oracle / SQL Server / PostgreSQL / MySQL (EF Core; padrão Oracle)</td><td>ADR-0013</td></tr>
           <tr><td>Logging / Telemetria</td><td>Serilog + OpenTelemetry (OTLP → Seq / Grafana Loki / Collector)</td><td>ADR-0005</td></tr>
           <tr><td>Resiliência</td><td>Polly (retry, circuit breaker, timeout)</td><td>ADR-0006</td></tr>
           <tr><td>Jobs</td><td>Hangfire</td><td>ADR-0007</td></tr>
@@ -240,14 +257,49 @@
           <tr><td>Tracker de histórias</td><td>Plugável: GitHub / Azure DevOps / GitLab</td><td>ADR-0010</td></tr>
           <tr><td>Tasks no tracker</td><td>Write-back das atividades como itens-filho</td><td>ADR-0011</td></tr>
           <tr><td>Tipos de história</td><td>Negócio e Técnica</td><td>ADR-0012</td></tr>
-          <tr><td>Banco (plugável)</td><td>Oracle / SQL Server / PostgreSQL / MySQL</td><td>ADR-0013</td></tr>
         </table>
       </div>
       <div class="callout"><b>Regra de dependência (inegociável):</b> <code>Domain</code> não depende de nada; <code>Application</code> só de <code>Domain</code> (define ports); <code>Infrastructure</code> implementa as ports; <code>Api</code> só compõe a DI. Os testes de arquitetura impõem isso.</div>
     </section>
 
+    <section id="banco">
+      <h2><span class="num">3</span> Banco de dados (plugável)</h2>
+      <p class="sub">Antes fixo em Oracle, agora <b>selecionável por configuração</b> — mesma filosofia das filas. O motor é detalhe de Infrastructure, atrás das ports da Application; trocar de banco não muda Domain/Application nem o fluxo. <b>Padrão recomendado: Oracle.</b> (ADR-0013, substitui o ADR-0004.)</p>
+      <div class="grid cols-4">
+        <div class="role"><div class="ic">🔶</div><b>Oracle</b><span><code>Oracle.EntityFrameworkCore</code> · driver <code>ManagedDataAccess.Core</code></span></div>
+        <div class="role"><div class="ic">🟦</div><b>SQL Server</b><span><code>Microsoft.EntityFrameworkCore.SqlServer</code></span></div>
+        <div class="role"><div class="ic">🐘</div><b>PostgreSQL</b><span><code>Npgsql.EntityFrameworkCore.PostgreSQL</code></span></div>
+        <div class="role"><div class="ic">🐬</div><b>MySQL</b><span><code>Pomelo.EntityFrameworkCore.MySql</code></span></div>
+      </div>
+
+      <h3>Como escolher</h3>
+      <p>No <b>scaffolding</b> do projeto (parâmetro do <code>/create-project</code>, padrão <code>oracle</code>):</p>
+      <div class="code"><button class="copy">copiar</button><pre>crie um projeto com nome Billing com banco PostgreSQL e fila RabbitMQ</pre></div>
+      <p>E em runtime, por configuração no projeto gerado:</p>
+      <div class="code"><button class="copy">copiar</button><pre><span class="tok-c">// appsettings.json</span>
+{ <span class="tok-s">"Database"</span>: { <span class="tok-s">"Provider"</span>: <span class="tok-s">"PostgreSql"</span> } }   <span class="tok-c">// Oracle | SqlServer | PostgreSql | MySql</span></pre></div>
+
+      <h3>O que muda (e o que não muda)</h3>
+      <div class="grid cols-2">
+        <div class="card"><b>Não muda</b><p style="color:var(--muted);margin:.4rem 0 0">Domain, Application, as <code>ports</code> (ex.: <code>IPedidoRepository</code>), os casos de uso e os testes. O código de negócio é o mesmo em qualquer banco.</p></div>
+        <div class="card"><b>Muda (só Infrastructure)</b><p style="color:var(--muted);margin:.4rem 0 0">O provider EF Core referenciado, a connection string e os scripts de migração no dialeto do banco, em <code>db/&lt;provider&gt;/migrations</code>.</p></div>
+      </div>
+
+      <h3>Scripts de migração por provider</h3>
+      <div class="code"><button class="copy">copiar</button><pre>db/
+└── &lt;provider&gt;/                 <span class="tok-c"># oracle | sqlserver | postgresql | mysql</span>
+    ├── migrations/
+    │   ├── V0001__create_schema.sql   <span class="tok-c"># up</span>
+    │   └── U0001__create_schema.sql   <span class="tok-c"># down (rollback)</span>
+    └── seed/</pre></div>
+      <p>Crie scripts com <code class="cmd">/create-db-script</code> (gera no dialeto do provider) e valide com <code>scripts/validate-db-scripts.ps1</code>.</p>
+
+      <div class="callout ok"><b>Resiliência:</b> chamadas ao banco usam a pipeline Polly <code>database</code> (timeout + retry transitório + circuit breaker), igual para qualquer provider. <b>Testes:</b> integração via Testcontainers — há imagem para os quatro bancos.</div>
+      <div class="callout"><b>Convenções:</b> Oracle em <code>UPPER_SNAKE_CASE</code>; PostgreSQL/MySQL em <code>snake_case</code>; SQL Server em PascalCase/snake_case (consistente). Detalhes e equivalências de tipos em <code>docs/standards/database.md</code>.</div>
+    </section>
+
     <section id="tipos">
-      <h2><span class="num">3</span> Tipos de história</h2>
+      <h2><span class="num">4</span> Tipos de história</h2>
       <p class="sub">Nem todo trabalho é feature de negócio. O template reconhece dois tipos.</p>
       <div class="grid cols-2">
         <div class="card">
@@ -265,7 +317,7 @@
     </section>
 
     <section id="tracker">
-      <h2><span class="num">4</span> Integração com o tracker</h2>
+      <h2><span class="num">5</span> Integração com o tracker</h2>
       <p class="sub">As histórias vêm de um tracker plugável. Trocar de origem é mudança de configuração, não de fluxo.</p>
       <div class="tbl-wrap">
         <table>
@@ -276,7 +328,8 @@
         </table>
       </div>
       <h3>Configuração — <code>.claude/tracker.config.json</code></h3>
-      <div class="code"><button class="copy">copiar</button><pre><span class="tok-c">// Segredos NUNCA aqui — só variáveis de ambiente.</span>
+      <div class="code"><button class="copy">copiar</button><pre><span class="tok-c">// Placeholders versionados; dados reais vão em tracker.config.local.json (fora do git).</span>
+<span class="tok-c">// Segredos NUNCA aqui — só variáveis de ambiente.</span>
 {
   <span class="tok-s">"provider"</span>: <span class="tok-s">"azure"</span>,
   <span class="tok-s">"azure"</span>: { <span class="tok-s">"org"</span>: <span class="tok-s">"minha-org"</span>, <span class="tok-s">"project"</span>: <span class="tok-s">"MeuProjeto"</span> },
@@ -289,7 +342,7 @@
     </section>
 
     <section id="tasks">
-      <h2><span class="num">5</span> Write-back de tasks</h2>
+      <h2><span class="num">6</span> Write-back de tasks</h2>
       <p class="sub">Ao planejar a implementação, o agente cria as atividades de volta no tracker — ligadas à história.</p>
       <div class="grid cols-3">
         <div class="role"><div class="ic">🔵</div><b>Azure DevOps</b><span>Work items <code>Task</code> filhos da User Story (link de parentesco). Aparecem no board sob a história.</span></div>
@@ -300,13 +353,13 @@
     </section>
 
     <section id="agentes">
-      <h2><span class="num">6</span> Agentes (papéis)</h2>
+      <h2><span class="num">7</span> Agentes (papéis)</h2>
       <p class="sub">Papéis especializados que a IA assume. Dentro de cada skill, eles rodam em sequência automaticamente — você não conduz agente por agente.</p>
       <div class="grid cols-3">
         <div class="role"><div class="ic">🧭</div><b>product-planner</b><span>Transforma o pedido em história com critérios de aceite testáveis.</span></div>
         <div class="role"><div class="ic">🏛️</div><b>solution-architect</b><span>Desenha a solução na Clean Architecture; produz arquitetura e ADRs.</span></div>
         <div class="role"><div class="ic">💻</div><b>backend-developer</b><span>Implementa domínio, use cases, adapters, endpoints.</span></div>
-        <div class="role"><div class="ic">🗄️</div><b>oracle-dba-reviewer</b><span>SQL/migrações Oracle seguros, reversíveis e performáticos.</span></div>
+        <div class="role"><div class="ic">🗄️</div><b>oracle-dba-reviewer</b><span>SQL/migrações seguros e performáticos (Oracle/SQL Server/PostgreSQL/MySQL).</span></div>
         <div class="role"><div class="ic">🧪</div><b>qa-tester</b><span>Pirâmide de testes; cobre cada critério de aceite.</span></div>
         <div class="role"><div class="ic">📈</div><b>observability-engineer</b><span>Logs estruturados, spans e métricas (Serilog + OTel).</span></div>
         <div class="role"><div class="ic">🛡️</div><b>security-reviewer</b><span>Secrets, injection, authz, exposição de dados.</span></div>
@@ -316,7 +369,7 @@
     </section>
 
     <section id="skills">
-      <h2><span class="num">7</span> Skills (comandos)</h2>
+      <h2><span class="num">8</span> Skills (comandos)</h2>
       <p class="sub">Cada intenção em português dispara uma skill. Você fala naturalmente; a tabela mostra o gatilho.</p>
       <div class="grid cols-2">
         <div class="skill"><code class="cmd">/create-project</code><span>"crie um projeto com nome X" — esqueleto completo da solução.</span></div>
@@ -326,7 +379,7 @@
         <div class="skill"><code class="cmd">/approve-architecture</code><span>"abra arquitetura da feature Z" — design + ADRs + tasks.</span></div>
         <div class="skill"><code class="cmd">/sync-tasks</code><span>"crie as tasks da história N" — write-back no tracker.</span></div>
         <div class="skill"><code class="cmd">/create-usecase</code><span>"implemente o use case W" — ponta a ponta.</span></div>
-        <div class="skill"><code class="cmd">/create-db-script</code><span>"crie um script de banco/Oracle…" — migração versionada (Oracle/SQL Server/PostgreSQL/MySQL).</span></div>
+        <div class="skill"><code class="cmd">/create-db-script</code><span>"crie um script de banco/Oracle…" — migração versionada (4 bancos).</span></div>
         <div class="skill"><code class="cmd">/create-job</code><span>"crie um job…" — Hangfire idempotente.</span></div>
         <div class="skill"><code class="cmd">/create-queue-provider</code><span>"crie um provider de fila Kafka" — mensageria plugável.</span></div>
         <div class="skill"><code class="cmd">/create-tests</code><span>"crie os testes…" — unit + integração + arquitetura.</span></div>
@@ -335,10 +388,10 @@
     </section>
 
     <section id="passo-a-passo">
-      <h2><span class="num">8</span> Passo a passo prático</h2>
+      <h2><span class="num">9</span> Passo a passo prático</h2>
       <p class="sub">Do zero ao PR. O exemplo usa Azure DevOps como tracker.</p>
       <div class="step-timeline">
-        <div class="t"><b>0 · Pré-requisitos</b><p>.NET 10 SDK, Git, Docker (para Oracle/filas nos testes), e a credencial do tracker em variável de ambiente (<code>AZDO_PAT</code>).</p></div>
+        <div class="t"><b>0 · Pré-requisitos</b><p>.NET 10 SDK, Git, Docker (para o banco/filas nos testes), e a credencial do tracker em variável de ambiente (<code>AZDO_PAT</code>).</p></div>
         <div class="t"><b>1 · Crie o projeto</b><p>Diga: <i>"crie um projeto com nome Billing com banco PostgreSQL e fila RabbitMQ"</i>. O banco é plugável (Oracle padrão · SQL Server · PostgreSQL · MySQL). Gera a solução, builda vazia e passa nos testes de arquitetura.</p></div>
         <div class="t"><b>2 · Traga a história</b><p>Diga: <i>"importe o work item 1234"</i>. Gera <code>docs/features/AZ-1234-&lt;slug&gt;.md</code> com os critérios de aceite. (Ou <i>"crie uma feature…"</i> do zero.)</p></div>
         <div class="t"><b>3 · Aprove a arquitetura</b><p>Diga: <i>"abra arquitetura da feature AZ-1234"</i>. Produz o design, os ADRs e cria as <b>tasks no Azure</b> ligadas à história.</p></div>
@@ -349,7 +402,7 @@
     </section>
 
     <section id="execucao">
-      <h2><span class="num">9</span> Modos de execução</h2>
+      <h2><span class="num">10</span> Modos de execução</h2>
       <p class="sub">Você escolhe quanto a IA encadeia sozinha entre as etapas.</p>
       <div class="grid cols-3">
         <div class="card"><h3 style="margin-top:0">Por etapa</h3><p style="color:var(--muted)">Uma frase por vez; você revisa entre cada passo. <b>Padrão recomendado.</b></p></div>
@@ -360,7 +413,7 @@
     </section>
 
     <section id="po">
-      <h2><span class="num">10</span> Guia do Product Owner</h2>
+      <h2><span class="num">11</span> Guia do Product Owner</h2>
       <p class="sub">Como escrever histórias no Azure DevOps para que sejam importáveis e implementáveis pela IA.</p>
       <h3>Campo <b>Description</b></h3>
       <div class="code"><button class="copy">copiar</button><pre>História
@@ -391,7 +444,7 @@ Cenário: Bloqueio por crédito insuficiente
     </section>
 
     <section id="gates">
-      <h2><span class="num">11</span> Gates &amp; comandos</h2>
+      <h2><span class="num">12</span> Gates &amp; comandos</h2>
       <p class="sub">Qualidade automatizada antes de cada PR.</p>
       <div class="code"><button class="copy">copiar</button><pre><span class="tok-c"># Build e testes</span>
 dotnet build -warnaserror
@@ -407,11 +460,13 @@ pwsh scripts/validate-pr.ps1     <span class="tok-c"># gate agregado</span></pre
     </section>
 
     <section id="faq">
-      <h2><span class="num">12</span> FAQ</h2>
+      <h2><span class="num">13</span> FAQ</h2>
       <h3>Preciso ficar conduzindo agente por agente?</h3>
       <p style="color:var(--muted)">Não. Dentro de cada skill os agentes rodam em sequência sozinhos. Você só decide quanto encadear <b>entre</b> as etapas (ver Modos de execução).</p>
       <h3>Onde ficam as histórias?</h3>
       <p style="color:var(--muted)">Como documentos versionados em <code>docs/features/</code>, geradas do tracker (<code>/import-story</code>) ou do zero (<code>/create-feature</code>). É de lá que a IA lê para implementar.</p>
+      <h3>Como troco o banco de dados de um projeto?</h3>
+      <p style="color:var(--muted)">Escolha o provider no <code>/create-project</code> (ou <code>Database:Provider</code>). Domain/Application/testes não mudam — só o provider EF Core, a connection string e os scripts em <code>db/&lt;provider&gt;</code>.</p>
       <h3>E os segredos (PAT/tokens)?</h3>
       <p style="color:var(--muted)">Nunca no código nem no <code>tracker.config.json</code> — somente em variáveis de ambiente.</p>
       <h3>Posso trocar de tracker depois?</h3>
@@ -421,12 +476,19 @@ pwsh scripts/validate-pr.ps1     <span class="tok-c"># gate agregado</span></pre
 </div>
 
 <footer>
-  Template Corporativo · C# / Oracle / Clean Architecture · gerado e mantido com Claude Code ·
-  <a href="https://github.com/programadortech/arquitetura-ia" target="_blank" rel="noopener">programadortech/arquitetura-ia</a>
+  <div class="logo2a" style="display:inline-grid">
+    <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" aria-label="2A Always Ahead">
+      <path d="M20,0 H80 a20,20 0 0 1 20,20 V110 a20,20 0 0 1 -20,20 H0 V20 a20,20 0 0 1 20,-20 Z" fill="#1496d6"/>
+      <path d="M38,26 L70,43 L38,60 Z" fill="#ffffff"/>
+      <text x="50" y="92" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#ffffff">2A</text>
+      <text x="50" y="112" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.5" fill="#ffffff">ALWAYS AHEAD</text>
+    </svg>
+  </div>
+  <div>Template Corporativo · 2A — Always Ahead · C# / Oracle / Clean Architecture · gerado e mantido com Claude Code ·
+  <a href="https://github.com/programadortech/arquitetura-ia" target="_blank" rel="noopener">programadortech/arquitetura-ia</a></div>
 </footer>
 
 <script>
-  // Tema claro/escuro (persistente)
   const root = document.documentElement, tbtn = document.getElementById('themeBtn');
   const saved = localStorage.getItem('guia-theme');
   if (saved) root.setAttribute('data-theme', saved);
@@ -435,12 +497,10 @@ pwsh scripts/validate-pr.ps1     <span class="tok-c"># gate agregado</span></pre
     root.setAttribute('data-theme', next); localStorage.setItem('guia-theme', next);
   });
 
-  // Menu mobile
   const toc = document.getElementById('toc'), mbtn = document.getElementById('menuBtn');
   mbtn.addEventListener('click', () => toc.classList.toggle('open'));
   toc.addEventListener('click', e => { if (e.target.tagName === 'A') toc.classList.remove('open'); });
 
-  // Copiar código
   document.querySelectorAll('.code .copy').forEach(btn => {
     btn.addEventListener('click', () => {
       const pre = btn.parentElement.querySelector('pre');
@@ -451,7 +511,6 @@ pwsh scripts/validate-pr.ps1     <span class="tok-c"># gate agregado</span></pre
     });
   });
 
-  // Destaque do item ativo no índice
   const links = [...document.querySelectorAll('aside.toc a')];
   const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
   const obs = new IntersectionObserver(entries => {
