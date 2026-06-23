@@ -4,7 +4,7 @@ O registro de design duradouro do template e dos projetos gerados a partir dele.
 
 | Pasta | Conteúdo |
 |---|---|
-| [`standards/`](standards/) | **Regras vinculantes** que todo projeto deve seguir (arquitetura, dispatcher, Oracle, observabilidade, resiliência, filas, jobs, testes, checklist de qualidade). |
+| [`standards/`](standards/) | **Regras vinculantes** que todo projeto deve seguir (arquitetura, dispatcher, Oracle, observabilidade, resiliência, filas, jobs, testes, checklist de qualidade). Inclui o [padrão de escrita de histórias para POs](standards/escrita-de-historias.md). |
 | [`adr/`](adr/) | Architecture Decision Records — o *porquê* por trás dos padrões. |
 | [`architecture/`](architecture/) | Designs técnicos por feature (a partir de `templates/architecture-template.md`). |
 | [`features/`](features/) | Definições por feature (a partir de `templates/feature-template.md`). |

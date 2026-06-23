@@ -9,6 +9,10 @@ Um documento por feature/história. Crie de duas formas:
 Uma feature deve ter critérios de aceite concretos e testáveis antes de avançar para a arquitetura
 (`/approve-architecture`). Esta tabela é o **backlog** do repositório.
 
+> **POs:** escrevam as histórias no Azure DevOps seguindo o
+> [padrão de escrita de histórias](../standards/escrita-de-historias.md) — é o que garante import limpo
+> e implementação correta pela IA.
+
 | História | Item (tracker) | Status | Arquitetura | Responsável |
 |---|---|---|---|---|
 | _nenhuma ainda_ | — | — | — | — |

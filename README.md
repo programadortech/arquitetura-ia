@@ -57,3 +57,8 @@ pwsh scripts/validate-pr.ps1     # gate agregado de PR
 - Nova decisão arquitetural → um novo ADR (`templates/adr-template.md`).
 - Nova feature → começa como documento antes de qualquer código.
 - Todo caso de uso tem testes unitários; todo PR roda o checklist de qualidade.
+
+## Para Product Owners
+Como escrever histórias no tracker (Azure DevOps) para que sejam importáveis e implementáveis pela IA:
+**[docs/standards/escrita-de-historias.md](docs/standards/escrita-de-historias.md)** — formato de
+Description + Acceptance Criteria (Given/When/Then), Definition of Ready/Done e um exemplo preenchido.
