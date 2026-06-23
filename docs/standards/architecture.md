@@ -13,7 +13,7 @@ e pelo projeto `*.ArchitectureTests` (NetArchTest).
        ▼                        ▼
 ┌─────────────┐         ┌──────────────────┐
 │ Application │◀────────│  Infrastructure  │ implements Application ports
-│  use cases  │ ports   │ Oracle/queues/   │
+│  use cases  │ ports   │ DB/queues/       │
 │  + ports    │         │ jobs/telemetry   │
 └──────┬──────┘         └──────────────────┘
        ▼
@@ -26,7 +26,7 @@ e pelo projeto `*.ArchitectureTests` (NetArchTest).
   (sem EF, sem Serilog, sem SDKs de providers).
 - **Application** — casos de uso (handlers `IUseCase<,>`), os contratos do dispatcher, DTOs e **portas**
   (interfaces) para tudo que é externo. Referencia **apenas** Domain. **Nunca** deve referenciar Infrastructure.
-- **Infrastructure** — implementa as portas: repositórios Oracle (EF Core / managed driver), queue providers,
+- **Infrastructure** — implementa as portas: repositórios do banco (EF Core; provider plugável), queue providers,
   jobs Hangfire, políticas Polly, adapters OpenTelemetry/Serilog. Referencia Application + Domain.
 - **Api** — host ASP.NET Core. Referencia todos os projetos **apenas para compor a DI** e expor endpoints.
   Os endpoints são finos: validam, despacham via `IUseCaseDispatcher`, mapeiam a resposta. Sem lógica de negócio.

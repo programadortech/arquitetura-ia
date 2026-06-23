@@ -14,7 +14,7 @@ política de resiliência. Usamos **Polly** (`Microsoft.Extensions.Http.Resilien
 ## Pipelines padrão (nomeados, registrados centralmente)
 | Pipeline | Usado para | Composição |
 |---|---|---|
-| `oracle` | chamadas de DB | timeout + retry(transient) + circuit breaker |
+| `database` | chamadas de DB (qualquer provider) | timeout + retry(transient) + circuit breaker |
 | `http-outbound` | HTTP externo | timeout + retry + circuit breaker + (opcional) fallback |
 | `queue-publish` | produção de mensagens | timeout + retry + circuit breaker |
 | `queue-consume` | consumo | retry e então dead-letter (sem retry infinito) |

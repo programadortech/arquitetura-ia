@@ -9,9 +9,18 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
-  <ItemGroup Label="Oracle">
+  <ItemGroup Label="Banco de dados (apenas o provider escolhido é referenciado pelo projeto)">
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.*" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.*" />
+    <!-- Oracle (padrão) -->
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.*" />
     <PackageVersion Include="Oracle.EntityFrameworkCore" Version="9.*" />
+    <!-- SQL Server -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.*" />
+    <!-- PostgreSQL -->
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.*" />
+    <!-- MySQL -->
+    <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql" Version="9.*" />
   </ItemGroup>
 
   <ItemGroup Label="Logging & Telemetry">
@@ -49,5 +58,8 @@
     <PackageVersion Include="NSubstitute" Version="5.*" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.*" />
     <PackageVersion Include="Testcontainers.Oracle" Version="3.*" />
+    <PackageVersion Include="Testcontainers.MsSql" Version="3.*" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="3.*" />
+    <PackageVersion Include="Testcontainers.MySql" Version="3.*" />
   </ItemGroup>
 </Project>

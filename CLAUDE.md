@@ -29,7 +29,7 @@ Quando o usuário pedir um dos itens a seguir, **invoque a skill correspondente*
 | "crie uma feature Y" | `/create-feature` |
 | "abra arquitetura da feature Z" | `/approve-architecture` |
 | "implemente o use case W" | `/create-usecase` |
-| "crie um script Oracle …" | `/create-oracle-script` |
+| "crie um script de banco / Oracle …" | `/create-db-script` |
 | "crie um job …" | `/create-job` |
 | "crie um provider de fila …" | `/create-queue-provider` |
 | "crie os testes …" | `/create-tests` |
@@ -46,7 +46,7 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Linguagem / runtime | C# / .NET 10 (LTS) | [ADR-0001](docs/adr/0001-record-architecture-decisions.md) |
 | Arquitetura | Clean Architecture (Domain → Application → Infrastructure → Api) | [ADR-0002](docs/adr/0002-clean-architecture.md) |
 | Casos de uso | Abstração de dispatcher própria (`IUseCase` + `IUseCaseDispatcher`) — **sem MediatR pago** | [ADR-0003](docs/adr/0003-usecase-dispatcher-no-mediatr.md) |
-| Banco de dados | Oracle (`Oracle.ManagedDataAccess.Core`, provider EF Core Oracle) | [ADR-0004](docs/adr/0004-oracle-database.md) |
+| Banco de dados | Plugável: Oracle / SQL Server / PostgreSQL / MySQL (via config; padrão Oracle) | [ADR-0013](docs/adr/0013-pluggable-database-providers.md) |
 | Logging | Serilog, logs estruturados | [ADR-0005](docs/adr/0005-observability-stack.md) |
 | Telemetria | OpenTelemetry (traces, métricas, logs) → OTLP Collector / Seq / Grafana Loki | [ADR-0005](docs/adr/0005-observability-stack.md) |
 | Resiliência | Polly (retry, circuit breaker, timeout) | [ADR-0006](docs/adr/0006-resilience-polly.md) |
@@ -73,7 +73,7 @@ Todo projeto criado via `/create-project` produz:
 │   ├── <ProjectName>.IntegrationTests/
 │   └── <ProjectName>.ArchitectureTests/
 ├── db/
-│   └── oracle/                           # scripts de migração e seed versionados
+│   └── <provider>/                       # oracle|sqlserver|postgresql|mysql — migração e seed versionados
 ├── docs/                                 # arquitetura, features e ADRs por projeto
 └── <ProjectName>.sln
 ```

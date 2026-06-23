@@ -9,9 +9,10 @@
 - **Criado em:** <YYYY-MM-DD>
 
 ## Stack (herdada do template)
-.NET 10 · Clean Architecture · dispatcher de UseCase customizado (sem MediatR pago) · Oracle · Serilog +
+.NET 10 · Clean Architecture · dispatcher de UseCase customizado (sem MediatR pago) · banco plugável · Serilog +
 OpenTelemetry · Polly · Hangfire · filas plugáveis (Kafka/SQS/RabbitMQ/MQTT).
 
+- **Banco de dados:** <Oracle | SqlServer | PostgreSql | MySql>
 - **Provedor de fila padrão:** <Kafka | SQS | RabbitMQ | MQTT>
 
 ## Estrutura da solução
@@ -26,7 +27,7 @@ OpenTelemetry · Polly · Hangfire · filas plugáveis (Kafka/SQS/RabbitMQ/MQTT)
 │   ├── <ProjectName>.UnitTests/
 │   ├── <ProjectName>.IntegrationTests/
 │   └── <ProjectName>.ArchitectureTests/
-├── db/oracle/
+├── db/<provider>/
 ├── docs/
 └── <ProjectName>.sln
 ```

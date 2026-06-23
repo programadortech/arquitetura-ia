@@ -15,7 +15,7 @@
 ## Portas utilizadas (interfaces da Application)
 | Porta | Propósito | Implementada por (Infrastructure) |
 |---|---|---|
-| `IXxxRepository` | <…> | `XxxRepository` (Oracle) |
+| `IXxxRepository` | <…> | `XxxRepository` (provider EF Core do projeto) |
 | `IQueuePublisher` | publica `<Event>` | provedor selecionado |
 
 ## Efeitos colaterais

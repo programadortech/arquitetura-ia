@@ -8,7 +8,7 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0001](0001-record-architecture-decisions.md) | Registrar decisões de arquitetura | Aceito |
 | [0002](0002-clean-architecture.md) | Clean Architecture | Aceito |
 | [0003](0003-usecase-dispatcher-no-mediatr.md) | Use Case Dispatcher customizado (sem MediatR pago) | Aceito |
-| [0004](0004-oracle-database.md) | Oracle como banco de dados relacional | Aceito |
+| [0004](0004-oracle-database.md) | Oracle como banco de dados relacional | Substituída por ADR-0013 |
 | [0005](0005-observability-stack.md) | Observabilidade — Serilog + OpenTelemetry | Aceito |
 | [0006](0006-resilience-polly.md) | Resiliência com Polly | Aceito |
 | [0007](0007-jobs-hangfire.md) | Jobs em background com Hangfire | Aceito |
@@ -17,5 +17,6 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0010](0010-pluggable-issue-trackers.md) | Trackers de histórias plugáveis (GitHub / Azure DevOps / GitLab) | Aceito |
 | [0011](0011-task-writeback-tracker.md) | Write-back de tasks para o tracker | Aceito |
 | [0012](0012-story-types-business-technical.md) | Tipos de história — negócio e técnica | Aceito |
+| [0013](0013-pluggable-database-providers.md) | Bancos de dados relacionais plugáveis (Oracle / SQL Server / PostgreSQL / MySQL) | Aceito |
 
-> Próximo número livre: **0013**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+> Próximo número livre: **0014**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.

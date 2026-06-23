@@ -17,7 +17,7 @@ command -v pwsh >/dev/null 2>&1 || PWSH="powershell"
 
 run "Clean Architecture rules" "$PWSH -NoProfile -File scripts/validate-clean-architecture.ps1"
 run "Architecture docs present" "$PWSH -NoProfile -File scripts/validate-architecture.ps1"
-run "Oracle scripts"           "$PWSH -NoProfile -File scripts/validate-oracle-scripts.ps1"
+run "DB scripts"               "$PWSH -NoProfile -File scripts/validate-db-scripts.ps1"
 run "Tests present & passing"   "$PWSH -NoProfile -File scripts/validate-tests.ps1"
 run "PR metadata"              "$PWSH -NoProfile -File scripts/validate-pr.ps1"
 

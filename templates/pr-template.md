@@ -13,7 +13,7 @@
 ## Tipo de mudança
 - [ ] Novo caso de uso / feature
 - [ ] Correção de bug
-- [ ] Migração Oracle
+- [ ] Migração de banco (DB)
 - [ ] Infraestrutura / DevOps
 - [ ] Apenas Docs / ADR
 
@@ -31,7 +31,7 @@ Veja [`docs/standards/quality-checklist.md`](../docs/standards/quality-checklist
 **Código e dados**
 - [ ] Compila com `-warnaserror`; `dotnet format` limpo.
 - [ ] Async + `CancellationToken`; entradas validadas.
-- [ ] SQL Oracle parametrizado; migrações versionadas + reversíveis; sem DDL destrutivo desprotegido.
+- [ ] SQL parametrizado (qualquer provider); migrações versionadas + reversíveis; sem DDL destrutivo desprotegido.
 
 **Resiliência e observabilidade**
 - [ ] Timeouts + retries limitados em chamadas externas; escritas/publicações idempotentes; DLQ para mensagens venenosas.

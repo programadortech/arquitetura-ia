@@ -1,7 +1,11 @@
 # ADR-0004: Oracle como banco de dados relacional
 
-- **Status:** Aceito
+- **Status:** Substituída por [ADR-0013](0013-pluggable-database-providers.md)
 - **Data:** 2026-06-22
+
+> **Nota:** esta decisão tornou o Oracle o banco fixo. Foi **substituída pelo ADR-0013**, que torna o
+> banco relacional **plugável** (Oracle / SQL Server / PostgreSQL / MySQL). O Oracle permanece como
+> provider suportado e padrão recomendado; o conteúdo abaixo segue válido como notas do provider Oracle.
 
 ## Contexto
 O banco de dados padrão da empresa é o Oracle. Precisamos de padrões de acesso consistentes, evolução segura

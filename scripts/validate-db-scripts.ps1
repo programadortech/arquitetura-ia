@@ -1,8 +1,9 @@
 <#
 .SYNOPSIS
-  Validates Oracle migration scripts under db/oracle for naming, ordering, reversibility and safety.
+  Validates relational DB migration scripts under db/<provider>/migrations for naming, ordering,
+  reversibility and safety. Provider-agnostic: oracle | sqlserver | postgresql | mysql.
 .DESCRIPTION
-  Checks each project's db/oracle/migrations:
+  Checks each project's db/<provider>/migrations:
     1. File names match V<NNNN>__<desc>.sql (up) / U<NNNN>__<desc>.sql (down).
     2. Version numbers are sequential without gaps.
     3. Each up script has a down script OR a header comment explaining why not.
@@ -17,10 +18,10 @@ $violations = New-Object System.Collections.Generic.List[string]
 $warns      = New-Object System.Collections.Generic.List[string]
 
 $migDirs = Get-ChildItem -Path $Root -Recurse -Directory -ErrorAction SilentlyContinue |
-           Where-Object { $_.FullName -match '[\\/]db[\\/]oracle[\\/]migrations$' }
+           Where-Object { $_.FullName -match '[\\/]db[\\/](oracle|sqlserver|postgresql|mysql)[\\/]migrations$' }
 
 if (-not $migDirs) {
-  Write-Host "[INFO] no db/oracle/migrations directory found - nothing to validate." -ForegroundColor Yellow
+  Write-Host "[INFO] no db/<provider>/migrations directory found - nothing to validate." -ForegroundColor Yellow
   exit 0
 }
 
@@ -60,9 +61,9 @@ foreach ($dir in $migDirs) {
 
 $warns | ForEach-Object { Write-Host "[WARN] $_" -ForegroundColor Yellow }
 if ($violations.Count -gt 0) {
-  Write-Host "[FAIL] Oracle script validation failed:" -ForegroundColor Red
+  Write-Host "[FAIL] DB script validation failed:" -ForegroundColor Red
   $violations | ForEach-Object { Write-Host "   - $_" -ForegroundColor Red }
   exit 1
 }
-Write-Host "[OK] Oracle scripts valid." -ForegroundColor Green
+Write-Host "[OK] DB scripts valid." -ForegroundColor Green
 exit 0

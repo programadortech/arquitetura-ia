@@ -1,6 +1,6 @@
 ---
 name: create-project
-description: Estrutura um novo projeto C# corporativo a partir deste template — solução em Clean Architecture, Oracle, Serilog, OpenTelemetry, Polly, Hangfire, filas plugáveis e os três projetos de teste. Use quando o usuário disser "crie um projeto com nome X".
+description: Estrutura um novo projeto C# corporativo a partir deste template — solução em Clean Architecture, banco plugável (Oracle/SQL Server/PostgreSQL/MySQL), Serilog, OpenTelemetry, Polly, Hangfire, filas plugáveis e os três projetos de teste. Use quando o usuário disser "crie um projeto com nome X".
 ---
 
 # Skill: create-project
@@ -9,6 +9,7 @@ Gera um esqueleto de solução completo e compilável, nomeado conforme o projet
 
 ## Inputs
 - **ProjectName** (obrigatório) — PascalCase, ex: `Billing`, `OrderManagement`.
+- Opcional: **banco de dados** (oracle | sqlserver | postgresql | mysql), padrão `oracle`.
 - Opcional: provedor de fila padrão (Kafka | SQS | RabbitMQ | MQTT), padrão `RabbitMQ`.
 
 Se ProjectName estiver faltando, peça antes de prosseguir.
@@ -18,13 +19,14 @@ Se ProjectName estiver faltando, peça antes de prosseguir.
 2. Crie o layout da solução exatamente como definido em `CLAUDE.md` → "Standard solution layout":
    - `src/<ProjectName>.Domain`, `.Application`, `.Infrastructure`, `.Api`
    - `tests/<ProjectName>.UnitTests`, `.IntegrationTests`, `.ArchitectureTests`
-   - `db/oracle/`, `docs/`, `<ProjectName>.sln`
+   - `db/<provider>/`, `docs/`, `<ProjectName>.sln` (provider = banco escolhido)
 3. Adicione a estrutura base de infraestrutura (sem lógica de negócio):
    - Application: `IUseCase<TRequest,TResponse>`, `IUseCaseDispatcher`, implementação `UseCaseDispatcher`,
      e a extensão de DI `AddApplication()` (veja `docs/standards/usecase-dispatcher.md`).
-   - Infrastructure: registro de Serilog + OpenTelemetry, registro de políticas Polly, base do contexto Oracle,
-     configuração do Hangfire, a abstração de fila plugável (`IQueuePublisher`/`IQueueConsumer`) com o
-     provedor selecionado conectado (veja `docs/standards/queue-providers.md`).
+   - Infrastructure: registro de Serilog + OpenTelemetry, registro de políticas Polly, `DbContext` base com o
+     **provider EF Core do banco escolhido** (Oracle/SQL Server/PostgreSQL/MySQL — veja
+     `docs/standards/database.md`), configuração do Hangfire, a abstração de fila plugável
+     (`IQueuePublisher`/`IQueueConsumer`) com o provedor selecionado (veja `docs/standards/queue-providers.md`).
    - Api: host mínimo ASP.NET Core, composition root de DI, health checks, configuração do exportador OTLP.
 4. Adicione `global.json` (fixe o SDK do .NET 10), `Directory.Build.props`, `Directory.Packages.props`
    (gerenciamento central de pacotes), `.editorconfig`, `.gitignore`.
@@ -35,7 +37,7 @@ Se ProjectName estiver faltando, peça antes de prosseguir.
 ## Standards to read first
 - `docs/standards/architecture.md`, `docs/standards/usecase-dispatcher.md`,
   `docs/standards/observability.md`, `docs/standards/queue-providers.md`,
-  `docs/standards/oracle.md`, `docs/standards/testing.md`.
+  `docs/standards/database.md` (+ `oracle.md` se Oracle), `docs/standards/testing.md`.
 
 ## Suggested agents
 `solution-architect` (design do esqueleto) → `backend-developer` (estruturação) → `devops-engineer`

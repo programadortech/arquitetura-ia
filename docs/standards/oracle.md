@@ -1,4 +1,8 @@
-# Padrão: Banco de Dados Oracle
+# Padrão: Banco de Dados Oracle (notas do provider)
+
+> O banco é **plugável** — ver o padrão guarda-chuva [`database.md`](database.md) e
+> [ADR-0013](../adr/0013-pluggable-database-providers.md). Este documento traz as **notas específicas do
+> provider Oracle** (padrão recomendado). Para SQL Server/PostgreSQL/MySQL, siga `database.md`.
 
 ## Drivers e acesso
 - `Oracle.ManagedDataAccess.Core` para o managed driver; `Oracle.EntityFrameworkCore` ao usar EF Core.
@@ -47,5 +51,5 @@ db/oracle/
 - Operações lock-light/online em tabelas grandes; evite DDL bloqueante e demorado em horário comercial.
 
 ## Validação
-`scripts/validate-oracle-scripts.ps1` verifica nomenclatura, ordenação de versão, presença de scripts de down e
+`scripts/validate-db-scripts.ps1` verifica nomenclatura, ordenação de versão, presença de scripts de down e
 guardas de DDL destrutivo. Veja [ADR-0004](../adr/0004-oracle-database.md).

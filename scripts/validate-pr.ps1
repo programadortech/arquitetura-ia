@@ -2,7 +2,7 @@
 .SYNOPSIS
   Aggregate PR gate: runs the architecture/oracle/test validations and checks PR hygiene.
 .DESCRIPTION
-  - Runs validate-clean-architecture, validate-architecture, validate-oracle-scripts, validate-tests.
+  - Runs validate-clean-architecture, validate-architecture, validate-db-scripts, validate-tests.
   - Checks no staged secrets and no MediatR introduced (best-effort via git).
   - Verifies build with warnings-as-errors when a solution + dotnet exist.
   Exit 0 = ready for review, 1 = blocked.
@@ -23,7 +23,7 @@ function Step([string]$name, [scriptblock]$action) {
 
 Step "Clean Architecture" { & "$here/validate-clean-architecture.ps1" -Root $Root }
 Step "Architecture docs"  { & "$here/validate-architecture.ps1" -Root $Root }
-Step "Oracle scripts"     { & "$here/validate-oracle-scripts.ps1" -Root $Root }
+Step "DB scripts"         { & "$here/validate-db-scripts.ps1" -Root $Root }
 Step "Tests"              { & "$here/validate-tests.ps1" -Root $Root }
 
 # git-based hygiene (best effort)

@@ -18,6 +18,7 @@ $warns  = New-Object System.Collections.Generic.List[string]
 $required = @(
   "docs/standards/architecture.md",
   "docs/standards/usecase-dispatcher.md",
+  "docs/standards/database.md",
   "docs/standards/oracle.md",
   "docs/standards/observability.md",
   "docs/standards/resilience.md",

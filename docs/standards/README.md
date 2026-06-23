@@ -5,7 +5,8 @@ o padrão ou registrando um novo ADR — nunca por divergência silenciosa.
 
 - [architecture.md](architecture.md) — camadas da Clean Architecture e regra de dependência.
 - [usecase-dispatcher.md](usecase-dispatcher.md) — abstração de dispatcher própria (sem MediatR pago).
-- [oracle.md](oracle.md) — acesso ao Oracle, nomenclatura, scripts de migração, segurança.
+- [database.md](database.md) — banco relacional **plugável** (Oracle / SQL Server / PostgreSQL / MySQL).
+- [oracle.md](oracle.md) — notas específicas do provider Oracle.
 - [observability.md](observability.md) — Serilog + OpenTelemetry, logs estruturados, exportação OTLP.
 - [resilience.md](resilience.md) — políticas Polly (timeout/retry/circuit breaker).
 - [queue-providers.md](queue-providers.md) — Kafka/SQS/RabbitMQ/MQTT plugáveis.

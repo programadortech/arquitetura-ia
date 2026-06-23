@@ -15,7 +15,7 @@ Transforma uma definição de feature em um design técnico aprovado mais quaisq
 2. Identifique os **casos de uso** (commands/queries) com contratos de request/response e regras de validação.
 3. Mapeamento de camadas (Domain / Application / Infrastructure / Api) conforme `docs/standards/architecture.md`.
 4. **Modelo de dados Oracle**: tabelas, chaves, índices, constraints e o plano do script de migração
-   (adie a escrita dos scripts para `/create-oracle-script`).
+   (adie a escrita dos scripts para `/create-db-script`).
 5. **Mensageria**: topics/filas necessárias, provedor (plugável), contratos de mensagem, estratégia de idempotência.
 6. **Jobs**: qualquer trabalho recorrente/fire-and-forget no Hangfire e seu agendamento.
 7. **Resiliência**: quais chamadas recebem retry / circuit breaker / timeout do Polly.

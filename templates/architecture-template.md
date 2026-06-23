@@ -16,17 +16,18 @@
 ## 3. Mapeamento de camadas
 - **Domain:** <entidades, value objects, eventos de domínio, invariantes>
 - **Application:** <casos de uso, portas (interfaces), behaviors>
-- **Infrastructure:** <repos Oracle, adapters de fila, jobs, políticas Polly, OTel>
+- **Infrastructure:** <repos do banco (provider EF Core), adapters de fila, jobs, políticas Polly, OTel>
 - **Api:** <endpoints, composição de DI>
 
 ```
 <component diagram or bullet flow respecting the dependency rule>
 ```
 
-## 4. Modelo de dados Oracle
+## 4. Modelo de dados (banco selecionado)
+- **Provider:** <oracle | sqlserver | postgresql | mysql>
 - **Tabelas:** <nome, colunas-chave, constraints>
 - **Índices:** <nome → colunas → justificativa>
-- **Plano de migração:** V<NNNN>__<desc> (+ down). Criado via `/create-oracle-script`.
+- **Plano de migração:** `db/<provider>/migrations/V<NNNN>__<desc>.sql` (+ down). Criado via `/create-db-script`.
 
 ## 5. Mensageria
 - **Provedor:** <plugável; padrão para este projeto>
@@ -40,7 +41,7 @@
 ## 7. Resiliência (Polly)
 | Chamada | Pipeline | Notas |
 |---|---|---|
-| <Oracle query> | `oracle` | timeout + retry + breaker |
+| <query no banco> | `database` | timeout + retry + breaker |
 | <external HTTP> | `http-outbound` | … |
 
 ## 8. Contrato de observabilidade
@@ -55,4 +56,4 @@
 - <…>
 
 ---
-> Próximo: implemente os casos de uso com `/create-usecase`, scripts com `/create-oracle-script`, testes com `/create-tests`.
+> Próximo: implemente os casos de uso com `/create-usecase`, scripts com `/create-db-script`, testes com `/create-tests`.

@@ -35,7 +35,7 @@ Peça ao Claude em linguagem natural — cada frase mapeia para uma skill:
 | "crie uma feature Y" | `/create-feature` |
 | "abra arquitetura da feature Z" | `/approve-architecture` |
 | "implemente o use case W" | `/create-usecase` |
-| "crie um script Oracle …" | `/create-oracle-script` |
+| "crie um script de banco / Oracle …" | `/create-db-script` |
 | "crie um job …" | `/create-job` |
 | "crie um provider de fila …" | `/create-queue-provider` |
 | "crie os testes …" | `/create-tests` |
@@ -52,7 +52,7 @@ Veja os [ADRs](docs/adr/) para a justificativa e os [standards](docs/standards/)
 ```powershell
 pwsh scripts/validate-clean-architecture.ps1
 pwsh scripts/validate-architecture.ps1
-pwsh scripts/validate-oracle-scripts.ps1
+pwsh scripts/validate-db-scripts.ps1
 pwsh scripts/validate-tests.ps1
 pwsh scripts/validate-pr.ps1     # gate agregado de PR
 ```

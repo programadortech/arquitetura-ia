@@ -196,7 +196,7 @@
         <span class="pill s">.NET 10</span>
         <span class="pill s">Clean Architecture</span>
         <span class="pill">UseCase Dispatcher (sem MediatR pago)</span>
-        <span class="pill">Oracle</span>
+        <span class="pill">Oracle · SQL Server · PostgreSQL · MySQL</span>
         <span class="pill">Serilog + OpenTelemetry</span>
         <span class="pill">Polly</span>
         <span class="pill">Hangfire</span>
@@ -213,7 +213,7 @@
         <div class="arrow">↓</div>
         <div class="step"><span class="n">2</span><div><code class="cmd">/approve-architecture</code><small>Desenha a solução (camadas, casos de uso, modelo Oracle, mensageria, jobs), registra ADRs e <b>cria as tasks no tracker</b>.</small></div></div>
         <div class="arrow">↓</div>
-        <div class="step"><span class="n">3</span><div><code class="cmd">/create-usecase</code> · <code class="cmd">/create-oracle-script</code> · <code class="cmd">/create-job</code> · <code class="cmd">/create-queue-provider</code><small>Implementação seguindo a regra de dependência.</small></div></div>
+        <div class="step"><span class="n">3</span><div><code class="cmd">/create-usecase</code> · <code class="cmd">/create-db-script</code> · <code class="cmd">/create-job</code> · <code class="cmd">/create-queue-provider</code><small>Implementação seguindo a regra de dependência.</small></div></div>
         <div class="arrow">↓</div>
         <div class="step"><span class="n">4</span><div><code class="cmd">/create-tests</code><small>Testes unitários, de integração e de arquitetura — um por critério de aceite.</small></div></div>
         <div class="arrow">↓</div>
@@ -230,7 +230,7 @@
           <tr><td>Linguagem / runtime</td><td>C# / .NET 10 (LTS)</td><td>ADR-0001</td></tr>
           <tr><td>Arquitetura</td><td>Clean Architecture (Domain → Application → Infrastructure → Api)</td><td>ADR-0002</td></tr>
           <tr><td>Casos de uso</td><td>Dispatcher próprio (<code>IUseCase</code> + <code>IUseCaseDispatcher</code>) — sem MediatR pago</td><td>ADR-0003</td></tr>
-          <tr><td>Banco</td><td>Oracle (<code>Oracle.ManagedDataAccess.Core</code> / EF Core)</td><td>ADR-0004</td></tr>
+          <tr><td>Banco</td><td>Plugável: Oracle / SQL Server / PostgreSQL / MySQL (EF Core; padrão Oracle)</td><td>ADR-0013</td></tr>
           <tr><td>Logging / Telemetria</td><td>Serilog + OpenTelemetry (OTLP → Seq / Grafana Loki / Collector)</td><td>ADR-0005</td></tr>
           <tr><td>Resiliência</td><td>Polly (retry, circuit breaker, timeout)</td><td>ADR-0006</td></tr>
           <tr><td>Jobs</td><td>Hangfire</td><td>ADR-0007</td></tr>
@@ -239,6 +239,7 @@
           <tr><td>Tracker de histórias</td><td>Plugável: GitHub / Azure DevOps / GitLab</td><td>ADR-0010</td></tr>
           <tr><td>Tasks no tracker</td><td>Write-back das atividades como itens-filho</td><td>ADR-0011</td></tr>
           <tr><td>Tipos de história</td><td>Negócio e Técnica</td><td>ADR-0012</td></tr>
+          <tr><td>Banco (plugável)</td><td>Oracle / SQL Server / PostgreSQL / MySQL</td><td>ADR-0013</td></tr>
         </table>
       </div>
       <div class="callout"><b>Regra de dependência (inegociável):</b> <code>Domain</code> não depende de nada; <code>Application</code> só de <code>Domain</code> (define ports); <code>Infrastructure</code> implementa as ports; <code>Api</code> só compõe a DI. Os testes de arquitetura impõem isso.</div>
@@ -324,7 +325,7 @@
         <div class="skill"><code class="cmd">/approve-architecture</code><span>"abra arquitetura da feature Z" — design + ADRs + tasks.</span></div>
         <div class="skill"><code class="cmd">/sync-tasks</code><span>"crie as tasks da história N" — write-back no tracker.</span></div>
         <div class="skill"><code class="cmd">/create-usecase</code><span>"implemente o use case W" — ponta a ponta.</span></div>
-        <div class="skill"><code class="cmd">/create-oracle-script</code><span>"crie um script Oracle…" — migração versionada.</span></div>
+        <div class="skill"><code class="cmd">/create-db-script</code><span>"crie um script de banco/Oracle…" — migração versionada (Oracle/SQL Server/PostgreSQL/MySQL).</span></div>
         <div class="skill"><code class="cmd">/create-job</code><span>"crie um job…" — Hangfire idempotente.</span></div>
         <div class="skill"><code class="cmd">/create-queue-provider</code><span>"crie um provider de fila Kafka" — mensageria plugável.</span></div>
         <div class="skill"><code class="cmd">/create-tests</code><span>"crie os testes…" — unit + integração + arquitetura.</span></div>
@@ -337,7 +338,7 @@
       <p class="sub">Do zero ao PR. O exemplo usa Azure DevOps como tracker.</p>
       <div class="step-timeline">
         <div class="t"><b>0 · Pré-requisitos</b><p>.NET 10 SDK, Git, Docker (para Oracle/filas nos testes), e a credencial do tracker em variável de ambiente (<code>AZDO_PAT</code>).</p></div>
-        <div class="t"><b>1 · Crie o projeto</b><p>Diga: <i>"crie um projeto com nome Billing usando fila RabbitMQ"</i>. Gera a solução, builda vazia e passa nos testes de arquitetura.</p></div>
+        <div class="t"><b>1 · Crie o projeto</b><p>Diga: <i>"crie um projeto com nome Billing com banco PostgreSQL e fila RabbitMQ"</i>. O banco é plugável (Oracle padrão · SQL Server · PostgreSQL · MySQL). Gera a solução, builda vazia e passa nos testes de arquitetura.</p></div>
         <div class="t"><b>2 · Traga a história</b><p>Diga: <i>"importe o work item 1234"</i>. Gera <code>docs/features/AZ-1234-&lt;slug&gt;.md</code> com os critérios de aceite. (Ou <i>"crie uma feature…"</i> do zero.)</p></div>
         <div class="t"><b>3 · Aprove a arquitetura</b><p>Diga: <i>"abra arquitetura da feature AZ-1234"</i>. Produz o design, os ADRs e cria as <b>tasks no Azure</b> ligadas à história.</p></div>
         <div class="t"><b>4 · Implemente</b><p>Diga: <i>"implemente o use case ConfirmarCobranca"</i>. Domain → Application → Infrastructure → Api, com Polly, OTel e logs estruturados.</p></div>
@@ -398,7 +399,7 @@ dotnet test
 <span class="tok-c"># Gates de validação (PowerShell)</span>
 pwsh scripts/validate-clean-architecture.ps1
 pwsh scripts/validate-architecture.ps1
-pwsh scripts/validate-oracle-scripts.ps1
+pwsh scripts/validate-db-scripts.ps1
 pwsh scripts/validate-tests.ps1
 pwsh scripts/validate-pr.ps1     <span class="tok-c"># gate agregado</span></pre></div>
       <div class="callout"><b>Hooks (automáticos):</b> <code>pre-task-check</code> lembra os padrões · <code>post-edit-check</code> sinaliza violações de layering/log/MediatR · <code>dangerous-command-blocker</code> bloqueia DDL destrutivo, force-push e exfiltração de segredos.</div>

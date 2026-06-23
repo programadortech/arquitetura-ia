@@ -15,12 +15,12 @@ Realiza uma revisão minuciosa e orientada por padrões das mudanças pendentes 
 2. Execute os gates automatizados:
    - `scripts/validate-clean-architecture.ps1`
    - `scripts/validate-architecture.ps1`
-   - `scripts/validate-oracle-scripts.ps1`
+   - `scripts/validate-db-scripts.ps1`
    - `scripts/validate-tests.ps1`
    - `scripts/validate-pr.ps1`
 3. Execute revisões por perspectiva (delegue aos agentes):
    - `tech-lead-reviewer` — correção, conformidade arquitetural, manutenibilidade.
-   - `oracle-dba-reviewer` — quaisquer mudanças em `*.sql` / `db/oracle/**`.
+   - `oracle-dba-reviewer` — quaisquer mudanças em `*.sql` / `db/<provider>/**`.
    - `observability-engineer` — qualidade de logging/tracing/métricas.
    - `security-reviewer` — segredos, injection, authz, exposição de dados.
 4. Cruze com `docs/standards/quality-checklist.md` e `templates/pr-template.md`.
