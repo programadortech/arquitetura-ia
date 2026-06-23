@@ -93,7 +93,9 @@ function Get-AzureWorkItem([string]$org, [string]$project, [string]$wid) {
   if (-not $org -or -not $project) { throw "azure: configure 'org' e 'project' em $ConfigPath." }
   $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$($env:AZDO_PAT)"))
   $h = @{ Authorization = "Basic $auth" }
-  $uri = "https://dev.azure.com/$org/$project/_apis/wit/workitems/$wid`?api-version=7.1"
+  $orgEnc = [uri]::EscapeDataString($org)
+  $projEnc = [uri]::EscapeDataString($project)
+  $uri = "https://dev.azure.com/$orgEnc/$projEnc/_apis/wit/workitems/$wid`?api-version=7.1"
   $w = Invoke-RestMethod -Headers $h -Uri $uri
   $f = $w.fields
   [pscustomobject]@{
@@ -103,7 +105,7 @@ function Get-AzureWorkItem([string]$org, [string]$project, [string]$wid) {
     labels = @($(if ($f.'System.Tags') { ($f.'System.Tags' -split ';').Trim() } else { @() }))
     milestone = $f.'System.IterationPath'
     assignees = @($(if ($f.'System.AssignedTo') { $f.'System.AssignedTo'.displayName } else { @() }))
-    url = "https://dev.azure.com/$org/$project/_workitems/edit/$($w.id)"; state = $f.'System.State'
+    url = "https://dev.azure.com/$orgEnc/$projEnc/_workitems/edit/$($w.id)"; state = $f.'System.State'
   }
 }
 

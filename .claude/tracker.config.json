@@ -1,12 +1,12 @@
 {
   "$comment": "Seleciona o tracker de onde as histórias são importadas pela skill /import-story. Segredos (tokens/PAT) NÃO vão aqui — somente variáveis de ambiente (GITHUB_TOKEN / AZDO_PAT / GITLAB_TOKEN).",
-  "provider": "github",
+  "provider": "azure",
   "github": {
     "repo": ""
   },
   "azure": {
-    "org": "",
-    "project": ""
+    "org": "minha-org",
+    "project": "MeuProjeto"
   },
   "gitlab": {
     "host": "https://gitlab.com",
