@@ -12,22 +12,28 @@ Implementa um caso de uso seguindo a arquitetura aprovada e os padrões do repos
 
 ## Steps
 1. Leia `docs/architecture/<feature>.md` para o contrato deste caso de uso e os padrões em
-   `docs/standards/usecase-dispatcher.md`, `architecture.md`, `observability.md`, `oracle.md`.
+   `docs/standards/usecase-dispatcher.md`, `architecture.md`, `error-handling.md`, `observability.md`, `database.md`.
+   **Se a feature usa integração externa**, leia também `docs/integrations/<categoria>/README.md`.
 2. **Camada Application**:
    - Tipos `XxxRequest` (input) e `XxxResponse` (output).
-   - `XxxHandler : IUseCase<XxxRequest, XxxResponse>` com validação de input e orquestração.
+   - `XxxHandler : IUseCase<XxxRequest, Result<XxxResponse>>` — retorna **`Result`/`Result<T>`** com
+     `Notification` para falhas de negócio. **Não use `throw`** para erro esperado (ver `error-handling.md`).
    - Defina/estenda quaisquer **portas** (interfaces) que o handler precise — nunca referencie Infrastructure.
+     Integrações entram por porta do catálogo (ex.: `IEmailSender`) — provedor decidido em `docs/integrations/`.
    - Registre o handler para o dispatcher (`AddUseCase<...>()` / assembly scan).
 3. **Domain**: adicione/estenda entities, value objects, domain events e invariantes conforme necessário.
-4. **Infrastructure**: implemente as portas (repositório Oracle, publicação em fila, enfileiramento de job), envolvendo
-   chamadas externas em políticas Polly e emitindo spans OTel + logs estruturados com Serilog.
-5. **Api**: exponha o endpoint que despacha o request via `IUseCaseDispatcher` (controller/endpoint enxuto).
-6. **Tests**: testes unitários para o handler (happy path, validação, erros); testes de integração para novos adaptadores
-   (delegue ao `/create-tests` se for amplo).
+4. **Infrastructure**: implemente as portas (repositório do banco, publicação em fila, adapter de integração,
+   enfileiramento de job **se habilitado**), envolvendo chamadas externas em Polly e emitindo spans OTel + logs.
+5. **Api**: endpoint enxuto que despacha via `IUseCaseDispatcher` e mapeia `Result` → **envelope `ApiResponse`**
+   (status correto). Exceção inesperada cai no **middleware global**.
+6. **Tests**: testes unitários para o handler (happy path, validações, erros como `Result.Failure`); integração
+   para novos adaptadores (delegue ao `/create-tests` se for amplo).
 7. Execute `dotnet build -warnaserror`, `dotnet test` e `scripts/validate-clean-architecture.ps1`.
 
 ## Standards you must enforce
 - O handler implementa `IUseCase<,>`; invocado apenas através de `IUseCaseDispatcher`. Sem MediatR.
+- **Erros de negócio via `Result`/`Notification` (não `throw`)**; resposta no envelope `ApiResponse`.
+- **Integrações pelo catálogo** (`docs/integrations/`): porta + adapter plugável.
 - Async + `CancellationToken` em todo o fluxo; sem bloqueio em chamadas async.
 - Logs estruturados; SQL parametrizado; inputs validados na fronteira.
 

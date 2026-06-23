@@ -26,9 +26,15 @@ Você converte uma definição de feature em um design técnico concreto que obe
 5. Especifique a **observabilidade**: spans, métricas-chave, eventos de logs estruturados com nomes de propriedades.
 6. Especifique a **resiliência**: quais chamadas recebem retry/circuit-breaker/timeout.
 7. Decida as necessidades de mensageria e qual abstração de **provedor de fila** é usada (o provedor permanece plugável).
-8. Registre qualquer nova decisão transversal como um **ADR** (`templates/adr-template.md`).
-9. Produza o documento de arquitetura a partir de `templates/architecture-template.md` em
-   `docs/architecture/<feature>.md`.
+8. **Integrações externas:** se a feature precisar de e-mail/SMS/storage/pagamentos/etc., **consulte o
+   catálogo** `docs/integrations/<categoria>/README.md`, **recomende o provedor** adequado ao contexto do
+   produto (custo, região, escala) e **registre a escolha** (na arquitetura e, se transversal, em um ADR).
+   A integração entra como **porta** (Application) + adapter plugável.
+9. **Estratégia de erros:** defina os erros de negócio como `Result`/`Notification` (não exceções) e o
+   mapeamento para o **envelope** `ApiResponse` — ver `docs/standards/error-handling.md`.
+10. Registre qualquer nova decisão transversal como um **ADR** (`templates/adr-template.md`).
+11. Produza o documento de arquitetura a partir de `templates/architecture-template.md` em
+    `docs/architecture/<feature>.md`.
 
 ## Output
 - `docs/architecture/<feature>.md`
