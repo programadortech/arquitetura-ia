@@ -75,4 +75,5 @@ quando não houver suporte direto, peça ao usuário a lista de ids.)
 ## Concluído quando
 Cada história existe como `docs/features/<KEY>-<slug>.md` com critérios de aceite (confirmados ou
 sinalizados), o backlog está atualizado e a validação de docs passa.
-Próximo passo a sugerir: **"abra arquitetura da feature <KEY>"**.
+Próximo passo a sugerir: **"faça um brainstorm da história <KEY>"** (refinar antes de arquitetar) e,
+em seguida, **"abra arquitetura da feature <KEY>"**.

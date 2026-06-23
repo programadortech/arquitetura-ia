@@ -223,13 +223,15 @@
       <div class="flow">
         <div class="step"><span class="n">1</span><div><code class="cmd">/import-story</code> ou <code class="cmd">/create-feature</code><small>A história entra (do Azure/GitHub/GitLab) e vira um documento versionado em <code>docs/features/</code>.</small></div></div>
         <div class="arrow">↓</div>
-        <div class="step"><span class="n">2</span><div><code class="cmd">/approve-architecture</code><small>Desenha a solução (camadas, casos de uso, modelo de dados, mensageria, jobs), registra ADRs e <b>cria as tasks no tracker</b>.</small></div></div>
+        <div class="step"><span class="n">2</span><div><code class="cmd">/brainstorm-story</code><small>Refinamento colaborativo: expõe lacunas/ambiguidades, faz perguntas e deixa a história clara e testável antes de arquitetar.</small></div></div>
         <div class="arrow">↓</div>
-        <div class="step"><span class="n">3</span><div><code class="cmd">/create-usecase</code> · <code class="cmd">/create-db-script</code> · <code class="cmd">/create-job</code> · <code class="cmd">/create-queue-provider</code><small>Implementação seguindo a regra de dependência.</small></div></div>
+        <div class="step"><span class="n">3</span><div><code class="cmd">/approve-architecture</code><small>Desenha a solução (camadas, casos de uso, modelo de dados, mensageria, jobs), registra ADRs e <b>cria as tasks no tracker</b>.</small></div></div>
         <div class="arrow">↓</div>
-        <div class="step"><span class="n">4</span><div><code class="cmd">/create-tests</code><small>Testes unitários, de integração e de arquitetura — um por critério de aceite.</small></div></div>
+        <div class="step"><span class="n">4</span><div><code class="cmd">/create-usecase</code> · <code class="cmd">/create-db-script</code> · <code class="cmd">/create-job</code> · <code class="cmd">/create-queue-provider</code><small>Implementação seguindo a regra de dependência.</small></div></div>
         <div class="arrow">↓</div>
-        <div class="step"><span class="n">5</span><div><code class="cmd">/review-pr</code><small>Revisão multiperspectiva + gates; abre o PR que referencia e fecha o item do tracker.</small></div></div>
+        <div class="step"><span class="n">5</span><div><code class="cmd">/create-tests</code><small>Testes unitários, de integração e de arquitetura — um por critério de aceite.</small></div></div>
+        <div class="arrow">↓</div>
+        <div class="step"><span class="n">6</span><div><code class="cmd">/review-pr</code><small>Revisão multiperspectiva + gates; abre o PR que referencia e fecha o item do tracker.</small></div></div>
       </div>
     </section>
 
@@ -368,6 +370,7 @@
       <div class="grid cols-2">
         <div class="skill"><code class="cmd">/create-project</code><span>"crie um projeto com nome X" — esqueleto completo da solução.</span></div>
         <div class="skill"><code class="cmd">/import-story</code><span>"importe o work item 1234" — traz a história do tracker.</span></div>
+        <div class="skill"><code class="cmd">/brainstorm-story</code><span>"faça um brainstorm da história N" — refina e clareia antes de arquitetar.</span></div>
         <div class="skill"><code class="cmd">/create-tech-story</code><span>"crie uma história técnica de setup" — arquitetura/infra.</span></div>
         <div class="skill"><code class="cmd">/create-feature</code><span>"crie uma feature Y" — define história de negócio.</span></div>
         <div class="skill"><code class="cmd">/approve-architecture</code><span>"abra arquitetura da feature Z" — design + ADRs + tasks.</span></div>

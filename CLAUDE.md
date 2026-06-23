@@ -24,6 +24,7 @@ Quando o usuário pedir um dos itens a seguir, **invoque a skill correspondente*
 |---|---|
 | "crie um projeto com nome X" | `/create-project` |
 | "importe a história / issue #N" | `/import-story` |
+| "faça um brainstorm / refine a história N" | `/brainstorm-story` |
 | "crie uma história técnica de setup/arquitetura" | `/create-tech-story` |
 | "crie as tasks da história N no azure" | `/sync-tasks` |
 | "crie uma feature Y" | `/create-feature` |

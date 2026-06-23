@@ -27,5 +27,6 @@ Produz um documento completo de **definição de feature**. Esta etapa é apenas
 `product-planner`.
 
 ## Done when
-O doc da feature tem critérios de aceitação concretos e está pronto para ser entregue ao `/approve-architecture`.
-Próximo passo a sugerir ao usuário: **"abra arquitetura da feature <name>"**.
+O doc da feature tem critérios de aceitação concretos e está pronto para refinamento/arquitetura.
+Próximo passo a sugerir ao usuário: **"faça um brainstorm da feature <name>"** (refinar) e depois
+**"abra arquitetura da feature <name>"**.
