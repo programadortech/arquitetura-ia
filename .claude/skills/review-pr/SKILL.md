@@ -30,13 +30,25 @@ Realiza uma revisão minuciosa e orientada por padrões das mudanças pendentes 
 Um único relatório de revisão terminando com **APPROVE** ou **REQUEST CHANGES** e os achados priorizados.
 Se `--fix` for solicitado, aplique as correções seguras; caso contrário, apenas reporte.
 
-## Abertura do PR (alvo por tipo — ver docs/standards/branching.md)
+## Abertura do PR + auto-merge (alvo por tipo — ver docs/standards/branching.md)
 Ao abrir o PR, escolha o **alvo** pelo tipo da branch:
 - `feature/{id}-{slug}` → **PR para `dev`**.
 - `hotfix/{id}-{slug}` → **PR para `staging`**.
 
 O PR referencia o item do tracker (ex.: `#12094`). Nunca abrir PR direto para `main`.
 
+**Auto-merge (merge automático ao ficar tudo verde):** depois de abrir o PR, ligue o auto-merge:
+```bash
+gh pr create --base dev --head feature/{id}-{slug} --title "…" --body "…"
+gh pr merge <n> --auto --merge --delete-branch
+```
+O GitHub então **mergeia sozinho assim que os checks obrigatórios passam** (o workflow `ci.yml`:
+build `-warnaserror` + testes unit/arquitetura/integração + validação da regra de dependência) — sem
+clique manual. O ruleset `protect-dev-staging` exige esses checks verdes, então nada entra quebrado.
+A revisão de IA (`/review-pr`) é a checagem de qualidade **local e sob demanda** antes de ligar o auto-merge
+(custo zero); ela não bloqueia o gate automático.
+
 ## Done when
 Todos os gates foram executados, todas as perspectivas estão cobertas, um veredito claro com achados
-acionáveis é produzido, e (se solicitado abrir o PR) ele aponta para o alvo correto por tipo.
+acionáveis é produzido, e (se solicitado abrir o PR) ele aponta para o alvo correto por tipo **com auto-merge
+ligado** — o merge acontece automaticamente quando o CI fica verde.
