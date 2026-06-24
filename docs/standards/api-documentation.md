@@ -28,13 +28,17 @@ if (!app.Environment.IsProduction())
         o.SwaggerEndpoint("/openapi/v1.json", "<Produto> v1"); // aponta para o OpenAPI NATIVO
         o.RoutePrefix = "swagger";
     });
-    app.MapGet("/", () => Results.Redirect("/scalar")); // a base URL abre a documentação
+    app.MapGet("/", () => Results.Redirect("/scalar")).ExcludeFromDescription(); // utilitário, fora do OpenAPI
 }
 else
 {
-    app.MapGet("/", () => "<Produto> API");
+    app.MapGet("/", () => "<Produto> API").ExcludeFromDescription();
 }
+app.MapHealthChecks("/health").ExcludeFromDescription(); // health não é contrato de API
 ```
+> **A doc só mostra APIs reais.** Endpoints utilitários (`/`, `/health`, redirect) usam
+> `.ExcludeFromDescription()` para **não** poluir o OpenAPI. Num projeto recém-criado o documento vem com
+> `"paths": {}` (vazio) — os endpoints aparecem conforme as features são implementadas (`/create-usecase`).
 > **Importante (evita o erro "Failed to fetch /swagger/v1/swagger.json"):** o Swagger UI deve apontar para
 > o documento do **OpenAPI nativo** (`/openapi/v1.json`), **não** para o caminho default do Swashbuckle
 > (`/swagger/v1/swagger.json`), que só existe com `AddSwaggerGen`. Como usamos `AddOpenApi()` (nativo),

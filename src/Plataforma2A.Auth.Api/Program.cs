@@ -53,14 +53,16 @@ if (!app.Environment.IsProduction())
         options.SwaggerEndpoint("/openapi/v1.json", "Plataforma2A.Auth v1");
         options.RoutePrefix = "swagger";
     });
-    app.MapGet("/", () => Results.Redirect("/scalar")); // base URL abre a documentação
+    // base URL abre a documentação — utilitário, fora do OpenAPI.
+    app.MapGet("/", () => Results.Redirect("/scalar")).ExcludeFromDescription();
 }
 else
 {
-    app.MapGet("/", () => "Plataforma2A.Auth API · 2A Always Ahead");
+    app.MapGet("/", () => "Plataforma2A.Auth API · 2A Always Ahead").ExcludeFromDescription();
 }
 
-app.MapHealthChecks("/health");
+// Health check — não faz parte do contrato de API, fora do OpenAPI.
+app.MapHealthChecks("/health").ExcludeFromDescription();
 
 app.Run();
 
