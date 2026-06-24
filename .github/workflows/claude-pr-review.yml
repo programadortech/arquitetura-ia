@@ -42,7 +42,7 @@ jobs:
           # Ferramentas liberadas: ler o repo, varrer padrões e postar o review.
           claude_args: >-
             --model claude-sonnet-4-6
-            --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*)"
+            --allowedTools "Read,Grep,Glob,Write,Bash(git diff:*),Bash(git log:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*)"
           prompt: |
             Você é o revisor técnico sênior deste repositório (Clean Architecture, C#/.NET 10).
             Revise o PR #${{ github.event.pull_request.number }} no repositório ${{ github.repository }}.
@@ -60,12 +60,18 @@ jobs:
                - Alvo de PR correto: `feature/*` → `dev`, `hotfix/*` → `staging` (nunca direto p/ `main`).
             4. Consolide os achados como **Blocking / Should-fix / Nit**, cada um com `arquivo:linha` e uma correção concreta.
 
-            Ao final, POSTE o review no PR usando `gh pr review`:
-            - Se não houver achados Blocking → `gh pr review ${{ github.event.pull_request.number }} --approve --body "<resumo>"`.
-            - Se houver achados Blocking → `gh pr review ${{ github.event.pull_request.number }} --request-changes --body "<resumo + achados>"`.
-            - Se só houver observações menores e quiser apenas registrar → `gh pr review ${{ github.event.pull_request.number }} --comment --body "<observações>"`.
+            Ao final, POSTE o review no PR usando `gh pr review` (escreva o corpo num arquivo e use `--body-file`
+            para preservar formatação e quebras de linha):
+            - Sem achados Blocking → `gh pr review ${{ github.event.pull_request.number }} --approve --body-file <arquivo>`.
+            - Com achados Blocking → `gh pr review ${{ github.event.pull_request.number }} --request-changes --body-file <arquivo>`.
+            - Só observações menores → `gh pr review ${{ github.event.pull_request.number }} --comment --body-file <arquivo>`.
 
-            O corpo do review deve ser em português, objetivo, com os achados priorizados e terminar com o veredito
-            **APPROVE** ou **REQUEST CHANGES**.
+            O corpo do review (em português) NÃO pode ser um resumo de uma linha. Ele DEVE conter, em Markdown:
+            1. Um parágrafo curto de visão geral.
+            2. Uma seção **Blocking** listando TODOS os bloqueantes — cada um com `arquivo:linha`, o problema e a
+               correção concreta. (Se não houver, escreva "Nenhum".)
+            3. Seções **Should-fix** e **Nit** no mesmo formato.
+            4. A linha final com o veredito: **APPROVE** ou **REQUEST CHANGES**.
+            Inclua todos os itens citados na visão geral — nunca diga "há N bloqueantes" sem enumerá-los.
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
