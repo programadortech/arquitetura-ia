@@ -63,3 +63,18 @@ jobs:
       - name: Validar convenções da camada de API (ADR-0028)
         shell: pwsh
         run: ./scripts/validate-api-conventions.ps1 -Root "${{ matrix.app }}"
+
+  # Check estável e único para branch protection (agrega building-blocks + matriz de produtos).
+  ci-ok:
+    needs: [building-blocks, product]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          bb="${{ needs.building-blocks.result }}"
+          pr="${{ needs.product.result }}"
+          echo "building-blocks=$bb product=$pr"
+          if [ "$bb" != "success" ]; then echo "BuildingBlocks falhou"; exit 1; fi
+          if [ "$pr" != "success" ] && [ "$pr" != "skipped" ]; then echo "Produto falhou"; exit 1; fi
+          echo "CI OK"
