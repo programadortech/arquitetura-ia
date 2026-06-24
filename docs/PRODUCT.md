@@ -24,7 +24,8 @@
 - _(a definir conforme o domínio de auth evolui)_
 
 ## Backlog / features
-- Índice: [`features/README.md`](features/README.md). Primeira história candidata: **AZ-12094** (Autenticação e Gerenciamento de Senha).
+- Índice: [`features/README.md`](features/README.md).
+- **AZ-12094 — Autenticação e Gerenciamento de Senha** — importada (a refinar). Doc: [`features/AZ-12094-autenticacao-e-gerenciamento-de-senha.md`](features/AZ-12094-autenticacao-e-gerenciamento-de-senha.md).
 
 ## Integrações ativas
 - _(nenhuma ainda — e-mail entra com o fluxo de reset de senha; decidir provedor pelo catálogo)_
