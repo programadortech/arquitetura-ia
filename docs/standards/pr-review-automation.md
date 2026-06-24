@@ -28,27 +28,26 @@ O `GITHUB_TOKEN` (`github-actions[bot]`) **não pode dar `Approve`** — só `RE
 Um `Approved` formal (estado verde) exige **identidade separada do autor** (PAT de outra conta/machine user
 ou GitHub App). O PAT do próprio autor também não aprova o próprio PR.
 
-## Merge automático ao ficar verde (auto-merge)
-O merge para `dev`/`staging` é **automático**: ligamos o **auto-merge** nativo do GitHub no PR e ele
-mergeia sozinho assim que os **checks obrigatórios** (o CI: build/test/arquitetura) ficam verdes. Não há
-clique manual nem espera por aprovação humana de bot. "Aprovado" = **CI verde** (que roda justamente os
-gates de arquitetura e testes). A revisão de IA local (`/review-pr`) é qualidade sob demanda antes de ligar
-o auto-merge — não bloqueia o gate.
+## Merge é MANUAL (decisão do usuário)
+O **merge final é do usuário** — o agente **não mergeia** e **não liga auto-merge**. O agente abre o PR,
+acompanha o **CI** e, quando **tudo fica verde**, **avisa o usuário** (link do PR + status dos checks) para
+que **ele** entre no GitHub e faça o merge para `dev`. "Verde" = o CI passou (build/test/arquitetura).
+A revisão de IA local (`/review-pr`) é qualidade sob demanda — não bloqueia nem dispara o merge.
 
 ```bash
 gh pr create --base dev --head feature/{id}-{slug} --title "…" --body "…"
-gh pr merge <n> --auto --merge --delete-branch   # mergeia sozinho quando o CI passar
+# (sem auto-merge) — quando o CI ficar verde, o agente avisa; o usuário clica em "Merge" no GitHub.
 ```
 
 ## Fluxo recomendado por feature
 1. Implementar na branch `feature/{id}-{slug}` (a partir de `main`).
 2. Build/test/validate locais verdes (o hook `pre-pr-check` ajuda).
 3. (Opcional, recomendado) Rodar `/review-pr` localmente para a revisão de IA — custo zero.
-4. Abrir o PR para `dev` e **ligar o auto-merge** (comandos acima). O **CI grátis** roda como check obrigatório.
-5. O GitHub **mergeia automaticamente** quando o CI fica verde; se falhar, corrigir e o auto-merge dispara de novo.
+4. Abrir o PR para `dev`. O **CI grátis** roda como check obrigatório.
+5. CI **verde** → o agente **avisa o usuário** → **o usuário faz o merge** na plataforma. CI vermelho → corrigir e avisar de novo.
 
 ## Setup (já configurado neste repo)
 - **Ruleset `protect-dev-staging`** (Settings → Rules → Rulesets): exige PR + check `build-test` (CI) verde;
-  bloqueia push direto/force-push/deleção em `dev`/`staging`. Admin pode bypass.
-- **Auto-merge habilitado** no repo (Settings → General → Pull Requests → *Allow auto-merge*) + *delete branch on merge*.
+  bloqueia push direto/force-push/deleção em `dev`/`staging`. O botão de merge só habilita com o CI verde. Admin pode bypass.
+- **Auto-merge desligado** no repo (merge é ato manual do usuário); *delete branch on merge* fica ligado (limpeza).
 - Nada de secrets pagos: o gate grátis usa só o `GITHUB_TOKEN` padrão.
