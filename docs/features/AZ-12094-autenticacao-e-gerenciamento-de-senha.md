@@ -1,6 +1,6 @@
 # Feature: Autenticação e Gerenciamento de Senha
 
-- **Status:** Importada (a refinar) — pronta para `/brainstorm-story`
+- **Status:** Refinada — pronta para `/approve-architecture`
 - **Tipo:** Negócio
 - **Item (tracker):** [AZ-12094](https://dev.azure.com/T-SystemsdoBrasil/Yamaha%20-%20Rollout/_workitems/edit/12094) · Product Backlog Item · estado: New
 - **Produto:** Plataforma2A.Auth
@@ -50,6 +50,8 @@ renovação com rotação do refresh, troca de senha (logado), solicitação e r
 8. **Solicitação de redefinição** → mensagem genérica; se existir, envia token por e-mail.
 9. **Redefinição com token válido** → altera a senha, invalida refresh tokens, "Senha redefinida com sucesso".
 10. **Redefinição recusada por token inválido/expirado** → "Token de redefinição inválido ou expirado".
+11. **Bloqueio por excesso de tentativas (brute force)** — Dado várias tentativas de login falhas acima do
+    limite, Quando chega nova tentativa, Então responde `429 Too Many Requests` e não processa a autenticação.
 
 ## Requisitos não funcionais
 - **Segurança/PII:** senhas nunca em texto puro; JWT assinado com chave segura; refresh em hash; nada sensível
@@ -78,12 +80,23 @@ POST /api/auth/reset-password   { email, token, newPassword, confirmNewPassword 
 - **Premissa:** provedor de e-mail decidido pelo catálogo `docs/integrations/email`.
 - **Risco:** rotação/invalidação de refresh token exige cuidado transacional (usar `IUnitOfWork`).
 
-## Questões em aberto (para o brainstorm)
-- [ ] Expiração de Access/Refresh? — proposto: 15 min / 7 dias.
-- [ ] Rate limit na API (.NET) ou gateway? — proposto: nativo do .NET.
-- [ ] Provedor de e-mail? — proposto: `IEmailSender` + SMTP em dev (decidir pelo catálogo).
-- [ ] Login por e-mail, usuário, ou ambos? — proposto: e-mail.
+## Decisões do refinamento (resolvidas)
+- **Expiração:** Access Token **15 min**, Refresh Token **7 dias** (com rotação a cada renovação).
+- **Rate limit / brute force:** **.NET Rate Limiting nativo** (middleware), por endpoint público (login/forgot/reset).
+- **E-mail:** porta **`IEmailSender`** + adapter **SMTP** em dev (provedor real plugável pelo catálogo `docs/integrations/email`).
+- **Identificador de login:** **e-mail** + senha.
+- **Auditoria de refresh tokens:** histórico com expiração e revogação (entidade `RefreshToken`, persistida via `IUnitOfWork`).
+
+## Notas para a arquitetura (próximo passo)
+- Registrar **ADR** do projeto: adoção de **ASP.NET Core Identity + JWT**.
+- Modelar entidade **`RefreshToken`** (token em hash, `UserId`, `ExpiresAt`, `RevokedAt`, `CreatedAt`, índices) no SQL Server.
+- Ports: `IIdentityService`, `IJwtTokenGenerator`, `IRefreshTokenStore`, `IEmailSender`. Handlers retornam **`Result<T>`**; Api responde **envelope**.
+- Rate Limiting do .NET nos endpoints `login`, `forgot-password`, `reset-password`.
+
+## Histórico de refinamento
+- **2026-06-23** — Brainstorm. Decididos: tokens 15min/7d; rate limit nativo; `IEmailSender`+SMTP dev; login por e-mail;
+  auditoria de refresh tokens. Adicionado AC #11 (brute force). Marcadas as notas de arquitetura (Identity/JWT como ADR, `RefreshToken`).
 
 ---
-> Próximo: **"faça um brainstorm da feature AZ-12094"** (refinar) e depois **"abra arquitetura da feature AZ-12094"**.
+> Próximo: **"abra arquitetura da feature AZ-12094"** → casos de uso, modelo de dados (SQL Server), ports, ADRs.
 > Implementação seguirá os padrões do produto: Result/Notification + envelope, `IUnitOfWork`, mappers estáticos.
