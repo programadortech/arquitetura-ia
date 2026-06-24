@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Plataforma2A.Auth.Api/Plataforma2A.Auth.Api.csproj" />
+    <Project Path="src/Plataforma2A.Auth.Application/Plataforma2A.Auth.Application.csproj" />
+    <Project Path="src/Plataforma2A.Auth.Domain/Plataforma2A.Auth.Domain.csproj" />
+    <Project Path="src/Plataforma2A.Auth.Infrastructure/Plataforma2A.Auth.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Plataforma2A.Auth.ArchitectureTests/Plataforma2A.Auth.ArchitectureTests.csproj" />
+    <Project Path="tests/Plataforma2A.Auth.IntegrationTests/Plataforma2A.Auth.IntegrationTests.csproj" />
+    <Project Path="tests/Plataforma2A.Auth.UnitTests/Plataforma2A.Auth.UnitTests.csproj" />
+  </Folder>
+</Solution>

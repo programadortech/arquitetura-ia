@@ -1,24 +1,18 @@
 <Project>
-  <!--
-    Shared build settings inherited by every project in a generated solution.
-    Copied into each new project root by /create-project.
-  -->
+  <!-- Build settings compartilhados por toda a solução do produto (monorepo — ADR-0019). -->
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <!-- Quality: warnings are errors; analyzers on. -->
+    <!-- Warnings de COMPILADOR são erros. Analisadores CA desligados no baseline (reativáveis por projeto). -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <AnalysisLevel>latest-recommended</AnalysisLevel>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
 
-    <!-- Reproducibility & diagnostics -->
     <Deterministic>true</Deterministic>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- don't require XML docs on every public member -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 </Project>
