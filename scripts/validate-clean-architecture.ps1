@@ -33,10 +33,10 @@ foreach ($proj in $csprojs) {
   if ($name -match '\.Domain$' -and $refs.Count -gt 0) {
     Fail "Domain project '$name' must have NO project references. Found: $($refs -join ', ')"
   }
-  if ($name -match '\.Application$') {
+  if ($name -match '\.Application$' -and $name -notmatch '^BuildingBlocks\.') {
     foreach ($r in $refs) {
-      if ($r -notmatch '\.Domain$') {
-        Fail "Application project '$name' references '$r' - it may reference only *.Domain."
+      if ($r -notmatch '\.Domain$' -and $r -notmatch '^BuildingBlocks\.') {
+        Fail "Application project '$name' references '$r' - it may reference only *.Domain or BuildingBlocks.*."
       }
     }
   }

@@ -1,7 +1,9 @@
-# Template Corporativo — C# / Oracle / Clean Architecture
+# Monorepo multi-produto — C# / Clean Architecture + Fábrica
 
-Uma **fábrica de templates e scaffolding** (não um sistema de negócio) para gerar projetos .NET
-corporativos com arquitetura, observabilidade, resiliência, mensageria e disciplina de qualidade consistentes.
+Um **monorepo multi-produto**: cada produto vive em `apps/<Produto>/` (isolado, Clean Architecture), os blocos
+transversais em `building-blocks/BuildingBlocks.*`, e a **fábrica** (padrões, agentes, skills, scripts, templates)
+é compartilhada na raiz para gerar/evoluir os produtos com qualidade consistente. Ver
+[ADR-0030](docs/adr/0030-monorepo-multiproduto.md).
 
 > Leia o [`CLAUDE.md`](CLAUDE.md) primeiro — é o documento de governança de como este repositório é usado.
 >
@@ -15,17 +17,12 @@ corporativos com arquitetura, observabilidade, resiliência, mensageria e discip
 ## O que tem aqui dentro
 ```
 .
-├── .claude/
-│   ├── agents/      # 9 papéis especializados de revisão/construção
-│   ├── skills/      # /create-project, /create-feature, /create-usecase, … (9 skills)
-│   ├── hooks/       # gates de qualidade conectados via settings.json
-│   └── settings.json
-├── docs/
-│   ├── standards/   # regras vinculantes (architecture, dispatcher, oracle, observability, …)
-│   ├── adr/         # architecture decision records
-│   ├── architecture/ features/ usecases/ database/ observability/ testing/
-├── templates/       # project, feature, architecture, usecase, pr, test-plan, adr
-├── scripts/         # gates de validação em PowerShell
+├── .claude/          # agents + skills + hooks (fábrica)
+├── docs/             # standards · adr · integrations · guia (transversal)
+├── templates/        # formatos de artefatos
+├── scripts/          # gates de validação (PowerShell)
+├── building-blocks/  # código compartilhado: BuildingBlocks.Application · BuildingBlocks.Api
+├── apps/             # OS PRODUTOS — apps/<Produto>/ (src, tests, db, docs, .slnx)
 └── CLAUDE.md
 ```
 

@@ -15,7 +15,7 @@ $ErrorActionPreference = "Stop"
 $violations = New-Object System.Collections.Generic.List[string]
 
 $apiProj = Get-ChildItem -Path $Root -Recurse -Filter *.Api.csproj -ErrorAction SilentlyContinue |
-           Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } | Select-Object -First 1
+           Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' -and $_.FullName -notmatch '[\\/]building-blocks[\\/]' } | Select-Object -First 1
 if (-not $apiProj) {
   Write-Host "[INFO] nenhum projeto *.Api (nada a validar)." -ForegroundColor Yellow
   exit 0
@@ -42,6 +42,14 @@ foreach ($f in $borderFiles) {
     if ($content.Contains($p)) {
       $violations.Add("Borda da API com logica indevida ('$p') em $($f.Name) - controller/endpoint deve so despachar (SRP, ADR-0028).")
     }
+  }
+}
+
+# 2b) Controllers nao declaram contratos (request/response) — devem ficar em Contracts/ (ADR-0028).
+$controllerFiles = $apiFiles | Where-Object { $_.Name.EndsWith("Controller.cs") }
+foreach ($f in $controllerFiles) {
+  if ((Get-Content $f.FullName -Raw) -match '\brecord\s+\w+\s*\(') {
+    $violations.Add("Contrato (record) declarado dentro de $($f.Name) - mova request/response para Contracts/<Recurso>/ (ADR-0028).")
   }
 }
 

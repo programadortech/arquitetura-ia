@@ -18,16 +18,16 @@ Gera um esqueleto de solução completo e compilável, nomeado conforme o projet
 Se ProjectName estiver faltando, peça antes de prosseguir. Confirme as opções (ou use os defaults).
 
 ## Steps
-1. Confirme o ProjectName e a pasta de destino (`<ProjectName>/` na raiz do repositório ou um caminho que o usuário fornecer).
-2. Crie o layout da solução exatamente como definido em `CLAUDE.md` → "Standard solution layout":
+1. Confirme o ProjectName. O produto é criado em **`apps/<ProjectName>/`** (monorepo multi-produto — ADR-0030).
+2. Crie o layout em `apps/<ProjectName>/` (ver `docs/standards/monorepo-layout.md`):
    - `src/<ProjectName>.Domain`, `.Application`, `.Infrastructure`, `.Api`
    - `tests/<ProjectName>.UnitTests`, `.IntegrationTests`, `.ArchitectureTests`
-   - `db/<provider>/`, `docs/`, `<ProjectName>.sln` (provider = banco escolhido)
-3. Adicione a estrutura base de infraestrutura (sem lógica de negócio):
-   - Application: `IUseCase<TRequest,TResponse>`, `IUseCaseDispatcher`, implementação `UseCaseDispatcher`,
-     e a extensão de DI `AddApplication()` (veja `docs/standards/usecase-dispatcher.md`).
-   - Application: além do dispatcher, as ports de persistência `IUnitOfWork` + repositórios e o
-     **Result/Notification** (ver `docs/standards/error-handling.md`).
+   - `db/<provider>/`, `docs/` (PRODUCT.md · features · architecture), `<ProjectName>.slnx` (provider = banco escolhido)
+3. Adicione a estrutura base (sem lógica de negócio), **reutilizando o `BuildingBlocks`** (não re-scaffoldar):
+   - Referencie `building-blocks/BuildingBlocks.Application` (dispatcher `IUseCase`/`IUseCaseDispatcher`,
+     `Result`/`Notification`, `IUnitOfWork`, behaviors) e `building-blocks/BuildingBlocks.Api` (envelope `ApiResponse`
+     + `ToApiResult`, `GlobalExceptionHandler`) via `ProjectReference`. Registre com `AddBuildingBlocksApplication(<Assembly do produto>)`.
+   - Application do produto: ports específicos + `Result/Notification` (vindo do BuildingBlocks).
    - Infrastructure: Serilog + OpenTelemetry, políticas Polly, e o **acesso a dados escolhido**:
      - **efcore** → `AppDbContext` (provider do banco) + `EfUnitOfWork`;
      - **dapper** → `IDbConnection` + `DapperUnitOfWork` (transação) — ambos com Unit of Work (`docs/standards/database.md`).
