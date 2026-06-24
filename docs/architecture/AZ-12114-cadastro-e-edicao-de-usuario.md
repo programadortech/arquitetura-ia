@@ -63,8 +63,10 @@ a **policy `users:manage`** (role `Administrador`).
 - Acesso a banco sob pipeline Polly `database`.
 
 ## 7. Autorização
-- Policy **`users:manage`** registrada no `AddAuthorization` exigindo a role `Administrador`.
-- Ambos os endpoints (`POST`/`PUT /api/users`) exigem a policy; sem ela → 403.
+- **`POST /api/users` é PÚBLICO/anônimo** ([ADR-0027](../adr/0027-cadastro-de-usuario-publico.md)): o corpo **não** aceita
+  `roles` nem `isActive`; o servidor fixa a role padrão **`Usuario`** e `isActive=true` (evita escalada de privilégio).
+  **Sem rate limit** nesta entrega (decisão do PO; mitigação recomendada como follow-up).
+- **`PUT /api/users/{id}` exige a policy `users:manage`** (role `Administrador`) — atribuição/elevação de roles só aqui.
 
 ## 8. Plano de tasks (write-back via /sync-tasks)
 Estender `ApplicationUser` (Name/IsActive) · migração SQL Server · ports `IUserAdminService`/`IUserWelcomeEmailSender` ·

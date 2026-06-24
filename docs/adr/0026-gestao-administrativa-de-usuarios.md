@@ -1,6 +1,6 @@
 # ADR-0026: Gestão administrativa de usuários (Identity) — IsActive, criação transacional e porta de e-mail
 
-- **Status:** Aceita
+- **Status:** Aceita · **a autorização do `POST /api/users` foi revisada por [ADR-0027](0027-cadastro-de-usuario-publico.md)** (cadastro tornou-se público).
 - **Data:** 2026-06-24
 - **Decisores:** Acaciano (tech lead), Claude
 - **Feature:** [AZ-12114 — Cadastro e Edição de Usuário](../features/AZ-12114-cadastro-e-edicao-de-usuario.md)

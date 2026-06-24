@@ -43,7 +43,11 @@ builder.Services
             ClockSkew = TimeSpan.Zero,
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    // Administração de usuários exige a role Administrador (AZ-12114 / ADR-0026).
+    options.AddPolicy("users:manage", policy => policy.RequireRole("Administrador"));
+});
 
 // Rate limiting (proteção contra força bruta — AC #11): janela fixa 10/min POR IP → 429.
 builder.Services.AddRateLimiter(options =>
@@ -115,6 +119,9 @@ app.MapHealthChecks("/health").ExcludeFromDescription();
 
 // Endpoints de autenticação e gerenciamento de senha (AZ-12094).
 app.MapAuthEndpoints();
+
+// Endpoints de administração de usuários (AZ-12114).
+app.MapUserEndpoints();
 
 app.Run();
 
