@@ -20,9 +20,7 @@ public sealed class RefreshTokenStore(AppDbContext db, JwtOptions options) : IRe
         var now = DateTimeOffset.UtcNow;
         var expires = now.AddDays(options.RefreshTokenDays);
 
-        db.RefreshTokens.Add(new RefreshToken(userId, Hash(raw), expires, now));
-        // Sem SaveChanges aqui: o caso de uso comita via IUnitOfWork.
-        return Task.FromResult(new RefreshTokenIssued(raw, expires));
+        db.RefreshTokens.Add(new RefreshToken(userId, Hash(raw), expires, now));        return Task.FromResult(new RefreshTokenIssued(raw, expires));
     }
 
     public async Task<Guid?> ValidateAsync(string rawToken, CancellationToken cancellationToken)
@@ -36,9 +34,7 @@ public sealed class RefreshTokenStore(AppDbContext db, JwtOptions options) : IRe
     {
         var hash = Hash(rawToken);
         var token = await db.RefreshTokens.FirstOrDefaultAsync(x => x.TokenHash == hash, cancellationToken);
-        token?.Revoke(DateTimeOffset.UtcNow);
-        // Sem SaveChanges aqui: o caso de uso comita via IUnitOfWork.
-    }
+        token?.Revoke(DateTimeOffset.UtcNow);    }
 
     public async Task RevokeAllForUserAsync(Guid userId, CancellationToken cancellationToken)
     {
@@ -50,9 +46,7 @@ public sealed class RefreshTokenStore(AppDbContext db, JwtOptions options) : IRe
         foreach (var token in tokens)
         {
             token.Revoke(now);
-        }
-        // Sem SaveChanges aqui: o caso de uso comita via IUnitOfWork.
-    }
+        }    }
 
     private static string Hash(string raw)
         => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(raw)));

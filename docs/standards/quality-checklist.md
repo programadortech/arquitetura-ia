@@ -17,6 +17,7 @@ Copie os itens relevantes para a descrição do PR (`templates/pr-template.md`).
 - [ ] Entradas validadas no limite do caso de uso/endpoint.
 - [ ] Sem código morto, sem blocos comentados, sem TODOs sem uma issue rastreada.
 - [ ] **SRP:** cada classe com uma responsabilidade (controllers/endpoints finos, handler = 1 caso de uso); sem classe "faz-tudo".
+- [ ] **Comentários só quando necessários** (ADR-0029): código autoexplicativo; só o "porquê" não óbvio. Sem comentário que repete o código, separadores decorativos ou `///` redundante.
 
 ## Camada de API (ADR-0028 · `docs/standards/api-layer.md`)
 - [ ] Controllers/endpoints **finos**: só desserializam, despacham via `IUseCaseDispatcher` e mapeiam `Result`→envelope (sem lógica/persistência).

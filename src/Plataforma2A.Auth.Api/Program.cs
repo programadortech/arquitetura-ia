@@ -4,7 +4,6 @@ using Plataforma2A.Auth.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Composição por preocupação (ADR-0028 / docs/standards/api-layer.md). Cada extension faz uma coisa.
 builder.Services
     .AddObservability()
     .AddApplication()

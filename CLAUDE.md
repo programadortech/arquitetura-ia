@@ -121,6 +121,10 @@ Api ──▶ Application ──▶ Domain
 4. **Toda** feature começa como um documento (`templates/feature-template.md`) antes do código.
 5. **Todo** caso de uso tem testes unitários; código que toca integração tem testes de integração.
 6. Logs são **estruturados** (message templates + propriedades), nunca concatenados como string.
+6b. **Código limpo** ([ADR-0029](docs/adr/0029-codigo-limpo-comentarios.md)): código autoexplicativo; comente
+   **só o "porquê" não óbvio** (decisão/segurança/gotcha/ADR), nunca o "o quê". Sem comentário redundante,
+   separador decorativo ou `///` que repete o nome. Camada de API segue [ADR-0028](docs/adr/0028-padroes-camada-api.md)
+   (controllers finos, contratos em `Contracts/`, `Program` enxuto, status codes).
 7. Segredos nunca vão para o código-fonte. Use configuration providers / variáveis de ambiente.
 8. Respeite os hooks — se um hook bloquear uma ação, corrija a causa, não o contorne.
 9. **Mantenha a documentação sempre atualizada** (faz parte do "Done"): ao mudar fluxo, skills, padrões,

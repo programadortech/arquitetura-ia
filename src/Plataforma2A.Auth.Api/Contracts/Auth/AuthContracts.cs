@@ -6,9 +6,6 @@ using AppResetPassword = Plataforma2A.Auth.Application.UseCases.Auth.ResetPasswo
 
 namespace Plataforma2A.Auth.Api.Contracts.Auth;
 
-// Contratos HTTP (corpo das requisições) da autenticação — fora do controller (ADR-0028 / api-layer.md).
-// Cada contrato expõe só o que o cliente PODE enviar e mapeia para o request do caso de uso via ToUseCase().
-
 public sealed record LoginRequest(string Email, string Password)
 {
     public AppLogin.LoginRequest ToUseCase() => new(Email, Password);

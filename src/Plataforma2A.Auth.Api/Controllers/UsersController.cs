@@ -20,8 +20,6 @@ public sealed class UsersController(IUseCaseDispatcher dispatcher) : ControllerB
     public async Task<IResult> Create([FromBody] CreateUserRequest body, CancellationToken ct)
     {
         var result = await dispatcher.SendAsync(body.ToUseCase(), ct);
-
-        // 201 Created + Location quando criado (ver docs/standards/http-status-codes.md).
         return result.IsSuccess
             ? result.ToApiResult(HttpContext, StatusCodes.Status201Created, location: $"/api/users/{result.Value!.Id}")
             : result.ToApiResult(HttpContext);

@@ -3,9 +3,7 @@ using AppUpdateUser = Plataforma2A.Auth.Application.UseCases.Users.UpdateUser;
 
 namespace Plataforma2A.Auth.Api.Contracts.Users;
 
-// Contratos HTTP de usuários — fora do controller (ADR-0028 / api-layer.md).
-
-// Cadastro PÚBLICO (ADR-0027): o cliente NÃO envia roles nem isActive — o servidor fixa a role padrão e ativo.
+// Cadastro público (ADR-0027): o cliente não envia roles nem isActive — o servidor fixa a role padrão e ativo.
 public sealed record CreateUserRequest(string Name, string Email, string UserName, string? Password)
 {
     private const string DefaultRole = "Usuario";

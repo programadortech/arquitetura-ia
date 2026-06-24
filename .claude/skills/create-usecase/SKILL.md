@@ -39,6 +39,7 @@ Implementa um caso de uso seguindo a arquitetura aprovada e os padrões do repos
 - **Mapeamento entidade↔model via mappers estáticos** (`ToResponse`/`ToEntity`) — **sem AutoMapper** (`docs/standards/mapping.md`).
 - **Borda fina + status code semântico** (ADR-0028): controller/endpoint só despacha; 201 no create, 204 sem corpo. `Program.cs` enxuto via `Extensions/`.
 - **Contratos HTTP em `Api/Contracts/<Recurso>/`** (request/response em arquivos próprios — **nunca** dentro do controller), cada request com `ToUseCase(...)` mapeando para o `*Request` do caso de uso; request só com campos do cliente (sem `UserId`/roles de servidor).
+- **Comentários só quando necessários** (ADR-0029 · `docs/standards/clean-code.md`): código autoexplicativo; comente o "porquê" não óbvio, nunca o "o quê". Sem comentário redundante/decorativo.
 - **Integrações pelo catálogo** (`docs/integrations/`): porta + adapter plugável.
 - Async + `CancellationToken` em todo o fluxo; sem bloqueio em chamadas async.
 - Logs estruturados; SQL parametrizado; inputs validados na fronteira.

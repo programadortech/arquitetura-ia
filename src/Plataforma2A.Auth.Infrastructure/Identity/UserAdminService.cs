@@ -78,7 +78,6 @@ public sealed class UserAdminService(
         var updated = await users.UpdateAsync(user);
         if (!updated.Succeeded) { return new UpdateUserOutcome(false, false, Describe(updated)); }
 
-        // Sincroniza roles: remove as que saíram, adiciona as novas.
         var current = await users.GetRolesAsync(user);
         var toRemove = current.Except(roles, StringComparer.OrdinalIgnoreCase).ToArray();
         if (toRemove.Length > 0)

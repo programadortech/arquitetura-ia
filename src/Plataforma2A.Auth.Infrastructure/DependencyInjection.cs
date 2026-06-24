@@ -20,12 +20,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // Banco: SQL Server (provider plugável) + Unit of Work (EF Core).
         var connectionString = configuration.GetConnectionString("Default");
         services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
-        // ASP.NET Core Identity (somente o core — sem cookies; a API usa JWT).
+        // Só o core do Identity: a API autentica por JWT, sem cookies.
         services
             .AddIdentityCore<ApplicationUser>(options =>
             {
@@ -36,7 +35,6 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
-        // Opções de JWT e SMTP (segredos via env/secret store — ADR-0022).
         var jwtOptions = configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
         var smtpOptions = configuration.GetSection("Smtp").Get<SmtpOptions>() ?? new SmtpOptions();
 
@@ -50,17 +48,13 @@ public static class DependencyInjection
         services.AddSingleton(jwtOptions);
         services.AddSingleton(smtpOptions);
 
-        // Ports de autenticação e e-mail.
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
         services.AddSingleton<IEmailSender, SmtpEmailSender>();
-
-        // Administração de usuários (AZ-12114).
         services.AddScoped<IUserAdminService, UserAdminService>();
         services.AddScoped<IUserWelcomeEmailSender, UserWelcomeEmailSender>();
 
-        // Resiliência: pipeline 'database' (timeout + retry com backoff e jitter).
         services.AddResiliencePipeline("database", builder =>
             builder
                 .AddTimeout(TimeSpan.FromSeconds(10))
