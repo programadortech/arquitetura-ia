@@ -30,6 +30,8 @@ public class ResetPasswordHandlerTests
     [Fact]
     public async Task Token_invalido_retorna_unauthorized()
     {
+        var user = new IdentityUserInfo(Guid.NewGuid(), "user@2a.com", []);
+        _identity.FindByEmailAsync("user@2a.com", Arg.Any<CancellationToken>()).Returns(user);
         _identity.ResetPasswordAsync("user@2a.com", "tok-ruim", "nova12345", Arg.Any<CancellationToken>())
             .Returns(false);
 
@@ -38,6 +40,20 @@ public class ResetPasswordHandlerTests
 
         result.IsFailure.Should().BeTrue();
         result.Errors[0].Type.Should().Be(ErrorType.Unauthorized);
+        await _refreshTokens.DidNotReceive().RevokeAllForUserAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Email_inexistente_responde_sucesso_generico_sem_resetar()
+    {
+        _identity.FindByEmailAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((IdentityUserInfo?)null);
+
+        var result = await CreateHandler().HandleAsync(
+            new ResetPasswordRequest("nao-existe@2a.com", "tok", "nova12345", "nova12345"), CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        await _identity.DidNotReceive().ResetPasswordAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

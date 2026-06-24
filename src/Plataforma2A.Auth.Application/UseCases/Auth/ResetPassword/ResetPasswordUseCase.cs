@@ -23,20 +23,24 @@ public sealed class ResetPasswordHandler(
             return Result<Unit>.Failure(new Error("senha.confirmacao_invalida", "A nova senha e a confirmação não conferem", ErrorType.Validation));
         }
 
+        // Lookup único antes do reset: garante que a revogação dos refresh tokens (AC #10) sempre
+        // acompanha um reset bem-sucedido. E-mail inexistente → sucesso genérico (não revela existência).
+        var user = await identity.FindByEmailAsync(request.Email, cancellationToken);
+        if (user is null)
+        {
+            return Result<Unit>.Success(Unit.Value);
+        }
+
         var ok = await identity.ResetPasswordAsync(request.Email, request.Token, request.NewPassword, cancellationToken);
         if (!ok)
         {
-            logger.LogWarning("Redefinição recusada: token inválido ou expirado para {Email}", request.Email);
+            logger.LogWarning("Redefinição recusada: token inválido ou expirado para {UserId}", user.UserId);
             return Result<Unit>.Failure(new Error("auth.token_reset_invalido", "Token de redefinição inválido ou expirado", ErrorType.Unauthorized));
         }
 
-        var user = await identity.FindByEmailAsync(request.Email, cancellationToken);
-        if (user is not null)
-        {
-            await refreshTokens.RevokeAllForUserAsync(user.UserId, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-            logger.LogInformation("Senha redefinida e refresh tokens revogados para {UserId}", user.UserId);
-        }
+        await refreshTokens.RevokeAllForUserAsync(user.UserId, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        logger.LogInformation("Senha redefinida e refresh tokens revogados para {UserId}", user.UserId);
 
         return Result<Unit>.Success(Unit.Value);
     }

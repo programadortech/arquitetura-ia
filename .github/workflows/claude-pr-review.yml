@@ -61,17 +61,20 @@ jobs:
             4. Consolide os achados como **Blocking / Should-fix / Nit**, cada um com `arquivo:linha` e uma correção concreta.
 
             Ao final, POSTE o review no PR usando `gh pr review` (escreva o corpo num arquivo e use `--body-file`
-            para preservar formatação e quebras de linha):
-            - Sem achados Blocking → `gh pr review ${{ github.event.pull_request.number }} --approve --body-file <arquivo>`.
-            - Com achados Blocking → `gh pr review ${{ github.event.pull_request.number }} --request-changes --body-file <arquivo>`.
-            - Só observações menores → `gh pr review ${{ github.event.pull_request.number }} --comment --body-file <arquivo>`.
+            para preservar formatação e quebras de linha). A decisão é determinada SOMENTE pelos achados Blocking:
+            - **Sem nenhum achado Blocking → SEMPRE `--approve`**, mesmo que existam Should-fix ou Nit
+              (eles são sugestões de follow-up, não impedem o merge):
+              `gh pr review ${{ github.event.pull_request.number }} --approve --body-file <arquivo>`.
+            - **Com pelo menos um achado Blocking → `--request-changes`**:
+              `gh pr review ${{ github.event.pull_request.number }} --request-changes --body-file <arquivo>`.
+            Não use `--comment` para o veredito final (ele não conta como aprovação/reprovação em branch protection).
 
             O corpo do review (em português) NÃO pode ser um resumo de uma linha. Ele DEVE conter, em Markdown:
             1. Um parágrafo curto de visão geral.
             2. Uma seção **Blocking** listando TODOS os bloqueantes — cada um com `arquivo:linha`, o problema e a
                correção concreta. (Se não houver, escreva "Nenhum".)
             3. Seções **Should-fix** e **Nit** no mesmo formato.
-            4. A linha final com o veredito: **APPROVE** ou **REQUEST CHANGES**.
+            4. A linha final com o veredito: **APPROVE** (sem Blocking) ou **REQUEST CHANGES** (com Blocking).
             Inclua todos os itens citados na visão geral — nunca diga "há N bloqueantes" sem enumerá-los.
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
