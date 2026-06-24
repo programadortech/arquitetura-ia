@@ -26,6 +26,10 @@ Vamos adotar o gate em **duas camadas, com custo zero por padrão**:
 **Não** manteremos a Action de IA na nuvem ligada por padrão (evita conta de API por PR). Ela pode ser
 reintroduzida no futuro como **opt-in** (trigger `@claude` em comentário) para PRs específicos.
 
+**Merge automático:** habilitamos o **auto-merge** do GitHub + o ruleset `protect-dev-staging` (exige PR e o
+check `build-test`/CI). Ligando o auto-merge no PR (`gh pr merge --auto`), o GitHub **mergeia sozinho quando o
+CI fica verde** — "aprovado = CI verde" (arquitetura + testes), sem clique nem aprovação de bot.
+
 ## Consequências
 - (+) Gate automático **gratuito** em todo PR (build/test/arquitetura) — barra os erros estruturais que mais importam.
 - (+) Revisão de IA continua disponível, **sem custo por PR** (local via `/review-pr`).
