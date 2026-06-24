@@ -28,13 +28,14 @@
 
 ## Backlog / features
 - Índice: [`features/README.md`](features/README.md).
-- **AZ-12094 — Autenticação e Gerenciamento de Senha** — implementada (branch `feature/12094-...`, PR para `dev`). Docs: [feature](features/AZ-12094-autenticacao-e-gerenciamento-de-senha.md) · [arquitetura](architecture/AZ-12094-autenticacao-e-gerenciamento-de-senha.md).
+- **AZ-12094 — Autenticação e Gerenciamento de Senha** — implementada (mergeada em `dev`, PR #1). Docs: [feature](features/AZ-12094-autenticacao-e-gerenciamento-de-senha.md) · [arquitetura](architecture/AZ-12094-autenticacao-e-gerenciamento-de-senha.md).
+- **AZ-12114 — Cadastro e Edição de Usuário** — importada (pronta p/ arquitetura). Admin CRUD de usuários (Identity), roles, status, senha opcional + interface de e-mail de boas-vindas (envio é história futura). Doc: [feature](features/AZ-12114-cadastro-e-edicao-de-usuario.md).
 
-## Fluxo de PR e revisão
+## Fluxo de PR e revisão (custo zero)
 - Branches sempre da `main`: `feature/{id}-{slug}` → PR para `dev`; `hotfix/{id}-{slug}` → PR para `staging` (ADR-0023).
-- Revisão automatizada por GitHub Action (Claude) a cada PR para `dev`/`staging`, postando APPROVE/REQUEST CHANGES
-  como bot (ADR-0025 / [`standards/pr-review-automation.md`](standards/pr-review-automation.md)). Requer secret `ANTHROPIC_API_KEY`.
-- Abertura/gerência de PR daqui usa o **GitHub CLI (`gh`)** autenticado (`gh auth login`).
+- **Gate grátis em CI** (`ci.yml`: build/test/arquitetura) é check obrigatório (ruleset `protect-dev-staging`). Revisão de IA é **local sob demanda** via `/review-pr` (sem custo). Ver ADR-0025 / [`standards/pr-review-automation.md`](standards/pr-review-automation.md).
+- **Merge é manual (decisão do usuário):** o agente abre o PR, acompanha o CI e, quando verde, **avisa**; o usuário faz o merge na plataforma.
+- Abertura/gerência de PR daqui usa o **GitHub CLI (`gh`)** autenticado. Segredos dos scripts de tracker via `.env` (gitignored) ou variável de ambiente.
 
 ## Integrações ativas
 - _(nenhuma ainda — e-mail entra com o fluxo de reset de senha; decidir provedor pelo catálogo)_
