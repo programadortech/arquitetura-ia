@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Plataforma2A.Auth.Application.Ports.Authentication;
 using Plataforma2A.Auth.Application.Ports.Email;
 using Plataforma2A.Auth.Application.Ports.Persistence;
+using Plataforma2A.Auth.Application.Ports.Users;
 using Plataforma2A.Auth.Infrastructure.Authentication;
 using Plataforma2A.Auth.Infrastructure.Email;
 using Plataforma2A.Auth.Infrastructure.Identity;
@@ -54,6 +55,10 @@ public static class DependencyInjection
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
         services.AddSingleton<IEmailSender, SmtpEmailSender>();
+
+        // Administração de usuários (AZ-12114).
+        services.AddScoped<IUserAdminService, UserAdminService>();
+        services.AddScoped<IUserWelcomeEmailSender, UserWelcomeEmailSender>();
 
         // Resiliência: pipeline 'database' (timeout + retry com backoff e jitter).
         services.AddResiliencePipeline("database", builder =>
