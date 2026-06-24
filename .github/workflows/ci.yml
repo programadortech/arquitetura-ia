@@ -1,0 +1,39 @@
+name: CI
+
+# Gate de qualidade determinístico e GRATUITO (sem IA / sem custo de API).
+# Roda em PRs para dev/staging: build com warnings-as-errors, testes (unit/arquitetura/integração)
+# e a validação estática da Clean Architecture. Repo público → minutos de Actions gratuitos.
+
+on:
+  pull_request:
+    branches: [dev, staging]
+  push:
+    branches: [dev, staging, main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET (via global.json)
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Plataforma2A.Auth.slnx
+
+      - name: Build (warnings = erros)
+        run: dotnet build Plataforma2A.Auth.slnx --no-restore -warnaserror
+
+      - name: Test (unit + arquitetura + integração)
+        run: dotnet test Plataforma2A.Auth.slnx --no-build --verbosity normal
+
+      - name: Validar Clean Architecture (regra de dependência)
+        shell: pwsh
+        run: ./scripts/validate-clean-architecture.ps1
