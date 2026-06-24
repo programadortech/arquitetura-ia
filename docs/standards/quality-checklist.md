@@ -23,6 +23,7 @@ Copie os itens relevantes para a descrição do PR (`templates/pr-template.md`).
 - [ ] `Program.cs` **enxuto** — composição em `Extensions/` (`Add*`/`Use*`/`Map*`); passa em `scripts/validate-api-conventions.ps1`.
 - [ ] **Status codes** corretos (`docs/standards/http-status-codes.md`): **201 + `Location`** no create, **204** sem corpo, 200 nas demais; erros pelo `ErrorType`.
 - [ ] Estilo de API consistente com o do projeto (`controllers` ou `minimal`).
+- [ ] **Contratos HTTP (request/response) em `Api/Contracts/<Recurso>/`**, em arquivos próprios — **nunca** dentro do `*Controller.cs`; request só com campos do cliente + `ToUseCase(...)`.
 
 ## Dados (Oracle)
 - [ ] Todo SQL parametrizado (bind variables).

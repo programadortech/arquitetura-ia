@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Plataforma2A.Auth.Api.Common;
+using Plataforma2A.Auth.Api.Contracts.Users;
 using Plataforma2A.Auth.Application.Abstractions;
-using Plataforma2A.Auth.Application.UseCases.Users.CreateUser;
-using Plataforma2A.Auth.Application.UseCases.Users.UpdateUser;
 
 namespace Plataforma2A.Auth.Api.Controllers;
 
@@ -16,19 +15,11 @@ namespace Plataforma2A.Auth.Api.Controllers;
 [Tags("Usuários")]
 public sealed class UsersController(IUseCaseDispatcher dispatcher) : ControllerBase
 {
-    /// <summary>Role padrão atribuída no cadastro público (sem elevação).</summary>
-    private const string DefaultRole = "Usuario";
-
-    // Cadastro público: NÃO recebe roles nem isActive (definidos pelo servidor).
-    public sealed record CreateUserBody(string Name, string Email, string UserName, string? Password);
-    public sealed record UpdateUserBody(string Name, string Email, string UserName, string[] Roles, bool IsActive);
-
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IResult> Create([FromBody] CreateUserBody body, CancellationToken ct)
+    public async Task<IResult> Create([FromBody] CreateUserRequest body, CancellationToken ct)
     {
-        var result = await dispatcher.SendAsync(
-            new CreateUserRequest(body.Name, body.Email, body.UserName, body.Password, [DefaultRole], IsActive: true), ct);
+        var result = await dispatcher.SendAsync(body.ToUseCase(), ct);
 
         // 201 Created + Location quando criado (ver docs/standards/http-status-codes.md).
         return result.IsSuccess
@@ -38,8 +29,6 @@ public sealed class UsersController(IUseCaseDispatcher dispatcher) : ControllerB
 
     [HttpPut("{id:guid}")]
     [Authorize("users:manage")]
-    public async Task<IResult> Update(Guid id, [FromBody] UpdateUserBody body, CancellationToken ct)
-        => (await dispatcher.SendAsync(
-                new UpdateUserRequest(id, body.Name, body.Email, body.UserName, body.Roles ?? [], body.IsActive), ct))
-            .ToApiResult(HttpContext);
+    public async Task<IResult> Update(Guid id, [FromBody] UpdateUserRequest body, CancellationToken ct)
+        => (await dispatcher.SendAsync(body.ToUseCase(id), ct)).ToApiResult(HttpContext);
 }

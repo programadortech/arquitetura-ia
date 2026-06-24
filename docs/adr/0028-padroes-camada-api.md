@@ -18,6 +18,8 @@ nasçam certas** (skills/agents) e o **gate** barre o que fugir.
 2. **SRP em toda a camada (e no resto do código).** Cada classe tem **uma** responsabilidade: controller/endpoint é
    **fino** (desserializa → despacha `IUseCaseDispatcher` → mapeia `Result`→envelope; **sem regra de negócio**);
    um handler = **um** caso de uso; serviços/adapters focados; mappers estáticos. Sem classes "faz-tudo".
+   **Contratos HTTP (request/response) ficam em arquivos próprios** sob `Api/Contracts/<Recurso>/`, **nunca**
+   aninhados no controller; o request expõe só os campos do cliente e um `ToUseCase(...)` que mapeia para o caso de uso.
 3. **`Program.cs` enxuto via extension methods.** O registro de serviços e o pipeline ficam em extensões
    agrupadas por preocupação (`AddObservability`, `AddApiDocumentation`, `AddJwtAuthentication`,
    `AddRateLimiting`, `AddAuthorizationPolicies`, `UseApiPipeline`, `MapApiEndpoints`/`MapControllers`). O

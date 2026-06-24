@@ -59,6 +59,28 @@ public partial class Program; // testes de integração
 ```
 Cada extension faz **uma** coisa e retorna `this` (encadeável). Sem blocos gigantes de configuração inline.
 
+## 3.1 Contratos HTTP (request/response) — fora do controller
+Os **DTOs de request/response** do HTTP **nunca** ficam aninhados na classe do controller. Eles vivem em
+arquivos próprios sob `src/<Produto>.Api/Contracts/<Recurso>/` (ex.: `Contracts/Auth/AuthContracts.cs`,
+`Contracts/Users/UserContracts.cs`).
+
+Regras:
+- **Request contract = só o que o cliente PODE enviar.** Campos definidos pelo servidor (ex.: `UserId` do token,
+  `roles`/`isActive` no cadastro público) **não** entram no corpo — são injetados no controller/mapper. Evita
+  *overposting* / escalada de privilégio.
+- Cada contrato expõe um mapper **`ToUseCase(...)`** que devolve o `*Request` do caso de uso (Application).
+  Dados de servidor entram por parâmetro do mapper (ex.: `ToUseCase(Guid userId)`). Sem AutoMapper (ADR-0021).
+- **Response:** quando a forma HTTP é igual ao response do caso de uso, use-o direto no envelope (sem DTO extra).
+  Crie um response em `Contracts/` **só** quando a forma divergir — também **nunca** aninhado no controller.
+
+Controller fino consumindo o contrato:
+```csharp
+[HttpPost("login")]
+[AllowAnonymous]
+public async Task<IResult> Login([FromBody] LoginRequest body, CancellationToken ct)
+    => (await dispatcher.SendAsync(body.ToUseCase(), ct)).ToApiResult(HttpContext);
+```
+
 ## 4. Borda → envelope + status code
 - Toda resposta usa o envelope `ApiResponse` ([error-handling](error-handling.md)).
 - Status code conforme [http-status-codes.md](http-status-codes.md): **201** no create (com `Location`),
@@ -68,6 +90,7 @@ Cada extension faz **uma** coisa e retorna `this` (encadeável). Sem blocos giga
 `scripts/validate-api-conventions.ps1` (no CI e no `/review-pr`) verifica, entre outros:
 - `Program.cs` enxuto (acima de um limite de linhas → falha);
 - camada Api sem lógica indevida (heurística: sem `DbContext`/`UserManager`/`new HttpClient` em controllers/endpoints);
+- **controllers não declaram contratos** (sem `record` de request/response dentro de `*Controller.cs` → vão para `Contracts/`);
 - consistência do estilo (controllers ⇒ `MapControllers`; minimal ⇒ `Map*Endpoints`);
 - presença da pasta `Extensions/` quando há composição.
 Itens de julgamento (SRP fino, status code correto caso a caso) são cobertos pela revisão (`tech-lead-reviewer`).

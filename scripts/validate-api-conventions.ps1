@@ -45,6 +45,14 @@ foreach ($f in $borderFiles) {
   }
 }
 
+# 2b) Controllers nao declaram contratos (request/response) — devem ficar em Contracts/ (ADR-0028).
+$controllerFiles = $apiFiles | Where-Object { $_.Name.EndsWith("Controller.cs") }
+foreach ($f in $controllerFiles) {
+  if ((Get-Content $f.FullName -Raw) -match '\brecord\s+\w+\s*\(') {
+    $violations.Add("Contrato (record) declarado dentro de $($f.Name) - mova request/response para Contracts/<Recurso>/ (ADR-0028).")
+  }
+}
+
 # 3) Composicao: pasta Extensions/ e mapeamento presente
 if (-not (Test-Path (Join-Path $apiDir "Extensions"))) {
   $violations.Add("Faltou a pasta Extensions/ na API (composicao do Program em extension methods - ADR-0028).")
