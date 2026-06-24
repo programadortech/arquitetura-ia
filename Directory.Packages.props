@@ -6,7 +6,8 @@
   -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <!-- Permite versões flutuantes (9.* etc.) no CPM; sem isso o build falha com NU1011. -->
+    <CentralPackageFloatingVersionsEnabled>true</CentralPackageFloatingVersionsEnabled>
   </PropertyGroup>
 
   <ItemGroup Label="Banco de dados (apenas o provider/ORM escolhido é referenciado pelo projeto)">

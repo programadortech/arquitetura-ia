@@ -17,15 +17,32 @@ app.MapOpenApi();                // expõe /openapi/v1.json
 | **swagger** | `Swashbuckle.AspNetCore.SwaggerUI` | `/swagger` | Clássico, difundido |
 | **redoc** | `Swashbuckle.AspNetCore.ReDoc` | `/redoc` | Documentação estática elegante |
 
-Default `scalar,swagger` (ambas em Development). Exemplo:
+Default `scalar,swagger` (ambas fora de produção). Configuração padrão (gerada pelo `/create-project`):
 ```csharp
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsProduction())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();      // /scalar
-    app.UseSwaggerUI(o => o.SwaggerEndpoint("/openapi/v1.json", "API v1")); // /swagger
+    app.MapOpenApi();                       // documento: /openapi/v1.json
+    app.MapScalarApiReference();            // UI Scalar: /scalar
+    app.UseSwaggerUI(o =>                   // UI Swagger: /swagger
+    {
+        o.SwaggerEndpoint("/openapi/v1.json", "<Produto> v1"); // aponta para o OpenAPI NATIVO
+        o.RoutePrefix = "swagger";
+    });
+    app.MapGet("/", () => Results.Redirect("/scalar")).ExcludeFromDescription(); // utilitário, fora do OpenAPI
 }
+else
+{
+    app.MapGet("/", () => "<Produto> API").ExcludeFromDescription();
+}
+app.MapHealthChecks("/health").ExcludeFromDescription(); // health não é contrato de API
 ```
+> **A doc só mostra APIs reais.** Endpoints utilitários (`/`, `/health`, redirect) usam
+> `.ExcludeFromDescription()` para **não** poluir o OpenAPI. Num projeto recém-criado o documento vem com
+> `"paths": {}` (vazio) — os endpoints aparecem conforme as features são implementadas (`/create-usecase`).
+> **Importante (evita o erro "Failed to fetch /swagger/v1/swagger.json"):** o Swagger UI deve apontar para
+> o documento do **OpenAPI nativo** (`/openapi/v1.json`), **não** para o caminho default do Swashbuckle
+> (`/swagger/v1/swagger.json`), que só existe com `AddSwaggerGen`. Como usamos `AddOpenApi()` (nativo),
+> sempre configure `SwaggerEndpoint("/openapi/v1.json", ...)`.
 
 ## Regras
 - O documento descreve o **envelope** (`ApiResponse<T>`) como o tipo de resposta — ver

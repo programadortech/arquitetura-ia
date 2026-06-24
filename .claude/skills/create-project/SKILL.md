@@ -33,7 +33,10 @@ Se ProjectName estiver faltando, peça antes de prosseguir. Confirme as opções
      Mais: **Hangfire só se `jobs=hangfire`**, abstração de fila plugável (`IQueuePublisher`/`IQueueConsumer`),
      e adapters de integração conforme o catálogo (`docs/integrations/`).
    - Api: host ASP.NET Core, DI, health checks, OTLP, **envelope `ApiResponse` + middleware global de exceções**,
-     **OpenAPI** (Scalar + Swagger), e `gateway` YARP opcional.
+     **OpenAPI** (Scalar + Swagger) — Swagger apontando para o OpenAPI **nativo** `/openapi/v1.json` (NÃO o
+     default `/swagger/v1/swagger.json`), a **base URL `/` redireciona para `/scalar`** fora de produção, e os
+     endpoints utilitários (`/`, `/health`) usam `.ExcludeFromDescription()` para **não** poluir o OpenAPI
+     (projeto recém-criado vem com `paths: {}`) — ver `docs/standards/api-documentation.md`. `gateway` YARP opcional.
    - **Configuração por ambiente** em TODO projeto executável (Api, Gateway, workers): `appsettings.json` +
      `appsettings.Development.json` (localhost) + `appsettings.Staging.json` + `appsettings.Production.json` +
      `Properties/launchSettings.json` (perfis Development/Staging). Sem segredos nos arquivos — placeholders +

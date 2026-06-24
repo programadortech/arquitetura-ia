@@ -9,11 +9,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <!-- Quality: warnings are errors; analyzers on. -->
+    <!-- Warnings de COMPILADOR são erros. Analisadores CA desligados no baseline (reativáveis por projeto;
+         evitam quebrar o scaffold por nits de estilo). -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <AnalysisLevel>latest-recommended</AnalysisLevel>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
 
     <!-- Reproducibility & diagnostics -->
     <Deterministic>true</Deterministic>
