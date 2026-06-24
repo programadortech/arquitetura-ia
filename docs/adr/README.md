@@ -28,4 +28,6 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0021](0021-no-automapper-static-mappers.md) | Sem AutoMapper — mapeamento explícito via mappers estáticos | Aceito |
 | [0022](0022-per-environment-configuration.md) | Configuração por ambiente (Development / Staging / Production) | Aceito |
 
-> Próximo número livre: **0023**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+| [0023](0023-git-branching-strategy.md) | Estratégia de branches e fluxo de PR (feature→dev, hotfix→staging) | Aceito |
+
+> Próximo número livre: **0024**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.

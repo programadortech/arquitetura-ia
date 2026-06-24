@@ -15,6 +15,7 @@ o padrão ou registrando um novo ADR — nunca por divergência silenciosa.
 - [integrations.md](integrations.md) — integrações plugáveis + catálogo (docs/integrations).
 - [api-gateway.md](api-gateway.md) — API Gateway opcional (YARP).
 - [configuration.md](configuration.md) — configuração por ambiente (Development/Staging/Production).
+- [branching.md](branching.md) — branches e fluxo de PR (feature→dev, hotfix→staging; sempre da main).
 - [queue-providers.md](queue-providers.md) — Kafka/SQS/RabbitMQ/MQTT plugáveis.
 - [jobs.md](jobs.md) — jobs em background/agendados com Hangfire (opcional).
 - [testing.md](testing.md) — testes unitários + integração + arquitetura.

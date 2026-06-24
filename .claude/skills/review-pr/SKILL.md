@@ -30,5 +30,13 @@ Realiza uma revisão minuciosa e orientada por padrões das mudanças pendentes 
 Um único relatório de revisão terminando com **APPROVE** ou **REQUEST CHANGES** e os achados priorizados.
 Se `--fix` for solicitado, aplique as correções seguras; caso contrário, apenas reporte.
 
+## Abertura do PR (alvo por tipo — ver docs/standards/branching.md)
+Ao abrir o PR, escolha o **alvo** pelo tipo da branch:
+- `feature/{id}-{slug}` → **PR para `dev`**.
+- `hotfix/{id}-{slug}` → **PR para `staging`**.
+
+O PR referencia o item do tracker (ex.: `#12094`). Nunca abrir PR direto para `main`.
+
 ## Done when
-Todos os gates foram executados, todas as perspectivas estão cobertas, e um veredito claro com achados acionáveis é produzido.
+Todos os gates foram executados, todas as perspectivas estão cobertas, um veredito claro com achados
+acionáveis é produzido, e (se solicitado abrir o PR) ele aponta para o alvo correto por tipo.

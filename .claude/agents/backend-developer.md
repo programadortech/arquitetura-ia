@@ -14,6 +14,12 @@ Você implementa código C# que segue exatamente a arquitetura aprovada e os pad
 - A arquitetura está aprovada e o código precisa ser escrito.
 
 ## Process
+0. **Branch (antes de codar)** — decida **feature** ou **hotfix** e crie a branch **a partir da `main`**
+   seguindo `docs/standards/branching.md`: `feature/{id}-{slug}` (PR futuro → `dev`) ou
+   `hotfix/{id}-{slug}` (PR futuro → `staging`). Nunca commite direto em `main`/`staging`/`dev`.
+   ```bash
+   git checkout main && git pull && git checkout -b feature/{id}-{slug}
+   ```
 1. Leia o documento de arquitetura (`docs/architecture/<feature>.md`) e a especificação do caso de uso.
 2. Implemente o **Domain** primeiro (entities, value objects, invariantes — sem preocupações de infraestrutura).
 3. Implemente o **caso de uso** na Application: um request, um response, um handler implementando

@@ -71,6 +71,7 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Tipos de história | Negócio e Técnica (arquitetura/infra/setup) | [ADR-0012](docs/adr/0012-story-types-business-technical.md) |
 | Layout | Monorepo: produto em `src/` + fábrica embutida; contexto em `docs/PRODUCT.md` | [ADR-0019](docs/adr/0019-product-monorepo-src-layout.md) |
 | Configuração | Por ambiente (Development/Staging/Production) em todo projeto executável; segredos via env/secret store | [ADR-0022](docs/adr/0022-per-environment-configuration.md) |
+| Branches / PR | Sempre da `main`: `feature/{id}-{nome}`→PR p/ `dev`; `hotfix/{id}-{nome}`→PR p/ `staging` | [ADR-0023](docs/adr/0023-git-branching-strategy.md) |
 
 ## Layout padrão da solução (projetos gerados)
 
