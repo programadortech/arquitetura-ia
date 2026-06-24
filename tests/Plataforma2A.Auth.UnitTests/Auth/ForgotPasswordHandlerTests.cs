@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Plataforma2A.Auth.Application.Ports.Authentication;
 using Plataforma2A.Auth.Application.Ports.Email;
@@ -10,8 +11,9 @@ public class ForgotPasswordHandlerTests
 {
     private readonly IIdentityService _identity = Substitute.For<IIdentityService>();
     private readonly IEmailSender _email = Substitute.For<IEmailSender>();
+    private readonly ILogger<ForgotPasswordHandler> _logger = Substitute.For<ILogger<ForgotPasswordHandler>>();
 
-    private ForgotPasswordHandler CreateHandler() => new(_identity, _email);
+    private ForgotPasswordHandler CreateHandler() => new(_identity, _email, _logger);
 
     [Fact]
     public async Task Email_existente_gera_token_e_envia_email()

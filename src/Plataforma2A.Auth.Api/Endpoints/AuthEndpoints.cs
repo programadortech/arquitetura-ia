@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Plataforma2A.Auth.Api.Common;
 using Plataforma2A.Auth.Application.Abstractions;
 using Plataforma2A.Auth.Application.UseCases.Auth.ChangePassword;
@@ -21,17 +20,17 @@ public static class AuthEndpoints
 
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/auth")
-            .WithTags("Autenticação")
-            .RequireRateLimiting("auth");
+        var group = app.MapGroup("/api/auth").WithTags("Autenticação");
 
+        // Rate limit só nos endpoints anônimos (vetores de força bruta) — AC #11.
         group.MapPost("/login", async (LoginBody body, IUseCaseDispatcher dispatcher, HttpContext http, CancellationToken ct) =>
         {
             var result = await dispatcher.SendAsync(new LoginRequest(body.Email, body.Password), ct);
             return result.ToApiResult(http);
         })
         .WithSummary("Autentica por e-mail e senha e devolve os tokens.")
-        .AllowAnonymous();
+        .AllowAnonymous()
+        .RequireRateLimiting("auth");
 
         group.MapPost("/refresh-token", async (RefreshTokenBody body, IUseCaseDispatcher dispatcher, HttpContext http, CancellationToken ct) =>
         {
@@ -61,7 +60,8 @@ public static class AuthEndpoints
             return result.ToApiResult(http);
         })
         .WithSummary("Inicia a redefinição de senha (envia token por e-mail).")
-        .AllowAnonymous();
+        .AllowAnonymous()
+        .RequireRateLimiting("auth");
 
         group.MapPost("/reset-password", async (ResetPasswordBody body, IUseCaseDispatcher dispatcher, HttpContext http, CancellationToken ct) =>
         {
@@ -70,14 +70,9 @@ public static class AuthEndpoints
             return result.ToApiResult(http);
         })
         .WithSummary("Redefine a senha com o token recebido por e-mail.")
-        .AllowAnonymous();
+        .AllowAnonymous()
+        .RequireRateLimiting("auth");
 
         return app;
-    }
-
-    private static Guid? GetUserId(this ClaimsPrincipal user)
-    {
-        var raw = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
-        return Guid.TryParse(raw, out var id) ? id : null;
     }
 }

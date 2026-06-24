@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Plataforma2A.Auth.Application.Common;
 using Plataforma2A.Auth.Application.Ports.Authentication;
@@ -9,8 +10,9 @@ namespace Plataforma2A.Auth.UnitTests.Auth;
 public class ChangePasswordHandlerTests
 {
     private readonly IIdentityService _identity = Substitute.For<IIdentityService>();
+    private readonly ILogger<ChangePasswordHandler> _logger = Substitute.For<ILogger<ChangePasswordHandler>>();
 
-    private ChangePasswordHandler CreateHandler() => new(_identity);
+    private ChangePasswordHandler CreateHandler() => new(_identity, _logger);
 
     [Fact]
     public async Task Confirmacao_divergente_retorna_validation_sem_chamar_identity()

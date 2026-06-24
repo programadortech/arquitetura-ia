@@ -1,7 +1,9 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Plataforma2A.Auth.Application.Common;
 using Plataforma2A.Auth.Application.Ports.Authentication;
+using Plataforma2A.Auth.Application.Ports.Persistence;
 using Plataforma2A.Auth.Application.UseCases.Auth.Login;
 
 namespace Plataforma2A.Auth.UnitTests.Auth;
@@ -11,8 +13,10 @@ public class LoginHandlerTests
     private readonly IIdentityService _identity = Substitute.For<IIdentityService>();
     private readonly IJwtTokenGenerator _jwt = Substitute.For<IJwtTokenGenerator>();
     private readonly IRefreshTokenStore _refreshTokens = Substitute.For<IRefreshTokenStore>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly ILogger<LoginHandler> _logger = Substitute.For<ILogger<LoginHandler>>();
 
-    private LoginHandler CreateHandler() => new(_identity, _jwt, _refreshTokens);
+    private LoginHandler CreateHandler() => new(_identity, _jwt, _refreshTokens, _unitOfWork, _logger);
 
     [Fact]
     public async Task Credenciais_validas_emitem_par_de_tokens()
@@ -30,6 +34,7 @@ public class LoginHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value!.AccessToken.Should().Be("access-jwt");
         result.Value.RefreshToken.Should().Be("refresh-raw");
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]

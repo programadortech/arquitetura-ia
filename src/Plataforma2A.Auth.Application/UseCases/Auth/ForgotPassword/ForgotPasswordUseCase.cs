@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Plataforma2A.Auth.Application.Abstractions;
 using Plataforma2A.Auth.Application.Common;
 using Plataforma2A.Auth.Application.Ports.Authentication;
@@ -8,8 +9,10 @@ namespace Plataforma2A.Auth.Application.UseCases.Auth.ForgotPassword;
 /// <summary>Solicita redefinição de senha (deslogado). Não revela se o e-mail existe. AC #8.</summary>
 public sealed record ForgotPasswordRequest(string Email) : IUseCaseRequest<Result<Unit>>;
 
-public sealed class ForgotPasswordHandler(IIdentityService identity, IEmailSender email)
-    : IUseCase<ForgotPasswordRequest, Result<Unit>>
+public sealed class ForgotPasswordHandler(
+    IIdentityService identity,
+    IEmailSender email,
+    ILogger<ForgotPasswordHandler> logger) : IUseCase<ForgotPasswordRequest, Result<Unit>>
 {
     public async Task<Result<Unit>> HandleAsync(ForgotPasswordRequest request, CancellationToken cancellationToken)
     {
@@ -24,6 +27,7 @@ public sealed class ForgotPasswordHandler(IIdentityService identity, IEmailSende
                     "Redefinição de senha",
                     $"Use o token a seguir para redefinir sua senha: {token}",
                     cancellationToken);
+                logger.LogInformation("Token de redefinição enviado para {UserId}", user.UserId);
             }
         }
 

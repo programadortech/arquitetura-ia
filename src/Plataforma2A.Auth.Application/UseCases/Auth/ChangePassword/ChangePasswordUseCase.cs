@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Plataforma2A.Auth.Application.Abstractions;
 using Plataforma2A.Auth.Application.Common;
 using Plataforma2A.Auth.Application.Ports.Authentication;
@@ -8,7 +9,8 @@ namespace Plataforma2A.Auth.Application.UseCases.Auth.ChangePassword;
 public sealed record ChangePasswordRequest(Guid UserId, string CurrentPassword, string NewPassword, string ConfirmNewPassword)
     : IUseCaseRequest<Result<Unit>>;
 
-public sealed class ChangePasswordHandler(IIdentityService identity) : IUseCase<ChangePasswordRequest, Result<Unit>>
+public sealed class ChangePasswordHandler(IIdentityService identity, ILogger<ChangePasswordHandler> logger)
+    : IUseCase<ChangePasswordRequest, Result<Unit>>
 {
     public async Task<Result<Unit>> HandleAsync(ChangePasswordRequest request, CancellationToken cancellationToken)
     {
@@ -18,8 +20,13 @@ public sealed class ChangePasswordHandler(IIdentityService identity) : IUseCase<
         }
 
         var changed = await identity.ChangePasswordAsync(request.UserId, request.CurrentPassword, request.NewPassword, cancellationToken);
-        return changed
-            ? Result<Unit>.Success(Unit.Value)
-            : Result<Unit>.Failure(new Error("senha.atual_invalida", "Senha atual inválida", ErrorType.Unauthorized));
+        if (!changed)
+        {
+            logger.LogWarning("Troca de senha recusada por senha atual inválida para {UserId}", request.UserId);
+            return Result<Unit>.Failure(new Error("senha.atual_invalida", "Senha atual inválida", ErrorType.Unauthorized));
+        }
+
+        logger.LogInformation("Senha alterada com sucesso para {UserId}", request.UserId);
+        return Result<Unit>.Success(Unit.Value);
     }
 }

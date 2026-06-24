@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Logging;
 using Plataforma2A.Auth.Application.Abstractions;
 using Plataforma2A.Auth.Application.Common;
 using Plataforma2A.Auth.Application.Ports.Authentication;
+using Plataforma2A.Auth.Application.Ports.Persistence;
 
 namespace Plataforma2A.Auth.Application.UseCases.Auth.ResetPassword;
 
@@ -8,8 +10,11 @@ namespace Plataforma2A.Auth.Application.UseCases.Auth.ResetPassword;
 public sealed record ResetPasswordRequest(string Email, string Token, string NewPassword, string ConfirmNewPassword)
     : IUseCaseRequest<Result<Unit>>;
 
-public sealed class ResetPasswordHandler(IIdentityService identity, IRefreshTokenStore refreshTokens)
-    : IUseCase<ResetPasswordRequest, Result<Unit>>
+public sealed class ResetPasswordHandler(
+    IIdentityService identity,
+    IRefreshTokenStore refreshTokens,
+    IUnitOfWork unitOfWork,
+    ILogger<ResetPasswordHandler> logger) : IUseCase<ResetPasswordRequest, Result<Unit>>
 {
     public async Task<Result<Unit>> HandleAsync(ResetPasswordRequest request, CancellationToken cancellationToken)
     {
@@ -21,6 +26,7 @@ public sealed class ResetPasswordHandler(IIdentityService identity, IRefreshToke
         var ok = await identity.ResetPasswordAsync(request.Email, request.Token, request.NewPassword, cancellationToken);
         if (!ok)
         {
+            logger.LogWarning("Redefinição recusada: token inválido ou expirado para {Email}", request.Email);
             return Result<Unit>.Failure(new Error("auth.token_reset_invalido", "Token de redefinição inválido ou expirado", ErrorType.Unauthorized));
         }
 
@@ -28,6 +34,8 @@ public sealed class ResetPasswordHandler(IIdentityService identity, IRefreshToke
         if (user is not null)
         {
             await refreshTokens.RevokeAllForUserAsync(user.UserId, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            logger.LogInformation("Senha redefinida e refresh tokens revogados para {UserId}", user.UserId);
         }
 
         return Result<Unit>.Success(Unit.Value);

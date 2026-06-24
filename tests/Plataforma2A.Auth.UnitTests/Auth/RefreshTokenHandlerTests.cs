@@ -1,7 +1,9 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Plataforma2A.Auth.Application.Common;
 using Plataforma2A.Auth.Application.Ports.Authentication;
+using Plataforma2A.Auth.Application.Ports.Persistence;
 using Plataforma2A.Auth.Application.UseCases.Auth.RefreshToken;
 
 namespace Plataforma2A.Auth.UnitTests.Auth;
@@ -11,8 +13,10 @@ public class RefreshTokenHandlerTests
     private readonly IIdentityService _identity = Substitute.For<IIdentityService>();
     private readonly IJwtTokenGenerator _jwt = Substitute.For<IJwtTokenGenerator>();
     private readonly IRefreshTokenStore _refreshTokens = Substitute.For<IRefreshTokenStore>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly ILogger<RefreshTokenHandler> _logger = Substitute.For<ILogger<RefreshTokenHandler>>();
 
-    private RefreshTokenHandler CreateHandler() => new(_identity, _jwt, _refreshTokens);
+    private RefreshTokenHandler CreateHandler() => new(_identity, _jwt, _refreshTokens, _unitOfWork, _logger);
 
     [Fact]
     public async Task Refresh_valido_rotaciona_revogando_o_anterior_e_emitindo_novo()
@@ -32,6 +36,8 @@ public class RefreshTokenHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value!.RefreshToken.Should().Be("novo-refresh");
         await _refreshTokens.Received(1).RevokeAsync("refresh-antigo", Arg.Any<CancellationToken>());
+        // Atomicidade: revogação + emissão comitam num único SaveChanges (B-1).
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -1,7 +1,9 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Plataforma2A.Auth.Application.Common;
 using Plataforma2A.Auth.Application.Ports.Authentication;
+using Plataforma2A.Auth.Application.Ports.Persistence;
 using Plataforma2A.Auth.Application.UseCases.Auth.ResetPassword;
 
 namespace Plataforma2A.Auth.UnitTests.Auth;
@@ -10,8 +12,10 @@ public class ResetPasswordHandlerTests
 {
     private readonly IIdentityService _identity = Substitute.For<IIdentityService>();
     private readonly IRefreshTokenStore _refreshTokens = Substitute.For<IRefreshTokenStore>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly ILogger<ResetPasswordHandler> _logger = Substitute.For<ILogger<ResetPasswordHandler>>();
 
-    private ResetPasswordHandler CreateHandler() => new(_identity, _refreshTokens);
+    private ResetPasswordHandler CreateHandler() => new(_identity, _refreshTokens, _unitOfWork, _logger);
 
     [Fact]
     public async Task Confirmacao_divergente_retorna_validation()
@@ -49,5 +53,6 @@ public class ResetPasswordHandlerTests
 
         result.IsSuccess.Should().BeTrue();
         await _refreshTokens.Received(1).RevokeAllForUserAsync(user.UserId, Arg.Any<CancellationToken>());
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

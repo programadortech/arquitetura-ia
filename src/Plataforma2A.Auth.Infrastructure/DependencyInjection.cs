@@ -38,6 +38,14 @@ public static class DependencyInjection
         // Opções de JWT e SMTP (segredos via env/secret store — ADR-0022).
         var jwtOptions = configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
         var smtpOptions = configuration.GetSection("Smtp").Get<SmtpOptions>() ?? new SmtpOptions();
+
+        // Fail-fast: chave ausente/curta só quebraria no primeiro login (HMAC-SHA256 exige ≥ 32 bytes).
+        if (string.IsNullOrWhiteSpace(jwtOptions.Key) || jwtOptions.Key.Length < 32)
+        {
+            throw new InvalidOperationException(
+                "Jwt:Key não configurado ou com comprimento insuficiente (mínimo 32 caracteres para HMAC-SHA256).");
+        }
+
         services.AddSingleton(jwtOptions);
         services.AddSingleton(smtpOptions);
 

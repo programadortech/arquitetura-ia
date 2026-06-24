@@ -7,19 +7,22 @@ using Plataforma2A.Auth.Infrastructure.Persistence;
 
 namespace Plataforma2A.Auth.Infrastructure.Authentication;
 
-/// <summary>Persiste refresh tokens como hash (SHA-256) no SQL Server; cuida de rotação/revogação.</summary>
+/// <summary>
+/// Persiste refresh tokens como hash (SHA-256) no SQL Server; cuida de rotação/revogação.
+/// Os métodos apenas **rastreiam** as mudanças (Add/revoga) — o commit é do caso de uso via
+/// <see cref="Plataforma2A.Auth.Application.Ports.Persistence.IUnitOfWork"/>, garantindo atomicidade.
+/// </summary>
 public sealed class RefreshTokenStore(AppDbContext db, JwtOptions options) : IRefreshTokenStore
 {
-    public async Task<RefreshTokenIssued> IssueAsync(Guid userId, CancellationToken cancellationToken)
+    public Task<RefreshTokenIssued> IssueAsync(Guid userId, CancellationToken cancellationToken)
     {
         var raw = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         var now = DateTimeOffset.UtcNow;
         var expires = now.AddDays(options.RefreshTokenDays);
 
         db.RefreshTokens.Add(new RefreshToken(userId, Hash(raw), expires, now));
-        await db.SaveChangesAsync(cancellationToken);
-
-        return new RefreshTokenIssued(raw, expires);
+        // Sem SaveChanges aqui: o caso de uso comita via IUnitOfWork.
+        return Task.FromResult(new RefreshTokenIssued(raw, expires));
     }
 
     public async Task<Guid?> ValidateAsync(string rawToken, CancellationToken cancellationToken)
@@ -33,11 +36,8 @@ public sealed class RefreshTokenStore(AppDbContext db, JwtOptions options) : IRe
     {
         var hash = Hash(rawToken);
         var token = await db.RefreshTokens.FirstOrDefaultAsync(x => x.TokenHash == hash, cancellationToken);
-        if (token is not null)
-        {
-            token.Revoke(DateTimeOffset.UtcNow);
-            await db.SaveChangesAsync(cancellationToken);
-        }
+        token?.Revoke(DateTimeOffset.UtcNow);
+        // Sem SaveChanges aqui: o caso de uso comita via IUnitOfWork.
     }
 
     public async Task RevokeAllForUserAsync(Guid userId, CancellationToken cancellationToken)
@@ -46,17 +46,12 @@ public sealed class RefreshTokenStore(AppDbContext db, JwtOptions options) : IRe
             .Where(x => x.UserId == userId && x.RevokedAt == null)
             .ToListAsync(cancellationToken);
 
-        if (tokens.Count == 0)
-        {
-            return;
-        }
-
         var now = DateTimeOffset.UtcNow;
         foreach (var token in tokens)
         {
             token.Revoke(now);
         }
-        await db.SaveChangesAsync(cancellationToken);
+        // Sem SaveChanges aqui: o caso de uso comita via IUnitOfWork.
     }
 
     private static string Hash(string raw)
