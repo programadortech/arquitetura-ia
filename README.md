@@ -8,6 +8,9 @@ corporativos com arquitetura, observabilidade, resiliência, mensageria e discip
 > 📖 **Guia visual do processo (HTML):** abra [`docs/guia/index.html`](docs/guia/index.html) no navegador —
 > documentação moderna e completa de todo o fluxo (histórias → arquitetura → código → PR), agentes, skills,
 > tipos de história, integração com tracker e guia do PO.
+>
+> 💻 **Rodar a API localmente:** ver [`docs/setup-local.md`](docs/setup-local.md) — pré-requisitos, `user-secrets`
+> (`Jwt:Key`), banco e como subir.
 
 ## O que tem aqui dentro
 ```
