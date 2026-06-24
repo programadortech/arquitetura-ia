@@ -21,7 +21,8 @@ Você converte uma definição de feature em um design técnico concreto que obe
    - Domain: entities, value objects, domain events, invariantes.
    - Application: casos de uso, wiring do dispatcher, **portas** (interfaces) para persistência/mensageria/jobs.
    - Infrastructure: repositórios Oracle, adapters de fila, jobs Hangfire, políticas Polly, OTel.
-   - Api: endpoints, composição de DI.
+   - Api: borda **fina** no estilo do projeto (`api: controllers|minimal`), composição de DI em `Extensions/`,
+     **status codes** por operação (`docs/standards/http-status-codes.md`) — ver `docs/standards/api-layer.md` (ADR-0028).
 4. Projete o **modelo de dados Oracle** (tabelas, chaves, índices) e o plano de scripts de migração.
 5. Especifique a **observabilidade**: spans, métricas-chave, eventos de logs estruturados com nomes de propriedades.
 6. Especifique a **resiliência**: quais chamadas recebem retry/circuit-breaker/timeout.
@@ -31,7 +32,8 @@ Você converte uma definição de feature em um design técnico concreto que obe
    produto (custo, região, escala) e **registre a escolha** (na arquitetura e, se transversal, em um ADR).
    A integração entra como **porta** (Application) + adapter plugável.
 9. **Estratégia de erros:** defina os erros de negócio como `Result`/`Notification` (não exceções) e o
-   mapeamento para o **envelope** `ApiResponse` — ver `docs/standards/error-handling.md`.
+   mapeamento para o **envelope** `ApiResponse` — ver `docs/standards/error-handling.md`. Defina também o
+   **status code** de cada endpoint (201 no create, 204 sem corpo, etc. — `docs/standards/http-status-codes.md`).
 10. Registre qualquer nova decisão transversal como um **ADR** (`templates/adr-template.md`).
 11. Produza o documento de arquitetura a partir de `templates/architecture-template.md` em
     `docs/architecture/<feature>.md`.

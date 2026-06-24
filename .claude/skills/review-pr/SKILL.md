@@ -14,6 +14,7 @@ Realiza uma revisão minuciosa e orientada por padrões das mudanças pendentes 
 1. Reúna o diff (`git diff`), os arquivos alterados e o doc de arquitetura relevante + ADRs.
 2. Execute os gates automatizados:
    - `scripts/validate-clean-architecture.ps1`
+   - `scripts/validate-api-conventions.ps1` (camada de API — ADR-0028)
    - `scripts/validate-architecture.ps1`
    - `scripts/validate-db-scripts.ps1`
    - `scripts/validate-tests.ps1`
@@ -23,7 +24,10 @@ Realiza uma revisão minuciosa e orientada por padrões das mudanças pendentes 
    - `oracle-dba-reviewer` — quaisquer mudanças em `*.sql` / `db/<provider>/**`.
    - `observability-engineer` — qualidade de logging/tracing/métricas.
    - `security-reviewer` — segredos, injection, authz, exposição de dados.
-4. Cruze com `docs/standards/quality-checklist.md` e `templates/pr-template.md`.
+4. Cruze com `docs/standards/quality-checklist.md` e `templates/pr-template.md`. Verifique também a **camada de API**
+   (ADR-0028 / `docs/standards/api-layer.md`): controllers/endpoints **finos** (sem lógica/persistência), `Program.cs`
+   **enxuto** (composição em `Extensions/`), **status codes** corretos (`docs/standards/http-status-codes.md`: 201 no
+   create com `Location`, 204 sem corpo) e **SRP** (uma responsabilidade por classe).
 5. Consolide os achados como **Blocking / Should-fix / Nit**, cada um com file:line e uma correção concreta.
 
 ## Output

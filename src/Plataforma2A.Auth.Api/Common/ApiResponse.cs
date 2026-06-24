@@ -18,18 +18,40 @@ public sealed record ApiResponse<T>(
     public static ApiResponse<T> Fail(IReadOnlyList<ApiError> errors, string traceId) => new(false, default, errors, traceId, DateTimeOffset.UtcNow);
 }
 
-/// <summary>Mapeia <see cref="Result"/> para o envelope + status HTTP correto.</summary>
+/// <summary>Mapeia <see cref="Result"/> para o envelope + status HTTP correto (ver docs/standards/http-status-codes.md).</summary>
 public static class ResultExtensions
 {
-    public static IResult ToApiResult<T>(this Result<T> result, HttpContext http)
-        => result.IsSuccess
-            ? Results.Json(ApiResponse<T>.Ok(result.Value!, TraceId(http)))
-            : Failure<T>(result.Errors, http);
+    /// <summary>
+    /// Sucesso → envelope com <paramref name="successStatusCode"/> (default 200; use 201 no create, 204 sem corpo).
+    /// Para 201, informe <paramref name="location"/> (header Location do recurso criado). Falha → status do ErrorType.
+    /// </summary>
+    public static IResult ToApiResult<T>(this Result<T> result, HttpContext http, int successStatusCode = StatusCodes.Status200OK, string? location = null)
+    {
+        if (!result.IsSuccess)
+        {
+            return Failure<T>(result.Errors, http);
+        }
+        if (successStatusCode == StatusCodes.Status204NoContent)
+        {
+            return Results.StatusCode(StatusCodes.Status204NoContent);
+        }
+        if (location is not null)
+        {
+            http.Response.Headers.Location = location;
+        }
+        return Results.Json(ApiResponse<T>.Ok(result.Value!, TraceId(http)), statusCode: successStatusCode);
+    }
 
-    public static IResult ToApiResult(this Result result, HttpContext http)
-        => result.IsSuccess
-            ? Results.Json(ApiResponse<object?>.Ok(null, TraceId(http)))
-            : Failure<object?>(result.Errors, http);
+    public static IResult ToApiResult(this Result result, HttpContext http, int successStatusCode = StatusCodes.Status200OK)
+    {
+        if (!result.IsSuccess)
+        {
+            return Failure<object?>(result.Errors, http);
+        }
+        return successStatusCode == StatusCodes.Status204NoContent
+            ? Results.StatusCode(StatusCodes.Status204NoContent)
+            : Results.Json(ApiResponse<object?>.Ok(null, TraceId(http)), statusCode: successStatusCode);
+    }
 
     private static IResult Failure<T>(IReadOnlyList<Error> errors, HttpContext http)
     {

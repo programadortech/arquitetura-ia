@@ -24,16 +24,20 @@ Implementa um caso de uso seguindo a arquitetura aprovada e os padrões do repos
 3. **Domain**: adicione/estenda entities, value objects, domain events e invariantes conforme necessário.
 4. **Infrastructure**: implemente as portas (repositório do banco, publicação em fila, adapter de integração,
    enfileiramento de job **se habilitado**), envolvendo chamadas externas em Polly e emitindo spans OTel + logs.
-5. **Api**: endpoint enxuto que despacha via `IUseCaseDispatcher` e mapeia `Result` → **envelope `ApiResponse`**
-   (status correto). Exceção inesperada cai no **middleware global**.
+5. **Api**: borda **fina** no estilo do projeto (`api: controllers|minimal`) — só desserializa, despacha via
+   `IUseCaseDispatcher` e mapeia `Result` → **envelope `ApiResponse`** com o **status code correto**
+   (`docs/standards/http-status-codes.md`: **201 + `Location`** no create, **204** sem corpo, 200 nas demais;
+   erros pelo `ErrorType`). **Sem lógica/persistência na borda** (SRP — `docs/standards/api-layer.md`, ADR-0028).
+   Exceção inesperada cai no **middleware global**.
 6. **Tests**: testes unitários para o handler (happy path, validações, erros como `Result.Failure`); integração
    para novos adaptadores (delegue ao `/create-tests` se for amplo).
-7. Execute `dotnet build -warnaserror`, `dotnet test` e `scripts/validate-clean-architecture.ps1`.
+7. Execute `dotnet build -warnaserror`, `dotnet test`, `scripts/validate-clean-architecture.ps1` e `scripts/validate-api-conventions.ps1`.
 
 ## Standards you must enforce
 - O handler implementa `IUseCase<,>`; invocado apenas através de `IUseCaseDispatcher`. Sem MediatR.
 - **Erros de negócio via `Result`/`Notification` (não `throw`)**; resposta no envelope `ApiResponse`.
 - **Mapeamento entidade↔model via mappers estáticos** (`ToResponse`/`ToEntity`) — **sem AutoMapper** (`docs/standards/mapping.md`).
+- **Borda fina + status code semântico** (ADR-0028): controller/endpoint só despacha; 201 no create, 204 sem corpo. `Program.cs` enxuto via `Extensions/`.
 - **Integrações pelo catálogo** (`docs/integrations/`): porta + adapter plugável.
 - Async + `CancellationToken` em todo o fluxo; sem bloqueio em chamadas async.
 - Logs estruturados; SQL parametrizado; inputs validados na fronteira.

@@ -37,3 +37,7 @@ jobs:
       - name: Validar Clean Architecture (regra de dependência)
         shell: pwsh
         run: ./scripts/validate-clean-architecture.ps1
+
+      - name: Validar convenções da camada de API (ADR-0028)
+        shell: pwsh
+        run: ./scripts/validate-api-conventions.ps1
