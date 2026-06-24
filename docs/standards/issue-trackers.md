@@ -63,6 +63,12 @@ qualquer que seja o tracker.
 > Tokens **nunca** vão para `tracker.config.json` nem para o código-fonte
 > (ver [quality-checklist.md](quality-checklist.md)).
 
+**Onde definir a credencial (duas formas):**
+1. **Arquivo `.env` na raiz** (recomendado p/ dev local) — copie `.env.example` para `.env` e preencha
+   (`AZDO_PAT=...`). É **gitignored**; os scripts `import-tracker-issue.ps1` e `push-tracker-tasks.ps1`
+   carregam o `.env` automaticamente (via `scripts/load-dotenv.ps1`), sem `setx` nem reiniciar o terminal.
+2. **Variável de ambiente do SO** (`setx AZDO_PAT ...` / CI secret) — tem **prioridade** sobre o `.env`.
+
 ## Critérios de aceite por provider
 - **Azure DevOps** tem campo dedicado `Microsoft.VSTS.Common.AcceptanceCriteria` (HTML) → vira a seção
   *Critérios de aceite* direto.

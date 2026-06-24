@@ -31,6 +31,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# ---- segredos: carrega o .env (gitignored) para o ambiente, se existir -------
+& (Join-Path $PSScriptRoot "load-dotenv.ps1")
+
 if (-not (Test-Path $TasksFile)) { throw "Arquivo de tasks não encontrado: $TasksFile" }
 # Lê como UTF-8 explicitamente (PowerShell 5.1 usaria ANSI e corromperia acentos).
 # Usa a forma de argumento do ConvertFrom-Json (o padrão "@(... | ConvertFrom-Json)" colapsa o array no PS 5.1).
