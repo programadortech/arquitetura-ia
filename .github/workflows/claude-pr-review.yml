@@ -38,8 +38,10 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Modelo fixo (Sonnet) — review competente e mais barato por PR.
           # Ferramentas liberadas: ler o repo, varrer padrões e postar o review.
           claude_args: >-
+            --model claude-sonnet-4-6
             --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*)"
           prompt: |
             Você é o revisor técnico sênior deste repositório (Clean Architecture, C#/.NET 10).
