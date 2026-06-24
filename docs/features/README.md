@@ -15,7 +15,8 @@ Uma feature deve ter critérios de aceite concretos e testáveis antes de avanç
 
 | História | Item (tracker) | Status | Arquitetura | Responsável |
 |---|---|---|---|---|
-| [Autenticação e Gerenciamento de Senha](AZ-12094-autenticacao-e-gerenciamento-de-senha.md) | [AZ-12094](https://dev.azure.com/T-SystemsdoBrasil/Yamaha%20-%20Rollout/_workitems/edit/12094) | Refinada (pronta p/ arquitetura) | — | — |
+| [Autenticação e Gerenciamento de Senha](AZ-12094-autenticacao-e-gerenciamento-de-senha.md) | [AZ-12094](https://dev.azure.com/T-SystemsdoBrasil/Yamaha%20-%20Rollout/_workitems/edit/12094) | Implementada (mergeada em `dev`) | [✓](../architecture/AZ-12094-autenticacao-e-gerenciamento-de-senha.md) | — |
+| [Cadastro e Edição de Usuário](AZ-12114-cadastro-e-edicao-de-usuario.md) | [AZ-12114](https://dev.azure.com/T-SystemsdoBrasil/Yamaha%20-%20Rollout/_workitems/edit/12114) | Importada (pronta p/ arquitetura) | — | — |
 
 > Coluna **Item (tracker)**: a `key` canônica e o link do item de origem — `GH-<n>` (GitHub),
 > `AZ-<n>` (Azure DevOps) ou `GL-<n>` (GitLab) — quando a história foi importada (rastreabilidade).
