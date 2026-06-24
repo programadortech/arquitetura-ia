@@ -31,5 +31,6 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0023](0023-git-branching-strategy.md) | Estratégia de branches e fluxo de PR (feature→dev, hotfix→staging) | Aceito |
 | [0024](0024-identity-jwt-autenticacao.md) | ASP.NET Core Identity + JWT (AZ-12094) | Aceito |
 | [0025](0025-automated-pr-review-github-action.md) | Gate de PR gratuito (CI) + revisão de IA local sob demanda | Aceito |
+| [0026](0026-gestao-administrativa-de-usuarios.md) | Gestão administrativa de usuários (IsActive, criação transacional, porta de e-mail) | Aceito |
 
-> Próximo número livre: **0026**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+> Próximo número livre: **0027**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.

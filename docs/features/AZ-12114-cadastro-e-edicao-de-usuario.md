@@ -1,6 +1,6 @@
 # Feature: Cadastro e Edição de Usuário
 
-- **Status:** Pronta para arquitetura (importada do tracker — refinar com `/brainstorm-story` se desejar)
+- **Status:** Refinada — arquitetura aberta (ver `docs/architecture/AZ-12114-cadastro-e-edicao-de-usuario.md`)
 - **Tipo:** Negócio
 - **Item (tracker):** [AZ-12114](https://dev.azure.com/T-SystemsdoBrasil/Yamaha%20-%20Rollout/_workitems/edit/12114) · Product Backlog Item · estado: New
 - **Sprint:** Yamaha - Rollout\Sprint 16
@@ -82,11 +82,15 @@ public interface IUserWelcomeEmailSender
 - **Risco:** atomicidade criação + roles exige `IUnitOfWork`/transação (mesmo cuidado do refresh token em AZ-12094).
 - **Premissa:** "senha opcional" + senha temporária seguem a política de senha do Identity já configurada.
 
-## Questões em aberto
-- [ ] Reusar `IEmailSender` (AZ-12094) ou criar `IUserWelcomeEmailSender`? — proposta: criar a dedicada (contrato do work item) e, se fizer sentido, implementá-la sobre o `IEmailSender` existente.
-- [ ] Endpoints de **listar/consultar** e **excluir** usuário fazem parte? — o work item só cita POST/PUT; assumir **fora do escopo** salvo confirmação.
-- [ ] Política de autorização: role fixa "Administrador" vs policy nomeada — confirmar com o time.
+## Decisões do refinamento (resolvidas)
+- **Interface de e-mail:** criar a porta dedicada **`IUserWelcomeEmailSender`** (contrato do work item), com adapter stub que só loga "envio preparado" + `TODO` (envio real é história futura). Pode, no futuro, ser implementada sobre o `IEmailSender` (AZ-12094).
+- **Endpoints:** **apenas** `POST /api/users` e `PUT /api/users/{id}` (o work item só cita esses). **Listar/consultar/excluir** ficam **fora do escopo** desta história.
+- **Autorização:** policy nomeada **`users:manage`** satisfeita pela role **`Administrador`** (em vez de checar a role solta nos endpoints).
+- **Modelo:** estender `ApplicationUser` com `Name` (nome completo) e `IsActive` (status). Migração adiciona as colunas em `AspNetUsers`. A validação de login (AZ-12094) passa a **recusar usuário inativo**.
+
+## Histórico de refinamento
+- **2026-06-24** — Import + brainstorm. Resolvidas as 3 questões (porta `IUserWelcomeEmailSender`; escopo só POST/PUT; policy `users:manage`/role `Administrador`; `Name`+`IsActive` no usuário). Arquitetura aberta na sequência.
 
 ---
-> Próximo: **"faça um brainstorm da história AZ-12114"** (refinar as questões em aberto) e, em seguida,
-> **"abra arquitetura da feature AZ-12114"** → casos de uso, modelo de dados, ports, ADRs.
+> Próximo: **`/create-usecase`** por handler (CreateUser, UpdateUser), **`/create-db-script`** (migração `Name`+`IsActive`)
+> e **`/create-tests`**, conforme `docs/architecture/AZ-12114-cadastro-e-edicao-de-usuario.md`.
