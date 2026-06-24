@@ -33,6 +33,10 @@ hotfix/13510-corrige-calculo-de-juros                  -> PR para staging
 2. **Durante** — commits pequenos e descritivos na branch; referenciar o id no commit/PR.
 3. **Fim** — `/review-pr` roda os gates e **abre o PR no alvo por tipo**: feature → `dev`; hotfix → `staging`.
    O PR referencia o item do tracker (ex.: `#12094`).
+4. **Gate + merge manual** — ao abrir o PR, o **CI gratuito** (`ci.yml`: build/test/arquitetura) roda como
+   check obrigatório. Quando fica **verde**, o agente **avisa o usuário**, que faz o **merge manualmente** na
+   plataforma (o merge é decisão dele; o agente não mergeia). A revisão de IA é sob demanda via `/review-pr`
+   (local, sem custo). Ver [`pr-review-automation.md`](pr-review-automation.md) / [ADR-0025](../adr/0025-automated-pr-review-github-action.md).
 
 ## Como decidir feature × hotfix
 - **Hotfix:** correção urgente de algo já em produção/homologação (vai para `staging` para validar rápido).

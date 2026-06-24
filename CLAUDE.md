@@ -1,8 +1,9 @@
 # CLAUDE.md — Monorepo do Produto (C# / Clean Architecture) + Fábrica
 
-> Este repositório é o **monorepo do produto**: o código vive na raiz em `src/` + `tests/`, e a
-> **fábrica** (padrões, agentes, skills, hooks, templates) convive ao lado para **gerar e evoluir** o
-> produto com contexto persistente. Ver [ADR-0019](docs/adr/0019-product-monorepo-src-layout.md).
+> Este repositório é um **monorepo multi-produto**: cada produto vive em `apps/<Produto>/`, os blocos
+> transversais em `building-blocks/BuildingBlocks.*`, e a **fábrica** (padrões, agentes, skills, hooks,
+> templates) é compartilhada na raiz para **gerar e evoluir** os produtos com contexto persistente.
+> Ver [ADR-0030](docs/adr/0030-monorepo-multiproduto.md).
 
 ## O que este repositório é
 
@@ -59,6 +60,7 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Resiliência | Polly (retry, circuit breaker, timeout) | [ADR-0006](docs/adr/0006-resilience-polly.md) |
 | Tratamento de erros | Result/Notification + envelope `ApiResponse` + middleware global (sem `throw` para negócio) | [ADR-0014](docs/adr/0014-error-handling-result-notification.md) |
 | Documentação de API | OpenAPI nativo + UI plugável (Scalar + Swagger, default) | [ADR-0015](docs/adr/0015-pluggable-api-documentation.md) |
+| Camada de API | Estilo plugável **Controllers** (default) **ou** Minimal; borda fina + SRP; `Program` enxuto via extensions; status codes semânticos | [ADR-0028](docs/adr/0028-padroes-camada-api.md) |
 | Integrações | Plugáveis + catálogo `docs/integrations/` (e-mail/SMS/storage/pagamentos) | [ADR-0016](docs/adr/0016-pluggable-integrations-catalog.md) |
 | API Gateway | Opcional (YARP) — `gateway: yarp \| none` | [ADR-0017](docs/adr/0017-optional-api-gateway-yarp.md) |
 | Jobs em background | **Opcional** (Hangfire) — `jobs: hangfire \| none` (default none) | [ADR-0018](docs/adr/0018-optional-hangfire-jobs.md) · [ADR-0007](docs/adr/0007-jobs-hangfire.md) |
@@ -69,33 +71,40 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Tracker de histórias | Plugável: GitHub Issues / Azure DevOps / GitLab (via config) | [ADR-0010](docs/adr/0010-pluggable-issue-trackers.md) |
 | Tasks no tracker | Write-back das atividades planejadas como itens-filho da história | [ADR-0011](docs/adr/0011-task-writeback-tracker.md) |
 | Tipos de história | Negócio e Técnica (arquitetura/infra/setup) | [ADR-0012](docs/adr/0012-story-types-business-technical.md) |
-| Layout | Monorepo: produto em `src/` + fábrica embutida; contexto em `docs/PRODUCT.md` | [ADR-0019](docs/adr/0019-product-monorepo-src-layout.md) |
+| Layout | Monorepo **multi-produto**: produtos em `apps/<Produto>/` + fábrica compartilhada + lib `building-blocks/BuildingBlocks` | [ADR-0030](docs/adr/0030-monorepo-multiproduto.md) |
 | Configuração | Por ambiente (Development/Staging/Production) em todo projeto executável; segredos via env/secret store | [ADR-0022](docs/adr/0022-per-environment-configuration.md) |
 | Branches / PR | Sempre da `main`: `feature/{id}-{nome}`→PR p/ `dev`; `hotfix/{id}-{nome}`→PR p/ `staging` | [ADR-0023](docs/adr/0023-git-branching-strategy.md) |
 
-## Layout padrão da solução (projetos gerados)
+## Layout padrão (monorepo multi-produto — ADR-0030)
 
-`/create-project` cria a solução **na raiz do monorepo** (não em subpasta):
+A fábrica é compartilhada na raiz; **cada produto vive em `apps/<Produto>/`**; os blocos transversais ficam
+em `building-blocks/BuildingBlocks.*`. `/create-project nome X` cria `apps/X/`:
 
 ```
-/ (raiz do monorepo)
-├── src/
-│   ├── <Produto>.Domain/            # Entities, value objects, domain events, sem dependências
-│   ├── <Produto>.Application/        # Use cases, dispatcher, ports, Result/Notification
-│   ├── <Produto>.Infrastructure/     # Adapters de banco, mensageria, integrações, Polly, OTel
-│   ├── <Produto>.Api/                # Host ASP.NET Core, DI, endpoints, envelope, middleware, OpenAPI
-│   └── <Produto>.Gateway/            # (opcional, YARP) ponto único de entrada para o front
-├── tests/  (UnitTests · IntegrationTests · ArchitectureTests)
-├── db/<provider>/                    # migração e seed versionados (provider plugável)
-├── docs/                             # PRODUCT.md, features, architecture, adr, standards, integrations
-├── .claude/ · templates/ · scripts/  # a fábrica (tooling)
-└── <Produto>.sln
+/ (raiz = fábrica compartilhada)
+├── .claude/ · templates/ · scripts/        # a fábrica (tooling)
+├── docs/  (standards · adr · integrations · guia)   # transversal
+├── building-blocks/
+│   ├── BuildingBlocks.Application/          # IUseCase/dispatcher, Result/Notification, IUnitOfWork, behaviors
+│   └── BuildingBlocks.Api/                  # envelope ApiResponse + ToApiResult, GlobalExceptionHandler
+├── apps/
+│   └── <Produto>/
+│       ├── src/ ( .Domain · .Application · .Infrastructure · .Api )
+│       ├── tests/ ( UnitTests · IntegrationTests · ArchitectureTests )
+│       ├── db/<provider>/
+│       ├── docs/ ( PRODUCT.md · features · architecture )
+│       └── <Produto>.slnx
+├── global.json · Directory.Build.props · Directory.Packages.props   # MSBuild compartilhado
+└── CLAUDE.md · README.md
 ```
+
+Os produtos **referenciam o `BuildingBlocks`** (não re-scaffoldam dispatcher/Result/envelope). Ver
+[`docs/standards/monorepo-layout.md`](docs/standards/monorepo-layout.md).
 
 Opções do `/create-project`: `db` (oracle|sqlserver|postgresql|mysql) · `dataaccess` (efcore|dapper, default efcore) ·
 `queue` (kafka|sqs|rabbitmq|mqtt) · `jobs` (hangfire|none, default none) · `apidocs` (scalar,swagger|…) ·
-`gateway` (yarp|none, default none). Ambos os ORMs têm **Unit of Work** (ver
-[ADR-0020](docs/adr/0020-data-access-efcore-or-dapper-uow.md)).
+`gateway` (yarp|none, default none) · `api` (controllers|minimal, default controllers — [ADR-0028](docs/adr/0028-padroes-camada-api.md)).
+Ambos os ORMs têm **Unit of Work** (ver [ADR-0020](docs/adr/0020-data-access-efcore-or-dapper-uow.md)).
 
 ## A regra de dependência (inegociável)
 
@@ -120,6 +129,10 @@ Api ──▶ Application ──▶ Domain
 4. **Toda** feature começa como um documento (`templates/feature-template.md`) antes do código.
 5. **Todo** caso de uso tem testes unitários; código que toca integração tem testes de integração.
 6. Logs são **estruturados** (message templates + propriedades), nunca concatenados como string.
+6b. **Código limpo** ([ADR-0029](docs/adr/0029-codigo-limpo-comentarios.md)): código autoexplicativo; comente **só o
+   "porquê" não óbvio**, nunca o "o quê"; sem separador decorativo nem `///` que repete o nome. Camada de API segue
+   [ADR-0028](docs/adr/0028-padroes-camada-api.md) (controllers finos, contratos em `Contracts/`, `Program` enxuto);
+   blocos comuns vêm do `BuildingBlocks` ([ADR-0030](docs/adr/0030-monorepo-multiproduto.md)).
 7. Segredos nunca vão para o código-fonte. Use configuration providers / variáveis de ambiente.
 8. Respeite os hooks — se um hook bloquear uma ação, corrija a causa, não o contorne.
 9. **Mantenha a documentação sempre atualizada** (faz parte do "Done"): ao mudar fluxo, skills, padrões,

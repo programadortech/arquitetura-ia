@@ -22,6 +22,7 @@ function Step([string]$name, [scriptblock]$action) {
 }
 
 Step "Clean Architecture" { & "$here/validate-clean-architecture.ps1" -Root $Root }
+Step "API conventions"    { & "$here/validate-api-conventions.ps1" -Root $Root }
 Step "Architecture docs"  { & "$here/validate-architecture.ps1" -Root $Root }
 Step "DB scripts"         { & "$here/validate-db-scripts.ps1" -Root $Root }
 Step "Tests"              { & "$here/validate-tests.ps1" -Root $Root }

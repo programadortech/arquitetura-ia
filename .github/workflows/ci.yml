@@ -1,0 +1,80 @@
+name: CI
+
+# Gate de qualidade determinístico e GRATUITO (sem IA / sem custo de API).
+# Builda o BuildingBlocks e roda, em MATRIZ por produto (apps/*), build + testes + validações.
+# Repo público → minutos de Actions gratuitos. Ver docs/standards/monorepo-layout.md (ADR-0030).
+
+on:
+  pull_request:
+    branches: [dev, staging]
+  push:
+    branches: [dev, staging, main]
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.find.outputs.apps }}
+      has_apps: ${{ steps.find.outputs.has_apps }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: find
+        shell: bash
+        run: |
+          apps=$(find apps -maxdepth 2 -name '*.slnx' 2>/dev/null | sed -E 's#/[^/]+\.slnx$##' | sort -u | jq -R . | jq -cs .)
+          [ -z "$apps" ] && apps='[]'
+          echo "apps=$apps" >> "$GITHUB_OUTPUT"
+          if [ "$apps" = "[]" ]; then echo "has_apps=false" >> "$GITHUB_OUTPUT"; else echo "has_apps=true" >> "$GITHUB_OUTPUT"; fi
+
+  building-blocks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet build building-blocks/BuildingBlocks.Api/BuildingBlocks.Api.csproj -warnaserror
+
+  product:
+    needs: discover
+    if: needs.discover.outputs.has_apps == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.discover.outputs.apps) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Restore
+        run: dotnet restore "${{ matrix.app }}"
+      - name: Build (warnings = erros)
+        run: dotnet build "${{ matrix.app }}" --no-restore -warnaserror
+      - name: Test
+        run: dotnet test "${{ matrix.app }}" --no-build --verbosity normal
+      - name: Validar Clean Architecture
+        shell: pwsh
+        run: ./scripts/validate-clean-architecture.ps1 -Root "${{ matrix.app }}"
+      - name: Validar convenções da camada de API (ADR-0028)
+        shell: pwsh
+        run: ./scripts/validate-api-conventions.ps1 -Root "${{ matrix.app }}"
+
+  # Check estável e único para branch protection (agrega building-blocks + matriz de produtos).
+  ci-ok:
+    needs: [building-blocks, product]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          bb="${{ needs.building-blocks.result }}"
+          pr="${{ needs.product.result }}"
+          echo "building-blocks=$bb product=$pr"
+          if [ "$bb" != "success" ]; then echo "BuildingBlocks falhou"; exit 1; fi
+          if [ "$pr" != "success" ] && [ "$pr" != "skipped" ]; then echo "Produto falhou"; exit 1; fi
+          echo "CI OK"

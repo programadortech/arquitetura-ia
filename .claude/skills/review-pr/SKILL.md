@@ -14,6 +14,7 @@ Realiza uma revisão minuciosa e orientada por padrões das mudanças pendentes 
 1. Reúna o diff (`git diff`), os arquivos alterados e o doc de arquitetura relevante + ADRs.
 2. Execute os gates automatizados:
    - `scripts/validate-clean-architecture.ps1`
+   - `scripts/validate-api-conventions.ps1` (camada de API — ADR-0028)
    - `scripts/validate-architecture.ps1`
    - `scripts/validate-db-scripts.ps1`
    - `scripts/validate-tests.ps1`
@@ -23,7 +24,10 @@ Realiza uma revisão minuciosa e orientada por padrões das mudanças pendentes 
    - `oracle-dba-reviewer` — quaisquer mudanças em `*.sql` / `db/<provider>/**`.
    - `observability-engineer` — qualidade de logging/tracing/métricas.
    - `security-reviewer` — segredos, injection, authz, exposição de dados.
-4. Cruze com `docs/standards/quality-checklist.md` e `templates/pr-template.md`.
+4. Cruze com `docs/standards/quality-checklist.md` e `templates/pr-template.md`. Verifique também a **camada de API**
+   (ADR-0028 / `docs/standards/api-layer.md`): controllers/endpoints **finos** (sem lógica/persistência), `Program.cs`
+   **enxuto** (composição em `Extensions/`), **status codes** corretos (`docs/standards/http-status-codes.md`: 201 no
+   create com `Location`, 204 sem corpo) e **SRP** (uma responsabilidade por classe).
 5. Consolide os achados como **Blocking / Should-fix / Nit**, cada um com file:line e uma correção concreta.
 
 ## Output
@@ -37,6 +41,22 @@ Ao abrir o PR, escolha o **alvo** pelo tipo da branch:
 
 O PR referencia o item do tracker (ex.: `#12094`). Nunca abrir PR direto para `main`.
 
+```bash
+gh pr create --base dev --head feature/{id}-{slug} --title "…" --body "…"
+```
+
+**O MERGE É MANUAL, decisão do usuário — o agente NÃO mergeia e NÃO liga auto-merge.**
+Depois de abrir o PR, o agente:
+1. acompanha o **CI** (`ci.yml`: build `-warnaserror` + testes unit/arquitetura/integração + validação da
+   regra de dependência);
+2. quando **tudo fica verde**, **AVISA o usuário** (com o link do PR e o status dos checks) para que **ele**
+   entre no GitHub e faça o merge para `dev`;
+3. se o CI falhar, corrige e avisa de novo quando ficar verde.
+
+A revisão de IA (`/review-pr`) é a checagem de qualidade **local e sob demanda** (custo zero) antes/depois de
+abrir o PR. O ruleset `protect-dev-staging` exige o CI verde, então o botão de merge só habilita quando passa.
+
 ## Done when
 Todos os gates foram executados, todas as perspectivas estão cobertas, um veredito claro com achados
-acionáveis é produzido, e (se solicitado abrir o PR) ele aponta para o alvo correto por tipo.
+acionáveis é produzido, e (se solicitado abrir o PR) ele aponta para o alvo correto por tipo. Com o CI **verde**,
+o agente **avisa o usuário para o merge manual** — nunca mergeia por conta própria.

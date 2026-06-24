@@ -39,6 +39,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# ---- segredos: carrega o .env (gitignored) para o ambiente, se existir -------
+& (Join-Path $PSScriptRoot "load-dotenv.ps1")
+
 # ---- configuração ------------------------------------------------------------
 # Prefere o override local (fora do git) quando o ConfigPath não foi informado explicitamente.
 $localCfg = ".claude/tracker.config.local.json"

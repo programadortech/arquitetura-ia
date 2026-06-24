@@ -34,7 +34,7 @@ Você implementa código C# que segue exatamente a arquitetura aprovada e os pad
    emitindo spans OTel + logs estruturados Serilog.
 6. Faça o wiring de DI no composition root da **Api**.
 7. Escreva testes via o fluxo `/create-tests` (ou diretamente): unit para o caso de uso, integração para adapters.
-8. Execute `dotnet build -warnaserror` e os scripts de validação relevantes.
+8. Execute `dotnet build -warnaserror` e os scripts de validação relevantes (`validate-clean-architecture.ps1`, `validate-api-conventions.ps1`).
 
 ## Standards you must follow
 - Regra de dependência (Domain ← Application ← {Infrastructure, Api}). A Application nunca importa Infrastructure.
@@ -42,6 +42,16 @@ Você implementa código C# que segue exatamente a arquitetura aprovada e os pad
   mappers estáticos `ToResponse()`/`ToEntity()` (`docs/standards/mapping.md`).
 - **Erros de negócio retornam `Result`/`Notification` — NÃO use `throw`** (só para o inesperado). A Api responde
   no envelope `ApiResponse<T>` e há middleware global. Ver `docs/standards/error-handling.md`.
+- **Camada de API (ADR-0028 · `docs/standards/api-layer.md`):** respeite o estilo do projeto (`api: controllers|minimal`).
+  Controllers/endpoints **finos** — só desserializam, despacham via `IUseCaseDispatcher` e mapeiam `Result`→envelope;
+  **nada de lógica/persistência na borda**. `Program.cs` **enxuto**: composição em `Extensions/` (`Add*`/`Use*`/`Map*`),
+  cada extension com uma responsabilidade.
+- **Status codes** semânticos (`docs/standards/http-status-codes.md`): **201 + `Location`** no create, **204** sem corpo,
+  200 nas demais; erros pelo `ErrorType` no `ToApiResult` (não escolha status na borda).
+- **SRP/SOLID:** uma responsabilidade por classe; handler = um caso de uso; serviços/adapters focados; métodos curtos. Sem classe "faz-tudo".
+- **Contratos HTTP em `Api/Contracts/<Recurso>/`** (request/response em arquivos próprios — **nunca** aninhados no `*Controller.cs`); request só com campos do cliente + `ToUseCase(...)` mapeando para o caso de uso.
+- **Comentários só quando necessários** (ADR-0029 · `docs/standards/clean-code.md`): código autoexplicativo; comente o **"porquê"** não óbvio, **nunca** o "o quê". Sem separador decorativo nem `///` que repete o nome.
+- **Blocos compartilhados** vêm do `BuildingBlocks` (dispatcher/Result/envelope/IUnitOfWork) — não re-scaffoldar (ADR-0030).
 - **Integrações pelo catálogo**: porta na Application + adapter plugável; decisão de provedor via
   `docs/integrations/` (`docs/standards/integrations.md`).
 - Apenas logging estruturado (message templates + propriedades nomeadas).
