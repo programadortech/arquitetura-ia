@@ -70,6 +70,7 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Tasks no tracker | Write-back das atividades planejadas como itens-filho da história | [ADR-0011](docs/adr/0011-task-writeback-tracker.md) |
 | Tipos de história | Negócio e Técnica (arquitetura/infra/setup) | [ADR-0012](docs/adr/0012-story-types-business-technical.md) |
 | Layout | Monorepo: produto em `src/` + fábrica embutida; contexto em `docs/PRODUCT.md` | [ADR-0019](docs/adr/0019-product-monorepo-src-layout.md) |
+| Configuração | Por ambiente (Development/Staging/Production) em todo projeto executável; segredos via env/secret store | [ADR-0022](docs/adr/0022-per-environment-configuration.md) |
 
 ## Layout padrão da solução (projetos gerados)
 

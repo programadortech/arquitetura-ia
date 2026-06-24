@@ -26,5 +26,6 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0019](0019-product-monorepo-src-layout.md) | Produto no monorepo (solução em src/) | Aceito |
 | [0020](0020-data-access-efcore-or-dapper-uow.md) | Acesso a dados plugável — EF Core ou Dapper, com Unit of Work | Aceito |
 | [0021](0021-no-automapper-static-mappers.md) | Sem AutoMapper — mapeamento explícito via mappers estáticos | Aceito |
+| [0022](0022-per-environment-configuration.md) | Configuração por ambiente (Development / Staging / Production) | Aceito |
 
-> Próximo número livre: **0022**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+> Próximo número livre: **0023**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.

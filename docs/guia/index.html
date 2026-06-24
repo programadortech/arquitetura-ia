@@ -360,6 +360,15 @@
         <div class="card"><b>Jobs — Hangfire</b><p style="color:var(--muted);margin:.4rem 0 0">Opção <code>jobs: hangfire</code> (default <b>none</b>): projeto nasce leve; liga jobs só quando precisar (ADR-0018).</p></div>
       </div>
 
+      <h3>Configuração por ambiente</h3>
+      <p>Todo projeto executável (Api, Gateway, workers) nasce com config por ambiente, selecionada por <code>ASPNETCORE_ENVIRONMENT</code> (ADR-0022):</p>
+      <div class="code"><button class="copy">copiar</button><pre>appsettings.json                 <span class="tok-c"># base, não sensível</span>
+appsettings.Development.json     <span class="tok-c"># local / localhost</span>
+appsettings.Staging.json         <span class="tok-c"># homologação</span>
+appsettings.Production.json      <span class="tok-c"># produção</span>
+Properties/launchSettings.json   <span class="tok-c"># perfis Development/Staging</span></pre></div>
+      <p style="color:var(--muted)">Precedência: base → <code>{Env}</code> → user-secrets (dev) → variáveis de ambiente. <b>Segredos nunca nos arquivos</b> — dev via <code>user-secrets</code>, staging/prod via env/secret store (só placeholders versionados).</p>
+
       <div class="callout ok"><b>Layout monorepo:</b> a solução vive na raiz em <code>src/</code> + <code>tests/</code>; a fábrica (<code>.claude</code>, <code>templates</code>, <code>scripts</code>, <code>docs</code>) convive ao lado e o contexto do produto persiste em <code>docs/PRODUCT.md</code> (ADR-0019).</div>
     </section>
 

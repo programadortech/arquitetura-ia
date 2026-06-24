@@ -34,6 +34,10 @@ Se ProjectName estiver faltando, peça antes de prosseguir. Confirme as opções
      e adapters de integração conforme o catálogo (`docs/integrations/`).
    - Api: host ASP.NET Core, DI, health checks, OTLP, **envelope `ApiResponse` + middleware global de exceções**,
      **OpenAPI** (Scalar + Swagger), e `gateway` YARP opcional.
+   - **Configuração por ambiente** em TODO projeto executável (Api, Gateway, workers): `appsettings.json` +
+     `appsettings.Development.json` (localhost) + `appsettings.Staging.json` + `appsettings.Production.json` +
+     `Properties/launchSettings.json` (perfis Development/Staging). Sem segredos nos arquivos — placeholders +
+     env/secret store. Ver `docs/standards/configuration.md`.
    - Api: host mínimo ASP.NET Core, composition root de DI, health checks, configuração do exportador OTLP.
 4. Adicione `global.json` (fixe o SDK do .NET 10), `Directory.Build.props`, `Directory.Packages.props`
    (gerenciamento central de pacotes), `.editorconfig`, `.gitignore`.

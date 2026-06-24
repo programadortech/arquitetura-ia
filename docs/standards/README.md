@@ -14,6 +14,7 @@ o padrão ou registrando um novo ADR — nunca por divergência silenciosa.
 - [api-documentation.md](api-documentation.md) — OpenAPI plugável (Scalar / Swagger / ReDoc).
 - [integrations.md](integrations.md) — integrações plugáveis + catálogo (docs/integrations).
 - [api-gateway.md](api-gateway.md) — API Gateway opcional (YARP).
+- [configuration.md](configuration.md) — configuração por ambiente (Development/Staging/Production).
 - [queue-providers.md](queue-providers.md) — Kafka/SQS/RabbitMQ/MQTT plugáveis.
 - [jobs.md](jobs.md) — jobs em background/agendados com Hangfire (opcional).
 - [testing.md](testing.md) — testes unitários + integração + arquitetura.
