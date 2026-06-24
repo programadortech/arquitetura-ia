@@ -23,16 +23,17 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0016](0016-pluggable-integrations-catalog.md) | Integrações plugáveis + catálogo (docs/integrations) | Aceito |
 | [0017](0017-optional-api-gateway-yarp.md) | API Gateway opcional (YARP) | Aceito |
 | [0018](0018-optional-hangfire-jobs.md) | Jobs (Hangfire) opcional no scaffold | Aceito |
-| [0019](0019-product-monorepo-src-layout.md) | Produto no monorepo (solução em src/) | Aceito |
+| [0019](0019-product-monorepo-src-layout.md) | Produto no monorepo (solução em src/) | Substituída por ADR-0030 |
 | [0020](0020-data-access-efcore-or-dapper-uow.md) | Acesso a dados plugável — EF Core ou Dapper, com Unit of Work | Aceito |
 | [0021](0021-no-automapper-static-mappers.md) | Sem AutoMapper — mapeamento explícito via mappers estáticos | Aceito |
 | [0022](0022-per-environment-configuration.md) | Configuração por ambiente (Development / Staging / Production) | Aceito |
 
 | [0023](0023-git-branching-strategy.md) | Estratégia de branches e fluxo de PR (feature→dev, hotfix→staging) | Aceito |
-| [0024](0024-identity-jwt-autenticacao.md) | ASP.NET Core Identity + JWT (AZ-12094) | Aceito |
 | [0025](0025-automated-pr-review-github-action.md) | Gate de PR gratuito (CI) + revisão de IA local sob demanda | Aceito |
-| [0026](0026-gestao-administrativa-de-usuarios.md) | Gestão administrativa de usuários (IsActive, criação transacional, porta de e-mail) | Aceito (autorização do POST revisada por ADR-0027) |
-| [0027](0027-cadastro-de-usuario-publico.md) | Cadastro de usuário público (anônimo) com mitigação de escalada de privilégio | Aceito |
 | [0028](0028-padroes-camada-api.md) | Padrões da camada de API (estilo Controllers/Minimal, composição enxuta, SRP, status codes) | Aceito |
+| [0029](0029-codigo-limpo-comentarios.md) | Código limpo — comentários só quando necessários | Aceito |
+| [0030](0030-monorepo-multiproduto.md) | Monorepo multi-produto (`apps/<Produto>/`) + biblioteca compartilhada BuildingBlocks | Aceito |
 
-> Próximo número livre: **0029**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+> ADRs específicos do produto Plataforma2A.Auth (0024/0026/0027) foram removidos junto com o produto (reset). O histórico permanece no git.
+>
+> Próximo número livre: **0031**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.

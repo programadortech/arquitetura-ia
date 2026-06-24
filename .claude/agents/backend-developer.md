@@ -49,6 +49,9 @@ Você implementa código C# que segue exatamente a arquitetura aprovada e os pad
 - **Status codes** semânticos (`docs/standards/http-status-codes.md`): **201 + `Location`** no create, **204** sem corpo,
   200 nas demais; erros pelo `ErrorType` no `ToApiResult` (não escolha status na borda).
 - **SRP/SOLID:** uma responsabilidade por classe; handler = um caso de uso; serviços/adapters focados; métodos curtos. Sem classe "faz-tudo".
+- **Contratos HTTP em `Api/Contracts/<Recurso>/`** (request/response em arquivos próprios — **nunca** aninhados no `*Controller.cs`); request só com campos do cliente + `ToUseCase(...)` mapeando para o caso de uso.
+- **Comentários só quando necessários** (ADR-0029 · `docs/standards/clean-code.md`): código autoexplicativo; comente o **"porquê"** não óbvio, **nunca** o "o quê". Sem separador decorativo nem `///` que repete o nome.
+- **Blocos compartilhados** vêm do `BuildingBlocks` (dispatcher/Result/envelope/IUnitOfWork) — não re-scaffoldar (ADR-0030).
 - **Integrações pelo catálogo**: porta na Application + adapter plugável; decisão de provedor via
   `docs/integrations/` (`docs/standards/integrations.md`).
 - Apenas logging estruturado (message templates + propriedades nomeadas).

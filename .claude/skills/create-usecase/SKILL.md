@@ -38,6 +38,9 @@ Implementa um caso de uso seguindo a arquitetura aprovada e os padrões do repos
 - **Erros de negócio via `Result`/`Notification` (não `throw`)**; resposta no envelope `ApiResponse`.
 - **Mapeamento entidade↔model via mappers estáticos** (`ToResponse`/`ToEntity`) — **sem AutoMapper** (`docs/standards/mapping.md`).
 - **Borda fina + status code semântico** (ADR-0028): controller/endpoint só despacha; 201 no create, 204 sem corpo. `Program.cs` enxuto via `Extensions/`.
+- **Contratos HTTP em `Api/Contracts/<Recurso>/`** (request/response em arquivos próprios, **nunca** no controller), cada request com `ToUseCase(...)`; request só com campos do cliente.
+- **Comentários só quando necessários** (ADR-0029): código autoexplicativo; só o "porquê" não óbvio.
+- **Blocos compartilhados vêm do `BuildingBlocks`** (dispatcher/Result/envelope/IUnitOfWork) — não re-scaffoldar (ADR-0030).
 - **Integrações pelo catálogo** (`docs/integrations/`): porta + adapter plugável.
 - Async + `CancellationToken` em todo o fluxo; sem bloqueio em chamadas async.
 - Logs estruturados; SQL parametrizado; inputs validados na fronteira.
