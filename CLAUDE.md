@@ -59,6 +59,7 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 | Resiliência | Polly (retry, circuit breaker, timeout) | [ADR-0006](docs/adr/0006-resilience-polly.md) |
 | Tratamento de erros | Result/Notification + envelope `ApiResponse` + middleware global (sem `throw` para negócio) | [ADR-0014](docs/adr/0014-error-handling-result-notification.md) |
 | Documentação de API | OpenAPI nativo + UI plugável (Scalar + Swagger, default) | [ADR-0015](docs/adr/0015-pluggable-api-documentation.md) |
+| Camada de API | Estilo plugável **Controllers** (default) **ou** Minimal; borda fina + SRP; `Program` enxuto via extensions; status codes semânticos | [ADR-0028](docs/adr/0028-padroes-camada-api.md) |
 | Integrações | Plugáveis + catálogo `docs/integrations/` (e-mail/SMS/storage/pagamentos) | [ADR-0016](docs/adr/0016-pluggable-integrations-catalog.md) |
 | API Gateway | Opcional (YARP) — `gateway: yarp \| none` | [ADR-0017](docs/adr/0017-optional-api-gateway-yarp.md) |
 | Jobs em background | **Opcional** (Hangfire) — `jobs: hangfire \| none` (default none) | [ADR-0018](docs/adr/0018-optional-hangfire-jobs.md) · [ADR-0007](docs/adr/0007-jobs-hangfire.md) |
@@ -94,8 +95,8 @@ seguir o padrão ou registrar um novo ADR — nunca divirja silenciosamente.
 
 Opções do `/create-project`: `db` (oracle|sqlserver|postgresql|mysql) · `dataaccess` (efcore|dapper, default efcore) ·
 `queue` (kafka|sqs|rabbitmq|mqtt) · `jobs` (hangfire|none, default none) · `apidocs` (scalar,swagger|…) ·
-`gateway` (yarp|none, default none). Ambos os ORMs têm **Unit of Work** (ver
-[ADR-0020](docs/adr/0020-data-access-efcore-or-dapper-uow.md)).
+`gateway` (yarp|none, default none) · `api` (controllers|minimal, default controllers — [ADR-0028](docs/adr/0028-padroes-camada-api.md)).
+Ambos os ORMs têm **Unit of Work** (ver [ADR-0020](docs/adr/0020-data-access-efcore-or-dapper-uow.md)).
 
 ## A regra de dependência (inegociável)
 

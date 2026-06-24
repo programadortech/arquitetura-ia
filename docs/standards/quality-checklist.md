@@ -16,6 +16,13 @@ Copie os itens relevantes para a descrição do PR (`templates/pr-template.md`).
 - [ ] Async de ponta a ponta; `CancellationToken` propagado; sem `.Result`/`.Wait()`.
 - [ ] Entradas validadas no limite do caso de uso/endpoint.
 - [ ] Sem código morto, sem blocos comentados, sem TODOs sem uma issue rastreada.
+- [ ] **SRP:** cada classe com uma responsabilidade (controllers/endpoints finos, handler = 1 caso de uso); sem classe "faz-tudo".
+
+## Camada de API (ADR-0028 · `docs/standards/api-layer.md`)
+- [ ] Controllers/endpoints **finos**: só desserializam, despacham via `IUseCaseDispatcher` e mapeiam `Result`→envelope (sem lógica/persistência).
+- [ ] `Program.cs` **enxuto** — composição em `Extensions/` (`Add*`/`Use*`/`Map*`); passa em `scripts/validate-api-conventions.ps1`.
+- [ ] **Status codes** corretos (`docs/standards/http-status-codes.md`): **201 + `Location`** no create, **204** sem corpo, 200 nas demais; erros pelo `ErrorType`.
+- [ ] Estilo de API consistente com o do projeto (`controllers` ou `minimal`).
 
 ## Dados (Oracle)
 - [ ] Todo SQL parametrizado (bind variables).

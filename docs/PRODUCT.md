@@ -10,6 +10,7 @@
 - **Solução:** criada em `src/` (monorepo, ADR-0019). Builda verde com `-warnaserror`; testes verdes.
 - **Banco:** SQL Server · **Acesso a dados:** EF Core + Unit of Work (`IUnitOfWork`/`EfUnitOfWork`).
 - **Fila:** RabbitMQ (abstração) · **Jobs:** none · **API docs:** Scalar + Swagger · **Gateway:** none.
+- **Camada de API:** **Controllers** (ADR-0028) — borda fina, `Program.cs` enxuto via `Extensions/`, status codes semânticos (201 no create); gate `validate-api-conventions.ps1` no CI.
 - **Erros:** Result/Notification + envelope `ApiResponse` + middleware global (`GlobalExceptionHandler`).
 - **Config:** por ambiente (Development/Staging/Production) + launchSettings.
 - **Endpoints:** `/` (info), `/health`, `/scalar`, `/swagger`, `/openapi/v1.json` (docs fora de produção).
