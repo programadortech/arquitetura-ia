@@ -46,13 +46,21 @@ app.UseSerilogRequestLogging();
 // Docs só fora de produção (ver docs/standards/api-documentation.md).
 if (!app.Environment.IsProduction())
 {
-    app.MapOpenApi();                                                              // /openapi/v1.json
-    app.MapScalarApiReference();                                                   // /scalar
-    app.UseSwaggerUI(o => o.SwaggerEndpoint("/openapi/v1.json", "Plataforma2A.Auth v1")); // /swagger
+    app.MapOpenApi();                          // documento: /openapi/v1.json
+    app.MapScalarApiReference();               // UI Scalar: /scalar
+    app.UseSwaggerUI(options =>                // UI Swagger: /swagger (lê o OpenAPI nativo)
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Plataforma2A.Auth v1");
+        options.RoutePrefix = "swagger";
+    });
+    app.MapGet("/", () => Results.Redirect("/scalar")); // base URL abre a documentação
+}
+else
+{
+    app.MapGet("/", () => "Plataforma2A.Auth API · 2A Always Ahead");
 }
 
 app.MapHealthChecks("/health");
-app.MapGet("/", () => "Plataforma2A.Auth API · 2A Always Ahead");
 
 app.Run();
 
