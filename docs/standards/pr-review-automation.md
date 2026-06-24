@@ -8,12 +8,14 @@ Toda Pull Request para `dev` ou `staging` é revisada automaticamente pelo Claud
 (`.github/workflows/claude-pr-review.yml`). A Action lê o diff, confronta com os padrões (`docs/standards/`)
 e ADRs (`docs/adr/`), e **posta o veredito** no PR usando `gh pr review`:
 
-- **APPROVE** — nenhum achado *Blocking*.
-- **REQUEST CHANGES** — há achado *Blocking* (com `arquivo:linha` e correção).
-- **COMMENT** — apenas observações menores.
+- **REQUEST CHANGES** — há achado *Blocking* (com `arquivo:linha` e correção). Estado formal que pode barrar o merge.
+- **COMMENT com "APROVADO — sem bloqueantes"** — nenhum *Blocking* (eventuais Should-fix/Nit são follow-up).
 
-A Action roda como `github-actions[bot]` (identidade separada do autor), então **aprova/reprova de fato** —
-o GitHub não permite que o **autor** aprove o próprio PR (só comentar).
+**Limitação do GitHub:** a Action roda como `github-actions[bot]` e o `GITHUB_TOKEN` **não pode dar `Approve`**
+(o comando falha) — só `REQUEST CHANGES` e `COMMENT`. Um **`Approved` formal** (estado verde) exige uma
+**identidade separada do autor**: um PAT de outra conta/machine user ou um **GitHub App** como secret. O PAT do
+próprio autor também não serve (o GitHub proíbe o autor de aprovar o próprio PR). Enquanto não houver essa
+identidade, o "sem bloqueantes" é comunicado por COMMENT textual.
 
 ## Quem revisa o quê
 | Camada | Onde | Aprova/Reprova? |
