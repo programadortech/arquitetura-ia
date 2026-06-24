@@ -1,6 +1,6 @@
 # Feature: Autenticação e Gerenciamento de Senha
 
-- **Status:** Refinada — pronta para `/approve-architecture`
+- **Status:** Implementada — arquitetura aprovada, código + testes na branch `feature/12094-autenticacao-e-gerenciamento-de-senha`
 - **Tipo:** Negócio
 - **Item (tracker):** [AZ-12094](https://dev.azure.com/T-SystemsdoBrasil/Yamaha%20-%20Rollout/_workitems/edit/12094) · Product Backlog Item · estado: New
 - **Produto:** Plataforma2A.Auth
