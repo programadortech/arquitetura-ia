@@ -1,0 +1,69 @@
+name: Claude PR Review
+
+# Revisão automatizada de PR pelo Claude, contra os padrões e ADRs do repositório.
+# Roda como github-actions[bot] (identidade separada do autor), então pode dar
+# APPROVE / REQUEST CHANGES de fato — ver docs/standards/pr-review-automation.md.
+#
+# Pré-requisito: secret ANTHROPIC_API_KEY no repositório
+#   (Settings → Secrets and variables → Actions → New repository secret).
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [dev, staging]
+
+# Não revisar duas vezes o mesmo PR em pushes rápidos.
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (histórico completo p/ diff)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Revisão pelo Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Ferramentas liberadas: ler o repo, varrer padrões e postar o review.
+          claude_args: >-
+            --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*)"
+          prompt: |
+            Você é o revisor técnico sênior deste repositório (Clean Architecture, C#/.NET 10).
+            Revise o PR #${{ github.event.pull_request.number }} no repositório ${{ github.repository }}.
+
+            Faça uma revisão minuciosa e orientada por padrões, seguindo a skill `.claude/skills/review-pr/SKILL.md`:
+            1. Reúna o diff do PR (`gh pr diff ${{ github.event.pull_request.number }}`) e os arquivos alterados.
+            2. Leia os padrões relevantes em `docs/standards/` e os ADRs em `docs/adr/` que se aplicam às mudanças,
+               além do doc de arquitetura da feature (em `docs/architecture/`) quando existir.
+            3. Verifique especialmente:
+               - A regra de dependência (Domain ← Application ← {Infrastructure, Api}); sem lógica de negócio na Api.
+               - Padrão Result/Notification + envelope `ApiResponse` (sem `throw` para fluxo de negócio).
+               - Use Case dispatcher próprio (nada de MediatR pago) e mappers estáticos (nada de AutoMapper).
+               - Segredos fora do código; logs estruturados; configuração por ambiente.
+               - Cobertura de testes (todo use case com teste unitário) e scripts de banco reversíveis.
+               - Alvo de PR correto: `feature/*` → `dev`, `hotfix/*` → `staging` (nunca direto p/ `main`).
+            4. Consolide os achados como **Blocking / Should-fix / Nit**, cada um com `arquivo:linha` e uma correção concreta.
+
+            Ao final, POSTE o review no PR usando `gh pr review`:
+            - Se não houver achados Blocking → `gh pr review ${{ github.event.pull_request.number }} --approve --body "<resumo>"`.
+            - Se houver achados Blocking → `gh pr review ${{ github.event.pull_request.number }} --request-changes --body "<resumo + achados>"`.
+            - Se só houver observações menores e quiser apenas registrar → `gh pr review ${{ github.event.pull_request.number }} --comment --body "<observações>"`.
+
+            O corpo do review deve ser em português, objetivo, com os achados priorizados e terminar com o veredito
+            **APPROVE** ou **REQUEST CHANGES**.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

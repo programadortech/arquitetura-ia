@@ -30,6 +30,12 @@
 - Índice: [`features/README.md`](features/README.md).
 - **AZ-12094 — Autenticação e Gerenciamento de Senha** — implementada (branch `feature/12094-...`, PR para `dev`). Docs: [feature](features/AZ-12094-autenticacao-e-gerenciamento-de-senha.md) · [arquitetura](architecture/AZ-12094-autenticacao-e-gerenciamento-de-senha.md).
 
+## Fluxo de PR e revisão
+- Branches sempre da `main`: `feature/{id}-{slug}` → PR para `dev`; `hotfix/{id}-{slug}` → PR para `staging` (ADR-0023).
+- Revisão automatizada por GitHub Action (Claude) a cada PR para `dev`/`staging`, postando APPROVE/REQUEST CHANGES
+  como bot (ADR-0025 / [`standards/pr-review-automation.md`](standards/pr-review-automation.md)). Requer secret `ANTHROPIC_API_KEY`.
+- Abertura/gerência de PR daqui usa o **GitHub CLI (`gh`)** autenticado (`gh auth login`).
+
 ## Integrações ativas
 - _(nenhuma ainda — e-mail entra com o fluxo de reset de senha; decidir provedor pelo catálogo)_
 
