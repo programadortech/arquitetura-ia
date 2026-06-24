@@ -38,7 +38,7 @@ e pelo projeto `*.ArchitectureTests` (NetArchTest).
 4. Infrastructure não depende de Api.
 5. Todo recurso externo é acessado através de uma porta definida em Application.
 6. Casos de uso são invocados somente através de `IUseCaseDispatcher`.
-7. Nenhuma referência a `MediatR`.
+7. Nenhuma referência a `MediatR` nem `AutoMapper` (mapeamento via mappers estáticos — ver [mapping.md](mapping.md)).
 
 ## Convenções de nomenclatura e estrutura
 - Casos de uso: `Application/UseCases/<Area>/<Action>/` contendo `XxxRequest`, `XxxResponse`, `XxxHandler`.

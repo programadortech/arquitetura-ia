@@ -10,6 +10,7 @@ o padrão ou registrando um novo ADR — nunca por divergência silenciosa.
 - [observability.md](observability.md) — Serilog + OpenTelemetry, logs estruturados, exportação OTLP.
 - [resilience.md](resilience.md) — políticas Polly (timeout/retry/circuit breaker).
 - [error-handling.md](error-handling.md) — Result/Notification + envelope `ApiResponse` + middleware global.
+- [mapping.md](mapping.md) — mapeamento explícito via mappers estáticos (**sem AutoMapper**).
 - [api-documentation.md](api-documentation.md) — OpenAPI plugável (Scalar / Swagger / ReDoc).
 - [integrations.md](integrations.md) — integrações plugáveis + catálogo (docs/integrations).
 - [api-gateway.md](api-gateway.md) — API Gateway opcional (YARP).

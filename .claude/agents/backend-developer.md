@@ -32,7 +32,8 @@ Você implementa código C# que segue exatamente a arquitetura aprovada e os pad
 
 ## Standards you must follow
 - Regra de dependência (Domain ← Application ← {Infrastructure, Api}). A Application nunca importa Infrastructure.
-- Sem MediatR pago. Use `IUseCaseDispatcher` / `IUseCase<,>`.
+- Sem MediatR pago (use `IUseCaseDispatcher` / `IUseCase<,>`). **Sem AutoMapper** — mapeamento explícito via
+  mappers estáticos `ToResponse()`/`ToEntity()` (`docs/standards/mapping.md`).
 - **Erros de negócio retornam `Result`/`Notification` — NÃO use `throw`** (só para o inesperado). A Api responde
   no envelope `ApiResponse<T>` e há middleware global. Ver `docs/standards/error-handling.md`.
 - **Integrações pelo catálogo**: porta na Application + adapter plugável; decisão de provedor via

@@ -30,6 +30,9 @@ case "$file" in
     # Paid MediatR.
     grep -nE 'using +MediatR' "$file" && \
       warn "MediatR detected — use the in-repo IUseCaseDispatcher abstraction instead."
+    # AutoMapper proibido (ADR-0021) — use mappers estáticos (ToResponse/ToEntity).
+    grep -nE 'using +AutoMapper' "$file" && \
+      warn "AutoMapper proibido — use mappers estáticos explícitos (docs/standards/mapping.md)."
     ;;
   *.sql)
     grep -niE '\b(DROP|TRUNCATE) ' "$file" >/dev/null && \

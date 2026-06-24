@@ -330,6 +330,17 @@
 }</pre></div>
       <div class="callout"><b>Fluxo:</b> negócio → <code>Result.Failure</code> → envelope 4xx · sucesso → <code>Result.Success</code> → 2xx · exceção → middleware → 500. Detalhe em <code>docs/standards/error-handling.md</code>.</div>
 
+      <h3>Mapeamento — sem AutoMapper</h3>
+      <p><b>AutoMapper é proibido</b> (mágica/reflexão em runtime). Use <b>mappers estáticos</b> explícitos com extension methods — padrão de mercado, seguro em compilação (ADR-0021).</p>
+      <div class="code"><button class="copy">copiar</button><pre><span class="tok-k">public static class</span> PedidoMappings
+{
+    <span class="tok-c">// entidade -> model</span>
+    <span class="tok-k">public static</span> PedidoResponse ToResponse(<span class="tok-k">this</span> Pedido p) =&gt; <span class="tok-k">new</span>(p.Id, p.ClienteId, p.Total);
+    <span class="tok-c">// request -> entidade</span>
+    <span class="tok-k">public static</span> Pedido ToEntity(<span class="tok-k">this</span> CriarPedidoRequest r) =&gt; Pedido.Criar(r.ClienteId, ...);
+}</pre></div>
+      <p style="color:var(--muted)">Opcional: um gerador <b>compile-time</b> (ex.: Mapperly) produz o mesmo padrão sem reflexão. AutoMapper continua proibido.</p>
+
       <h3>Documentação de API (plugável)</h3>
       <p>OpenAPI nativo do .NET 10 + UI selecionável. Default: <b>Scalar</b> (<code>/scalar</code>) <b>+ Swagger</b> (<code>/swagger</code>); ReDoc opcional (ADR-0015).</p>
 

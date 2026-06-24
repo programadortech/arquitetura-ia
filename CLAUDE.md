@@ -112,7 +112,8 @@ Api ──▶ Application ──▶ Domain
 ## Regras de trabalho para o Claude
 
 1. **Sempre execute o script de validação relevante** após gerar código (veja `scripts/`).
-2. **Nunca** introduza uma dependência paga (MediatR ≥ v12 comercial, etc.). Use o dispatcher do repositório.
+2. **Nunca** introduza uma dependência paga/proibida: MediatR (≥ v12 comercial) → use o dispatcher do repositório;
+   **AutoMapper** → use mappers estáticos explícitos (`ToResponse`/`ToEntity`, ver `docs/standards/mapping.md`).
 3. **Toda** nova decisão arquitetural → um novo ADR usando `templates/adr-template.md`.
 4. **Toda** feature começa como um documento (`templates/feature-template.md`) antes do código.
 5. **Todo** caso de uso tem testes unitários; código que toca integração tem testes de integração.

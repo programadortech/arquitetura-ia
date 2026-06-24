@@ -7,7 +7,8 @@ Copie os itens relevantes para a descrição do PR (`templates/pr-template.md`).
 - [ ] Regra de dependência respeitada (Domain ← Application ← {Infrastructure, Api}).
 - [ ] Application não referencia Infrastructure.
 - [ ] Casos de uso despachados via `IUseCaseDispatcher`; handlers implementam `IUseCase<,>`.
-- [ ] Nenhum `MediatR` (ou outra dependência paga) introduzido.
+- [ ] Nenhum `MediatR` nem `AutoMapper` (ou outra dependência paga/proibida) introduzido.
+- [ ] Mapeamento entidade↔model via **mappers estáticos** (`ToResponse`/`ToEntity`), não AutoMapper.
 - [ ] Novas decisões cross-cutting registradas como um ADR.
 
 ## Qualidade de código

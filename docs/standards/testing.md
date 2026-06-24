@@ -22,7 +22,7 @@ NSubstitute** (Moq aceitável), **Testcontainers** para integração, **NetArchT
   - Domain não depende de nada externo.
   - Application **não** referencia Infrastructure.
   - Handlers nomeados `*Handler` e que implementam `IUseCase<,>`.
-  - Nenhum tipo referencia `MediatR`.
+  - Nenhum tipo referencia `MediatR` nem `AutoMapper`.
   - Tipos do SDK do provider vivem apenas sob `Infrastructure.Messaging`.
 
 ## Cobertura e barra de qualidade

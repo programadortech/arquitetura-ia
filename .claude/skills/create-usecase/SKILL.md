@@ -33,6 +33,7 @@ Implementa um caso de uso seguindo a arquitetura aprovada e os padrões do repos
 ## Standards you must enforce
 - O handler implementa `IUseCase<,>`; invocado apenas através de `IUseCaseDispatcher`. Sem MediatR.
 - **Erros de negócio via `Result`/`Notification` (não `throw`)**; resposta no envelope `ApiResponse`.
+- **Mapeamento entidade↔model via mappers estáticos** (`ToResponse`/`ToEntity`) — **sem AutoMapper** (`docs/standards/mapping.md`).
 - **Integrações pelo catálogo** (`docs/integrations/`): porta + adapter plugável.
 - Async + `CancellationToken` em todo o fluxo; sem bloqueio em chamadas async.
 - Logs estruturados; SQL parametrizado; inputs validados na fronteira.
