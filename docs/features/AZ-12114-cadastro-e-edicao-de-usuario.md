@@ -49,7 +49,7 @@ com a implementação marcada como `TODO` para uma história futura.
 6. **Edição com sucesso** — **Dado** um usuário existente, **quando** altera os dados básicos, **então** atualiza os dados e as roles e retorna os dados atualizados (**sem** alterar senha).
 7. **Edição recusada para usuário inexistente** — **Dado** id inexistente, **quando** solicita a edição, **então** recusa com "Usuário não encontrado".
 8. **Inativação de usuário** — **Dado** um usuário ativo, **quando** altera o status para inativo, **então** o usuário fica inativo **e não consegue autenticar**.
-9. **Autorização** — **Dado** um chamador sem permissão de administrador, **quando** acessa cadastrar/editar, **então** a operação é negada (401/403).
+9. **Autorização** — **Dado** um chamador sem permissão de administrador, **quando** acessa **editar** (`PUT`), **então** a operação é negada (401/403). O **cadastro** (`POST`) é público (ADR-0027), mas **não** permite escolher roles/status.
 10. **Observabilidade** — **Dado** qualquer operação de cadastro/edição, **quando** executada, **então** são emitidos logs estruturados (tentativa/sucesso/falha, associação de roles, preparação de e-mail) **sem** expor senha/PII.
 
 ## Requisitos não funcionais
@@ -85,7 +85,7 @@ public interface IUserWelcomeEmailSender
 ## Decisões do refinamento (resolvidas)
 - **Interface de e-mail:** criar a porta dedicada **`IUserWelcomeEmailSender`** (contrato do work item), com adapter stub que só loga "envio preparado" + `TODO` (envio real é história futura). Pode, no futuro, ser implementada sobre o `IEmailSender` (AZ-12094).
 - **Endpoints:** **apenas** `POST /api/users` e `PUT /api/users/{id}` (o work item só cita esses). **Listar/consultar/excluir** ficam **fora do escopo** desta história.
-- **Autorização:** policy nomeada **`users:manage`** satisfeita pela role **`Administrador`** (em vez de checar a role solta nos endpoints).
+- **Autorização:** **`POST /api/users` é PÚBLICO/anônimo** (decisão do PO — [ADR-0027](../adr/0027-cadastro-de-usuario-publico.md)): não aceita `roles`/`isActive`, cria com role padrão `Usuario` e ativo (sem escalada de privilégio); **sem rate limit** nesta entrega. **`PUT /api/users/{id}`** continua exigindo a policy **`users:manage`** (role `Administrador`).
 - **Modelo:** estender `ApplicationUser` com `Name` (nome completo) e `IsActive` (status). Migração adiciona as colunas em `AspNetUsers`. A validação de login (AZ-12094) passa a **recusar usuário inativo**.
 
 ## Histórico de refinamento
