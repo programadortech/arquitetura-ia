@@ -1,47 +1,45 @@
-# ADR-0025: Revisão automatizada de PR via GitHub Action (Claude)
+# ADR-0025: Gate de PR gratuito (CI determinístico) + revisão de IA local sob demanda
 
 - **Status:** Aceita
 - **Data:** 2026-06-24
 - **Decisores:** Acaciano (tech lead), Claude
 
 ## Contexto
-O fluxo de PR (ADR-0023) precisa de um portão de revisão consistente. A skill `/review-pr` já roda
-localmente (gates + agentes `tech-lead-reviewer`, `security-reviewer`, `oracle-dba-reviewer`,
-`observability-engineer`), mas depende de alguém executá-la.
+O fluxo de PR (ADR-0023) precisa de um portão de revisão consistente. Duas formas de automatizar:
+- **CI determinístico** (build/test/validação de arquitetura) — gratuito em repositório público.
+- **Revisão por IA** — a `anthropics/claude-code-action` na nuvem **cobra por execução** da API da Anthropic
+  (~US$ 0,40–2,80 por PR no Sonnet) e dispararia a cada push (`synchronize`), multiplicando o custo.
 
-Há uma restrição do GitHub relevante: **o autor de um PR não pode dar `APPROVE`/`REQUEST CHANGES` no
-próprio PR — apenas comentar**. Logo, uma revisão que rode com a mesma identidade que abriu o PR só
-consegue registrar observações, não aprovar/reprovar formalmente.
+A skill `/review-pr` já roda localmente (agentes `tech-lead-reviewer`, `security-reviewer`,
+`oracle-dba-reviewer`, `observability-engineer`) dentro da assinatura do Claude Code — **sem custo por PR**.
+
+Limitação relevante: o `GITHUB_TOKEN` (`github-actions[bot]`) **não pode dar `Approve`** (só `REQUEST CHANGES`
+e `COMMENT`); um `Approved` formal exigiria identidade separada do autor.
 
 ## Decisão
-Vamos adicionar uma **GitHub Action** (`.github/workflows/claude-pr-review.yml`) que, a cada PR para
-`dev` ou `staging`, executa o **Claude Code Action** (`anthropics/claude-code-action`) revisando o diff
-contra `docs/standards/` e `docs/adr/`, seguindo a skill `review-pr`, e **posta o veredito via
-`gh pr review`** (`--approve` / `--request-changes` / `--comment`).
+Vamos adotar o gate em **duas camadas, com custo zero por padrão**:
 
-Por rodar como `github-actions[bot]` (identidade separada do autor), a Action **pode aprovar ou reprovar
-de fato**. A revisão local on-demand (`/review-pr`) continua disponível para análises mais profundas.
+1. **CI determinístico obrigatório e gratuito** — `.github/workflows/ci.yml`: a cada PR para `dev`/`staging`,
+   `dotnet build -warnaserror` + `dotnet test` + `scripts/validate-clean-architecture.ps1`. Sem IA.
+2. **Revisão de IA local sob demanda** — `/review-pr` no Claude Code (assinatura existente), antes de abrir/mergear.
 
-Pré-requisito operacional: secret **`ANTHROPIC_API_KEY`** no repositório. O `GITHUB_TOKEN` padrão da Action
-recebe permissão `pull-requests: write`.
+**Não** manteremos a Action de IA na nuvem ligada por padrão (evita conta de API por PR). Ela pode ser
+reintroduzida no futuro como **opt-in** (trigger `@claude` em comentário) para PRs específicos.
 
 ## Consequências
-- (+) Todo PR para `dev`/`staging` recebe uma revisão padronizada automaticamente, com Approve/Request changes reais.
-- (+) Os mesmos padrões/ADRs da revisão local valem na CI — uma fonte de verdade.
-- (+) Não depende de o autor lembrar de rodar a revisão.
-- (−) Consome créditos da API Anthropic por PR; exige gerenciar o secret.
-- (−) A Action lê os padrões e o diff, mas **não roda os gates PowerShell** (build/test/`validate-*.ps1`) —
-  esses ficam para um workflow de CI dedicado (a criar) ou para a verificação local.
+- (+) Gate automático **gratuito** em todo PR (build/test/arquitetura) — barra os erros estruturais que mais importam.
+- (+) Revisão de IA continua disponível, **sem custo por PR** (local via `/review-pr`).
+- (+) Sem gestão de secret pago nem risco de conta de API surpresa.
+- (−) A revisão de IA não é automática em todo PR — depende de rodar `/review-pr` (decisão consciente de custo).
+- (−) Sem `Approved` verde automático de bot (exigiria identidade separada); o merge é destravado pelo CI verde + revisão local.
 
 ## Alternativas consideradas
-- **Só revisão local (`/review-pr`):** depende de execução manual e não aprova/reprova em PR do próprio autor.
-- **Conta de serviço/bot dedicada com PAT:** funciona, mas adiciona gestão de identidade/segredo extra; a
-  `github-actions[bot]` já resolve a separação de identidade sem conta adicional.
-- **Outras ferramentas de review (CodeRabbit etc.):** não conhecem os padrões/ADRs específicos deste repositório.
+- **Action de IA na nuvem em todo PR:** revisão automática, mas **cobra por execução** e por push — custo alto e recorrente.
+- **IA na nuvem opt-in (`@claude`):** viável; paga só nos PRs marcados. Fica como evolução futura, não default.
+- **Ferramentas externas (CodeRabbit etc.):** não conhecem os padrões/ADRs específicos deste repositório.
 
 ## Referências
 - [ADR-0023 — Estratégia de branches e fluxo de PR](0023-git-branching-strategy.md)
 - [docs/standards/pr-review-automation.md](../standards/pr-review-automation.md)
-- [docs/standards/branching.md](../standards/branching.md)
 - `.claude/skills/review-pr/SKILL.md`
-- [.github/workflows/claude-pr-review.yml](../../.github/workflows/claude-pr-review.yml)
+- [.github/workflows/ci.yml](../../.github/workflows/ci.yml)

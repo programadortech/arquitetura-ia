@@ -1,42 +1,40 @@
-# Padrão: Revisão automatizada de PR (GitHub Action + Claude)
+# Padrão: Revisão e gate de PR (custo zero por padrão)
 
 > Vinculante. Codifica [ADR-0025](../adr/0025-automated-pr-review-github-action.md). Complementa o fluxo de
 > branches/PR de [`branching.md`](branching.md) e a skill `.claude/skills/review-pr/SKILL.md`.
 
-## O que é
-Toda Pull Request para `dev` ou `staging` é revisada automaticamente pelo Claude via GitHub Action
-(`.github/workflows/claude-pr-review.yml`). A Action lê o diff, confronta com os padrões (`docs/standards/`)
-e ADRs (`docs/adr/`), e **posta o veredito** no PR usando `gh pr review`:
+## Estratégia (sem custo de API)
+A revisão de PR tem duas camadas — a obrigatória é **gratuita**:
 
-- **REQUEST CHANGES** — há achado *Blocking* (com `arquivo:linha` e correção). Estado formal que pode barrar o merge.
-- **COMMENT com "APROVADO — sem bloqueantes"** — nenhum *Blocking* (eventuais Should-fix/Nit são follow-up).
+1. **Gate determinístico em CI (grátis, obrigatório)** — `.github/workflows/ci.yml`.
+   A cada PR para `dev`/`staging` roda: `dotnet build -warnaserror`, `dotnet test`
+   (unit + arquitetura + integração) e `scripts/validate-clean-architecture.ps1`.
+   Não usa IA. O repositório é **público** → minutos de GitHub Actions são gratuitos.
+   Pega de graça o que mais importa: build quebrado, teste falhando e violação da regra de dependência.
 
-**Limitação do GitHub:** a Action roda como `github-actions[bot]` e o `GITHUB_TOKEN` **não pode dar `Approve`**
-(o comando falha) — só `REQUEST CHANGES` e `COMMENT`. Um **`Approved` formal** (estado verde) exige uma
-**identidade separada do autor**: um PAT de outra conta/machine user ou um **GitHub App** como secret. O PAT do
-próprio autor também não serve (o GitHub proíbe o autor de aprovar o próprio PR). Enquanto não houver essa
-identidade, o "sem bloqueantes" é comunicado por COMMENT textual.
+2. **Revisão de IA sob demanda (local, sem custo por PR)** — a skill `/review-pr`, executada no Claude Code
+   (dentro da assinatura existente), delega aos agentes `tech-lead-reviewer`, `security-reviewer`,
+   `oracle-dba-reviewer`, `observability-engineer` e produz um veredito. Roda quando você pede, antes
+   de abrir/mergear o PR. **Não chama a API por PR — não gera conta avulsa.**
 
-## Quem revisa o quê
-| Camada | Onde | Aprova/Reprova? |
-|---|---|---|
-| Automática (CI) | GitHub Action a cada PR p/ `dev`/`staging` | Sim (bot) |
-| Local on-demand | `/review-pr` (agentes `tech-lead-reviewer`, `security-reviewer`, `oracle-dba-reviewer`, `observability-engineer`) | Só comenta se rodar como autor |
+## Por que não a Action de IA na nuvem por padrão
+A `anthropics/claude-code-action` chama a **API da Anthropic e cobra por execução** (~US$ 0,40–2,80 por PR
+no Sonnet) — e dispararia a cada push (`synchronize`), multiplicando o custo. Por isso ela **não fica ligada
+por padrão**. Pode ser reintroduzida como **opt-in** (trigger `@claude` num comentário) se algum dia se quiser
+revisão de IA na nuvem em PRs específicos — aí paga só nesses casos.
 
-## Setup (uma vez por repositório)
-1. **Secret** `ANTHROPIC_API_KEY` em *Settings → Secrets and variables → Actions → New repository secret*.
-2. (Opcional) Em *Settings → Branches*, exigir o status check da Action e/ou 1 review aprovado em `dev`/`staging`
-   como **branch protection** — assim um *REQUEST CHANGES* bloqueia o merge.
-3. Nada mais no código: o workflow usa o `GITHUB_TOKEN` padrão com permissão `pull-requests: write`.
+## Limitação do GitHub (se um dia usar a Action de nuvem)
+O `GITHUB_TOKEN` (`github-actions[bot]`) **não pode dar `Approve`** — só `REQUEST CHANGES` e `COMMENT`.
+Um `Approved` formal (estado verde) exige **identidade separada do autor** (PAT de outra conta/machine user
+ou GitHub App). O PAT do próprio autor também não aprova o próprio PR.
 
-## O que a Action cobre e o que não cobre
-- **Cobre:** aderência à regra de dependência, Result/Notification + envelope, dispatcher próprio (sem MediatR),
-  mappers estáticos (sem AutoMapper), segredos fora do código, logs estruturados, config por ambiente,
-  cobertura de testes, reversibilidade de scripts de banco, alvo de PR correto.
-- **Não cobre (ainda):** os gates PowerShell (`build`, `dotnet test`, `validate-*.ps1`) — rode-os localmente
-  antes do PR (o hook `pre-pr-check` ajuda) ou adicione um workflow de CI dedicado.
+## Fluxo recomendado por feature
+1. Implementar na branch `feature/{id}-{slug}` (a partir de `main`).
+2. Build/test/validate locais verdes (o hook `pre-pr-check` ajuda).
+3. (Opcional, recomendado) Rodar `/review-pr` localmente para a revisão de IA — custo zero.
+4. Abrir o PR para `dev` (`gh pr create --base dev`). O **CI grátis** roda e vira check obrigatório.
+5. Corrigir o que o CI/review apontar; mergear quando verde.
 
-## Relação com o fluxo de branches
-- `feature/{id}-{slug}` → PR para **`dev`**.
-- `hotfix/{id}-{slug}` → PR para **`staging`**.
-- Nunca abrir PR direto para `main`. Ver [`branching.md`](branching.md) / [ADR-0023](../adr/0023-git-branching-strategy.md).
+## Setup (uma vez)
+- (Recomendado) Em *Settings → Branches*, proteger `dev`/`staging` exigindo o check **CI** verde para o merge.
+- Nada de secrets pagos: o gate grátis usa só o `GITHUB_TOKEN` padrão.
