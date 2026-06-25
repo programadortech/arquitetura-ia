@@ -10,6 +10,9 @@ public static class WebApplicationExtensions
     {
         app.UseExceptionHandler();
         app.UseSerilogRequestLogging();
+        app.UseRateLimiter();
+        app.UseAuthentication();
+        app.UseAuthorization();
         return app;
     }
 

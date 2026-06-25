@@ -9,7 +9,9 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddApiServices()
-    .AddApiDocumentation();
+    .AddApiDocumentation()
+    .AddJwtAuthentication()
+    .AddRateLimiting();
 
 var app = builder.Build();
 

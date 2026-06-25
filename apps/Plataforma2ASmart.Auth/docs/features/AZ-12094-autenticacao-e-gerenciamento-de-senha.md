@@ -1,6 +1,6 @@
 # Feature: Autenticação e Gerenciamento de Senha
 
-- **Status:** Importada (a refinar) — pronta para `/brainstorm-story` → `/approve-architecture`
+- **Status:** Arquitetura aberta (ver `docs/architecture/AZ-12094-autenticacao-e-gerenciamento-de-senha.md`)
 - **Tipo:** Negócio
 - **Produto:** Plataforma2ASmart.Auth (`apps/Plataforma2ASmart.Auth/`)
 - **Item (tracker):** [AZ-12094](https://dev.azure.com/T-SystemsdoBrasil/Yamaha%20-%20Rollout/_workitems/edit/12094) · Product Backlog Item · estado: New
@@ -80,11 +80,15 @@ POST /api/auth/reset-password   { email, token, newPassword, confirmNewPassword 
 - **Premissa:** provedor de e-mail decidido pelo catálogo `docs/integrations/email`.
 - **Risco:** rotação/invalidação de refresh token exige cuidado transacional (usar `IUnitOfWork` do BuildingBlocks).
 
-## Questões em aberto (refinar no brainstorm)
-- [ ] Expiração do Access/Refresh token — proposta: 15 min / 7 dias com rotação.
-- [ ] Rate limit: .NET nativo por IP nos endpoints públicos (login/forgot/reset).
-- [ ] Identificador de login: e-mail (proposta) ou username.
+## Decisões do refinamento (resolvidas)
+- **Expiração:** Access Token **15 min**, Refresh Token **7 dias**, com **rotação** a cada renovação (o anterior é revogado).
+- **Identificador de login:** **e-mail** + senha.
+- **Força bruta (AC #11):** **.NET Rate Limiting nativo, por IP** (janela fixa) nos endpoints públicos (login/forgot/reset) → 429.
+- **E-mail:** porta **`IEmailSender`** (Application) + adapter **SMTP/stub em dev**; provedor real plugável pelo catálogo `docs/integrations/email`.
+- **Auditoria de refresh tokens:** entidade **`RefreshToken`** (token em **hash**, `UserId`, `ExpiresAt`, `RevokedAt`, `CreatedAt`, índices), persistida via `IUnitOfWork` (BuildingBlocks).
+
+## Histórico de refinamento
+- **2026-06-25** — Brainstorm. Decididos: tokens 15min/7d com rotação; login por e-mail; rate limit nativo por IP (AC #11); `IEmailSender`+SMTP dev; auditoria de refresh tokens (`RefreshToken`).
 
 ---
-> Próximo: **"faça um brainstorm da história AZ-12094"** (refinar) e depois **"abra arquitetura da feature AZ-12094"**.
-> Implementação seguirá os padrões: contratos em `Contracts/`, Result/envelope (BuildingBlocks), `IUnitOfWork`, status codes.
+> Implementação consome o **BuildingBlocks** (Result/envelope/dispatcher/IUnitOfWork); contratos em `Api/Contracts/Auth/`; status codes semânticos.

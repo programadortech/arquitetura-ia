@@ -1,7 +1,13 @@
+using System.Text;
+using System.Threading.RateLimiting;
 using BuildingBlocks.Api;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Plataforma2ASmart.Auth.Infrastructure.Authentication;
 using Serilog;
 
 namespace Plataforma2ASmart.Auth.Api.Extensions;
@@ -39,6 +45,51 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApiDocumentation(this IServiceCollection services)
     {
         services.AddOpenApi();
+        return services;
+    }
+
+    /// <summary>Autenticação JWT Bearer a partir do JwtOptions único do DI (claim 'sub' preservada).</summary>
+    public static IServiceCollection AddJwtAuthentication(this IServiceCollection services)
+    {
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+        services
+            .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+            .Configure<JwtOptions>((options, jwt) =>
+            {
+                options.MapInboundClaims = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwt.Issuer,
+                    ValidAudience = jwt.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
+                    ClockSkew = TimeSpan.Zero,
+                };
+            });
+        services.AddAuthorization();
+        return services;
+    }
+
+    /// <summary>Rate limiting por IP para os endpoints públicos sensíveis (login/forgot/reset — AC #11).</summary>
+    public static IServiceCollection AddRateLimiting(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddPolicy("auth", httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 10,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0,
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    }));
+        });
         return services;
     }
 }
