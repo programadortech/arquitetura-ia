@@ -15,6 +15,9 @@ $ErrorActionPreference = "Stop"
 $errors = New-Object System.Collections.Generic.List[string]
 $warns  = New-Object System.Collections.Generic.List[string]
 
+# standards/ e adr/ são da FÁBRICA (raiz do repo); features/ e architecture/ são por produto (-Root). Monorepo multi-produto (ADR-0030).
+$repoRoot = Split-Path $PSScriptRoot -Parent
+
 $required = @(
   "docs/standards/architecture.md",
   "docs/standards/usecase-dispatcher.md",
@@ -28,23 +31,20 @@ $required = @(
   "docs/standards/quality-checklist.md"
 )
 foreach ($r in $required) {
-  if (-not (Test-Path (Join-Path $Root $r))) { $errors.Add("Missing required standard: $r") }
+  if (-not (Test-Path (Join-Path $repoRoot $r))) { $errors.Add("Missing required standard: $r") }
 }
 
-# ADR numbering
-$adrDir = Join-Path $Root "docs/adr"
+# ADR numbering (decisões transversais — na raiz)
+$adrDir = Join-Path $repoRoot "docs/adr"
 if (-not (Test-Path $adrDir)) {
   $errors.Add("Missing docs/adr directory.")
 } else {
-  $adrs = Get-ChildItem $adrDir -Filter "*.md" |
+  # Lacunas são aceitas (ADRs removidos no reset deixam buracos); só DUPLICATAS são erro.
+  $nums = Get-ChildItem $adrDir -Filter "*.md" |
           Where-Object { $_.Name -match '^\d{4}-' } |
-          Sort-Object Name
-  $expected = 1
-  foreach ($a in $adrs) {
-    $num = [int]($a.Name.Substring(0,4))
-    if ($num -ne $expected) { $errors.Add("ADR numbering gap: expected $($expected.ToString('0000')), found $($a.Name)") }
-    $expected++
-  }
+          ForEach-Object { [int]($_.Name.Substring(0,4)) }
+  $dups = $nums | Group-Object | Where-Object { $_.Count -gt 1 }
+  foreach ($d in $dups) { $errors.Add("ADR número duplicado: $($d.Name)") }
 }
 
 # Feature -> architecture coverage (warn only)
