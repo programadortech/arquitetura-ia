@@ -77,10 +77,23 @@ Api(UsersController) ─▶ Application(Create/UpdateUser, IUserAdminService, IU
 - **Spans:** `CreateUser`, `UpdateUser` (atributos `user.id`, `roles.count`, `temp_password.generated`).
 
 ## 7. Plano de tasks
-ApplicationUser `Name`+`IsActive` · porta `IUserAdminService` + outcomes · porta `IUserWelcomeEmailSender` ·
-`CreateUserHandler` · `UpdateUserHandler` · `UserAdminService` (UserManager/RoleManager, transação, senha temp) ·
-`UserWelcomeEmailSender` (temporário) · gate `IsActive` no login (regressão AZ-12094) · `UsersController` + contratos +
-policy `Users.Manage` · migração SQL Server `0002` · testes (unit handlers + arquitetura + regressão login) · observabilidade.
+Sincronizado no Azure DevOps como filhas da história **#12114** (`/sync-tasks`):
+
+| # | Task |
+|---|---|
+| 12118 | Domain/Identity: `Name` e `IsActive` no `ApplicationUser` |
+| 12119 | Application: portas `IUserAdminService` e `IUserWelcomeEmailSender` |
+| 12120 | Application: caso de uso `CreateUser` |
+| 12121 | Application: caso de uso `UpdateUser` |
+| 12122 | Infrastructure: `UserAdminService` (Identity) |
+| 12123 | Infrastructure: `UserWelcomeEmailSender` temporário |
+| 12124 | Infrastructure: gate de usuário inativo no login |
+| 12125 | Api: `UsersController` + contratos |
+| 12126 | Api: autorização (`Users.Manage`, bootstrap `Users.Create`, seed de roles) |
+| 12127 | Banco: migração SQL Server `0002` (`Name`/`IsActive`) |
+| 12128 | Testes: handlers + bootstrap + regressão do login |
+| 12129 | Observabilidade: logs estruturados e métricas |
+| 12130 | Revisão: build `-warnaserror` + validadores |
 
 ---
 > Próximo: `/create-usecase CreateUser` e `/create-usecase UpdateUser`; migração com `/create-db-script`; testes com `/create-tests`. PR para `dev`.

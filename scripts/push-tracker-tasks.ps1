@@ -36,9 +36,10 @@ $ErrorActionPreference = "Stop"
 
 if (-not (Test-Path $TasksFile)) { throw "Arquivo de tasks não encontrado: $TasksFile" }
 # Lê como UTF-8 explicitamente (PowerShell 5.1 usaria ANSI e corromperia acentos).
-# Usa a forma de argumento do ConvertFrom-Json (o padrão "@(... | ConvertFrom-Json)" colapsa o array no PS 5.1).
 $tasksRaw = [System.IO.File]::ReadAllText((Resolve-Path $TasksFile), [System.Text.Encoding]::UTF8)
-$tasks = @(ConvertFrom-Json $tasksRaw)
+# No PS 5.1, `@(ConvertFrom-Json $raw)` de um array JSON vira UM elemento (o array aninhado), e o loop
+# manda todos os títulos num só campo. Desenrolar pelo pipeline garante um item por task.
+$tasks = @(); ConvertFrom-Json $tasksRaw | ForEach-Object { $tasks += $_ }
 if ($tasks.Count -eq 0) { Write-Output "[INFO] Nenhuma task para criar."; exit 0 }
 
 $localCfg = ".claude/tracker.config.local.json"
