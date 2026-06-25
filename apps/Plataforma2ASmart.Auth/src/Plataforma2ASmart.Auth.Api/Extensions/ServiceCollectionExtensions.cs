@@ -17,6 +17,10 @@ public static class ServiceCollectionExtensions
 {
     private const string ServiceName = "Plataforma2ASmart.Auth.Api";
 
+    /// <summary>Policy de administração de usuários (AZ-12114 / ADR-P0002), mapeada para a role administrativa.</summary>
+    public const string ManageUsersPolicy = "Users.Manage";
+    private const string AdminRole = "Administrador";
+
     public static IServiceCollection AddObservability(this IServiceCollection services)
     {
         services.AddSerilog(cfg => cfg.Enrich.FromLogContext().WriteTo.Console());
@@ -67,9 +71,11 @@ public static class ServiceCollectionExtensions
                     ValidAudience = jwt.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
                     ClockSkew = TimeSpan.Zero,
+                    RoleClaimType = JwtOptions.RoleClaimType,
                 };
             });
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+            options.AddPolicy(ManageUsersPolicy, policy => policy.RequireRole(AdminRole)));
         return services;
     }
 

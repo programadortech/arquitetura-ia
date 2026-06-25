@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Plataforma2ASmart.Auth.Application.Ports.Authentication;
 using Plataforma2ASmart.Auth.Application.Ports.Email;
+using Plataforma2ASmart.Auth.Application.Ports.Users;
 using Plataforma2ASmart.Auth.Infrastructure.Authentication;
 using Plataforma2ASmart.Auth.Infrastructure.Email;
 using Plataforma2ASmart.Auth.Infrastructure.Identity;
@@ -48,9 +49,11 @@ public static class DependencyInjection
         services.AddSingleton(smtpOptions);
 
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IUserAdminService, UserAdminService>();
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
         services.AddSingleton<IEmailSender, SmtpEmailSender>();
+        services.AddSingleton<IUserWelcomeEmailSender, UserWelcomeEmailSender>();
 
         services.AddResiliencePipeline("database", builder =>
             builder

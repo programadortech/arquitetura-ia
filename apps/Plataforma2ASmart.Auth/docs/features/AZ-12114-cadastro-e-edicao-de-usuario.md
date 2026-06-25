@@ -1,6 +1,6 @@
 # Feature: Cadastro e Edição de Usuário
 
-- **Status:** Arquitetura aprovada
+- **Status:** Em implementação (PR)
 - **Responsável:** —
 - **Data:** 2026-06-25
 - **Relacionados:**

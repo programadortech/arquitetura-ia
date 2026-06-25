@@ -9,7 +9,8 @@ public sealed class IdentityService(UserManager<ApplicationUser> users) : IIdent
     public async Task<IdentityUserInfo?> ValidateCredentialsAsync(string email, string password, CancellationToken cancellationToken)
     {
         var user = await users.FindByEmailAsync(email);
-        if (user is null || !await users.CheckPasswordAsync(user, password))
+        // Usuário inativo não autentica (AZ-12114) — mesma resposta de credencial inválida, sem revelar o motivo.
+        if (user is null || !user.IsActive || !await users.CheckPasswordAsync(user, password))
         {
             return null;
         }
