@@ -17,7 +17,8 @@
 - Clean Architecture (0002), dispatcher próprio (0003), Result/envelope (0014), EF/Dapper+UoW (0020), config por ambiente (0022), camada de API (0028), código limpo (0029), monorepo multi-produto (0030).
 
 ## Backlog / features
-- _(nenhuma ainda — importe histórias com `/import-story` ou crie com `/create-feature`)_
+- Índice: [`features/README.md`](features/README.md).
+- **AZ-12094 — Autenticação e Gerenciamento de Senha** — importada (a refinar). Doc: [`features/AZ-12094-autenticacao-e-gerenciamento-de-senha.md`](features/AZ-12094-autenticacao-e-gerenciamento-de-senha.md).
 
 ## Setup local
 - `dotnet run --project apps/Plataforma2ASmart.Auth/src/Plataforma2ASmart.Auth.Api` (API em http://localhost:5090; docs em `/scalar`).
