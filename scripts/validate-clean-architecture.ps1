@@ -27,8 +27,9 @@ if (-not $csprojs) {
 foreach ($proj in $csprojs) {
   $name = $proj.BaseName
   $xml  = [xml](Get-Content $proj.FullName)
+  # Normaliza '\' -> '/' antes de extrair o nome (no Linux, '\' não é separador de caminho).
   $refs = @($xml.Project.ItemGroup.ProjectReference.Include | Where-Object { $_ }) |
-          ForEach-Object { [System.IO.Path]::GetFileNameWithoutExtension($_) }
+          ForEach-Object { [System.IO.Path]::GetFileNameWithoutExtension(($_ -replace '\\','/')) }
 
   if ($name -match '\.Domain$' -and $refs.Count -gt 0) {
     Fail "Domain project '$name' must have NO project references. Found: $($refs -join ', ')"
