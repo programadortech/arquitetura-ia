@@ -52,6 +52,7 @@ temporária (com `TODO`) para uma história futura concluir.
 
 ## Regras de negócio (decididas no refinamento)
 - **Autorização:** os endpoints exigem a **policy nomeada `Users.Manage`**, mapeada para a(s) role(s) administrativa(s) — o controller não depende do nome literal de uma role.
+- **Bootstrap do primeiro usuário:** `POST /api/users` é liberado **enquanto não há nenhum usuário** no sistema (policy `Users.Create`); ao criar o primeiro, volta a exigir a role administrativa. `PUT` nunca é liberado por bootstrap. As roles do sistema são semeadas no startup.
 - **Roles informadas devem existir:** informar uma role inexistente no cadastro/edição **recusa** a operação com erro de **Validation** (a feature **não** cria roles novas).
 - **Status ativo/inativo:** modelado como flag **`IsActive`** no `ApplicationUser`; o **gate de login** (fluxo da AZ-12094) recusa usuários inativos. Inativar **não** apaga o usuário.
 - **Nome:** atributo de perfil **`Name`** adicionado ao `ApplicationUser` (o Identity padrão não possui `Name`).
@@ -74,6 +75,7 @@ temporária (com `TODO`) para uma história futura concluir.
 10. **Given** uma role informada que **não** existe no sistema **when** o administrador cadastra ou edita o usuário **then** o sistema recusa com erro de **Validation** ("Perfil informado não existe") e **não** cria/altera o usuário.
 11. **Given** qualquer endpoint desta feature **when** chamado com entrada inválida **then** o sistema responde com erro de validação descrevendo os campos.
 12. **Given** qualquer operação **when** executada **then** registra logs estruturados **sem** expor senha ou dados sensíveis.
+13. **Given** que o sistema **não** tem nenhum usuário **when** alguém chama `POST /api/users` sem autenticação **then** o cadastro é permitido (bootstrap do primeiro usuário); **e given** já existe ao menos um usuário **then** o mesmo `POST` sem a policy `Users.Create`/role administrativa é recusado (401/403).
 
 ## Requisitos não funcionais
 - **Performance:** cadastro ≤ 500 ms; edição ≤ 300 ms (condições normais, sem contar e-mail). Consultas por e-mail e login usam índices adequados.
@@ -151,6 +153,7 @@ Nenhuma task-filha cadastrada para o AZ-12114 no momento do import. As atividade
   3. **Ativo/inativo** → flag `IsActive` no `ApplicationUser` + gate no login.
   4. **Role inexistente** → recusar com erro de Validation.
   Critérios de aceite ampliados (authz 401/403, role inexistente, validação de entrada) e seção de Regras de negócio adicionada. Status: **Pronta para arquitetura**.
+- **2026-06-25** — Pós-implementação: resolvido o impasse do **primeiro usuário** (ovo-e-galinha). `POST /api/users` liberado via policy `Users.Create` **somente enquanto não há usuários** (fecha ao criar o primeiro); roles semeadas no startup. Novo AC #13.
 
 ---
 > Próximo: execute `/approve-architecture` → produz `docs/architecture/AZ-12114-cadastro-e-edicao-de-usuario.md`.

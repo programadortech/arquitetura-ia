@@ -2,8 +2,10 @@ using System.Text;
 using System.Threading.RateLimiting;
 using BuildingBlocks.Api;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
+using Plataforma2ASmart.Auth.Api.Authorization;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -16,10 +18,6 @@ namespace Plataforma2ASmart.Auth.Api.Extensions;
 public static class ServiceCollectionExtensions
 {
     private const string ServiceName = "Plataforma2ASmart.Auth.Api";
-
-    /// <summary>Policy de administração de usuários (AZ-12114 / ADR-P0002), mapeada para a role administrativa.</summary>
-    public const string ManageUsersPolicy = "Users.Manage";
-    private const string AdminRole = "Administrador";
 
     public static IServiceCollection AddObservability(this IServiceCollection services)
     {
@@ -74,8 +72,12 @@ public static class ServiceCollectionExtensions
                     RoleClaimType = JwtOptions.RoleClaimType,
                 };
             });
+        services.AddScoped<IAuthorizationHandler, CreateUserAuthorizationHandler>();
         services.AddAuthorization(options =>
-            options.AddPolicy(ManageUsersPolicy, policy => policy.RequireRole(AdminRole)));
+        {
+            options.AddPolicy(UserPolicies.ManageUsers, policy => policy.RequireRole(UserPolicies.AdminRole));
+            options.AddPolicy(UserPolicies.CreateUser, policy => policy.AddRequirements(new CreateUserRequirement()));
+        });
         return services;
     }
 

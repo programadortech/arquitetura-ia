@@ -53,4 +53,7 @@ public interface IUserAdminService
 {
     Task<UserCreateOutcome> CreateAsync(CreateUserSpec spec, CancellationToken cancellationToken);
     Task<UserUpdateOutcome> UpdateAsync(UpdateUserSpec spec, CancellationToken cancellationToken);
+
+    /// <summary>Há algum usuário no sistema? Usado pelo bootstrap do primeiro usuário (AZ-12114).</summary>
+    Task<bool> AnyUserExistsAsync(CancellationToken cancellationToken);
 }

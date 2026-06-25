@@ -15,6 +15,11 @@ e onde aplicar o gate, e como modelar o **e-mail de boas-vindas** cujo envio rea
 ## Decisão
 1. **Autorização por policy nomeada `Users.Manage`** (não `[Authorize(Roles="...")]` literal no controller). A policy é
    registrada na composição da Api e mapeada para a(s) role(s) administrativa(s); trocar o mapeamento não toca o controller.
+   - **Bootstrap do primeiro usuário:** `POST /api/users` usa a policy **`Users.Create`** (requirement próprio) que libera o
+     cadastro para **administrador OU enquanto não existir nenhum usuário** no sistema. Ao criar o primeiro, o endpoint volta a
+     exigir a role — evita o impasse ovo-e-galinha sem abrir o endpoint permanentemente. `PUT` permanece em `Users.Manage`.
+   - **Seed de roles no startup** (idempotente): as roles do sistema (`Administrador`/`Operador`/`Supervisor`) são garantidas na
+     inicialização — sem elas, o cadastro falharia por role inexistente. Roles não são segredo.
 2. **Status ativo/inativo como flag `IsActive`** no `ApplicationUser` (default `true`). O **gate de login** (porta
    `IIdentityService` da AZ-12094) passa a recusar usuários inativos — inativar **não** apaga o usuário.
 3. **`Name`** como atributo de perfil no `ApplicationUser` (o Identity padrão não possui `Name`).

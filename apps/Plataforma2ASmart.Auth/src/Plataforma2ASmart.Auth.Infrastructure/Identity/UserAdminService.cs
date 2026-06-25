@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Plataforma2ASmart.Auth.Application.Ports.Users;
 using Plataforma2ASmart.Auth.Infrastructure.Persistence;
@@ -17,6 +18,8 @@ public sealed class UserAdminService(
     IOptions<IdentityOptions> identityOptions) : IUserAdminService
 {
     private PasswordOptions PasswordPolicy => identityOptions.Value.Password;
+
+    public Task<bool> AnyUserExistsAsync(CancellationToken cancellationToken) => users.Users.AnyAsync(cancellationToken);
 
     public async Task<UserCreateOutcome> CreateAsync(CreateUserSpec spec, CancellationToken cancellationToken)
     {

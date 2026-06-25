@@ -2,8 +2,8 @@ using BuildingBlocks.Api;
 using BuildingBlocks.Application.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Plataforma2ASmart.Auth.Api.Authorization;
 using Plataforma2ASmart.Auth.Api.Contracts.Users;
-using Plataforma2ASmart.Auth.Api.Extensions;
 
 namespace Plataforma2ASmart.Auth.Api.Controllers;
 
@@ -11,10 +11,11 @@ namespace Plataforma2ASmart.Auth.Api.Controllers;
 [ApiController]
 [Route("api/users")]
 [Tags("Usuários")]
-[Authorize(Policy = ServiceCollectionExtensions.ManageUsersPolicy)]
 public sealed class UsersController(IUseCaseDispatcher dispatcher) : ControllerBase
 {
+    // Bootstrap: liberado sem admin enquanto não houver nenhum usuário; depois exige a role (ver CreateUserRequirement).
     [HttpPost]
+    [Authorize(Policy = UserPolicies.CreateUser)]
     public async Task<IResult> Create([FromBody] CreateUserRequest body, CancellationToken ct)
     {
         var result = await dispatcher.SendAsync(body.ToUseCase(), ct);
@@ -23,6 +24,7 @@ public sealed class UsersController(IUseCaseDispatcher dispatcher) : ControllerB
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = UserPolicies.ManageUsers)]
     public async Task<IResult> Update(Guid id, [FromBody] UpdateUserRequest body, CancellationToken ct)
         => (await dispatcher.SendAsync(body.ToUseCase(id), ct)).ToApiResult(HttpContext);
 }

@@ -37,8 +37,12 @@ temporária, associação de roles **transacional**); `IUserWelcomeEmailSender` 
     gera **senha temporária** compatível com `IdentityOptions.Password` quando não informada.
   - `UserWelcomeEmailSender : IUserWelcomeEmailSender` — impl. temporária: loga "boas-vindas preparado" (sem senha) + `TODO`.
   - **Gate de inativo:** `IIdentityService.ValidateCredentialsAsync` (AZ-12094) passa a recusar `!IsActive`.
-- **Api:** `UsersController` fino com `[Authorize(Policy = "Users.Manage")]`; contratos em `Contracts/Users/`
-  (`CreateUserRequest`/`UpdateUserRequest` com `ToUseCase()`); policy `Users.Manage` registrada em `AddJwtAuthentication`/`AddAuthorization`.
+- **Api:** `UsersController` fino; `POST` sob `[Authorize(Policy="Users.Create")]` (bootstrap), `PUT` sob `[Authorize(Policy="Users.Manage")]`;
+  contratos em `Contracts/Users/` (`ToUseCase()`); policies + `CreateUserAuthorizationHandler` em `Authorization/`. Roles semeadas no startup (`SeedRolesAsync`).
+
+### Bootstrap do primeiro usuário
+`Users.Create` (requirement `CreateUserRequirement` + handler) libera o `POST` para **admin OU sistema sem nenhum usuário**
+(`IUserAdminService.AnyUserExistsAsync`). Fecha sozinho ao criar o primeiro. `PUT` nunca é liberado por bootstrap.
 
 ```
 Api(UsersController) ─▶ Application(Create/UpdateUser, IUserAdminService, IUserWelcomeEmailSender) ─▶ Domain(—)

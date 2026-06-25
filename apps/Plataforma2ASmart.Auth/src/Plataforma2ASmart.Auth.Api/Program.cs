@@ -1,6 +1,7 @@
 using Plataforma2ASmart.Auth.Api.Extensions;
 using Plataforma2ASmart.Auth.Application;
 using Plataforma2ASmart.Auth.Infrastructure;
+using Plataforma2ASmart.Auth.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services
     .AddRateLimiting();
 
 var app = builder.Build();
+
+await app.Services.SeedRolesAsync();
 
 app.UseApiPipeline();
 app.MapApiDocumentation();
