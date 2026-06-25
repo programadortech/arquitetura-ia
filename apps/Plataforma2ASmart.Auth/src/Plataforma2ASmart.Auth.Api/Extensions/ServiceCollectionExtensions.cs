@@ -2,8 +2,10 @@ using System.Text;
 using System.Threading.RateLimiting;
 using BuildingBlocks.Api;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
+using Plataforma2ASmart.Auth.Api.Authorization;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -67,9 +69,15 @@ public static class ServiceCollectionExtensions
                     ValidAudience = jwt.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
                     ClockSkew = TimeSpan.Zero,
+                    RoleClaimType = JwtOptions.RoleClaimType,
                 };
             });
-        services.AddAuthorization();
+        services.AddScoped<IAuthorizationHandler, CreateUserAuthorizationHandler>();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(UserPolicies.ManageUsers, policy => policy.RequireRole(UserPolicies.AdminRole));
+            options.AddPolicy(UserPolicies.CreateUser, policy => policy.AddRequirements(new CreateUserRequirement()));
+        });
         return services;
     }
 

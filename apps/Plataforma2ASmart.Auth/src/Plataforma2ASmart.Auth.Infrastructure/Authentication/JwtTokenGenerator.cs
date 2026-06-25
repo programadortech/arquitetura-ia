@@ -21,7 +21,7 @@ public sealed class JwtTokenGenerator(JwtOptions options) : IJwtTokenGenerator
             new(ClaimTypes.Name, email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.AddRange(roles.Select(role => new Claim(JwtOptions.RoleClaimType, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Key));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
