@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="NetArchTest.Rules" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Plataforma2ASmart.Auth.Domain\Plataforma2ASmart.Auth.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Plataforma2ASmart.Auth.Application\Plataforma2ASmart.Auth.Application.csproj" />
+    <ProjectReference Include="..\..\src\Plataforma2ASmart.Auth.Infrastructure\Plataforma2ASmart.Auth.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Plataforma2ASmart.Auth.Api\Plataforma2ASmart.Auth.Api.csproj" />
+  </ItemGroup>
+</Project>

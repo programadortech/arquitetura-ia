@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Plataforma2ASmart.Auth.Domain/Plataforma2ASmart.Auth.Domain.csproj" />
+    <Project Path="src/Plataforma2ASmart.Auth.Application/Plataforma2ASmart.Auth.Application.csproj" />
+    <Project Path="src/Plataforma2ASmart.Auth.Infrastructure/Plataforma2ASmart.Auth.Infrastructure.csproj" />
+    <Project Path="src/Plataforma2ASmart.Auth.Api/Plataforma2ASmart.Auth.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Plataforma2ASmart.Auth.UnitTests/Plataforma2ASmart.Auth.UnitTests.csproj" />
+    <Project Path="tests/Plataforma2ASmart.Auth.IntegrationTests/Plataforma2ASmart.Auth.IntegrationTests.csproj" />
+    <Project Path="tests/Plataforma2ASmart.Auth.ArchitectureTests/Plataforma2ASmart.Auth.ArchitectureTests.csproj" />
+  </Folder>
+</Solution>
