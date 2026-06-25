@@ -63,6 +63,16 @@ jobs:
       - name: Validar convenções da camada de API (ADR-0028)
         shell: pwsh
         run: ./scripts/validate-api-conventions.ps1 -Root "${{ matrix.app }}"
+      - name: Contrato OpenAPI atualizado (ADR-0032)
+        shell: pwsh
+        env:
+          OPENAPI_GENERATION: "true"
+          Jwt__Key: "ci-openapi-generation-dummy-key-0123456789"
+          ConnectionStrings__Default: "Server=localhost;Database=openapi-gen;TrustServerCertificate=True"
+        run: |
+          ./scripts/generate-openapi.ps1 -Root "${{ matrix.app }}"
+          git diff --exit-code -- "${{ matrix.app }}/contracts/openapi.json"
+          if ($LASTEXITCODE -ne 0) { Write-Error "openapi.json desatualizado — rode scripts/generate-openapi.ps1 e commite."; exit 1 }
 
   # Check estável e único para branch protection (agrega building-blocks + matriz de produtos).
   ci-ok:
