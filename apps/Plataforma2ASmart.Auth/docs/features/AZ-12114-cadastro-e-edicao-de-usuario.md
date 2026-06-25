@@ -41,7 +41,7 @@ temporária (com `TODO`) para uma história futura concluir.
 - Ativação/inativação de usuário; usuário inativo **não autentica**.
 - Unicidade de e-mail e de nome de usuário.
 - **Interface** de envio de e-mail de boas-vindas + implementação temporária com `TODO` (sem envio real).
-- Validação de entrada, autenticação + autorização (Administrador/policy) em todos os endpoints.
+- Validação de entrada, autenticação + autorização via **policy nomeada `Users.Manage`** em todos os endpoints.
 - Logs estruturados (sem dados sensíveis) e métricas.
 
 **Fora do escopo**
@@ -49,6 +49,17 @@ temporária (com `TODO`) para uma história futura concluir.
 - Alteração de senha pela edição de usuário (senha é tratada apenas pelos fluxos de senha da AZ-12094).
 - Exclusão de usuário, fluxo de listagem/paginação e tela/UI (frontend).
 - Gestão de roles em si (criação de roles novas) além de associar as existentes ao usuário.
+
+## Regras de negócio (decididas no refinamento)
+- **Autorização:** os endpoints exigem a **policy nomeada `Users.Manage`**, mapeada para a(s) role(s) administrativa(s) — o controller não depende do nome literal de uma role.
+- **Roles informadas devem existir:** informar uma role inexistente no cadastro/edição **recusa** a operação com erro de **Validation** (a feature **não** cria roles novas).
+- **Status ativo/inativo:** modelado como flag **`IsActive`** no `ApplicationUser`; o **gate de login** (fluxo da AZ-12094) recusa usuários inativos. Inativar **não** apaga o usuário.
+- **Nome:** atributo de perfil **`Name`** adicionado ao `ApplicationUser` (o Identity padrão não possui `Name`).
+- **Senha opcional:** com senha → cria com a senha informada (validada pela política do Identity); sem senha → gera senha temporária (política do Identity), mantida **só em memória**, e prepara o e-mail de boas-vindas.
+- **E-mail de boas-vindas:** via **porta dedicada `IUserWelcomeEmailSender`** (Application); implementação temporária na Infrastructure apenas **loga** (sem expor a senha) com `TODO` para a história futura. Indisponibilidade do e-mail **não** falha o cadastro.
+- **Unicidade:** e-mail e login únicos (normalizados pelo Identity) — duplicidade recusa com mensagem específica.
+- **Transacional:** criação do usuário + associação de roles é atômica (Unit of Work); falha na associação **não** deixa usuário criado parcialmente.
+- **Edição não altera senha:** senha permanece exclusiva dos fluxos de senha da AZ-12094.
 
 ## Critérios de aceite (Given/When/Then)
 1. **Given** um administrador autenticado **when** cadastra um usuário com dados obrigatórios **e** uma senha válida **then** o sistema cria o usuário no Identity, associa as roles, retorna os dados do usuário e **não** gera senha temporária.
@@ -59,8 +70,10 @@ temporária (com `TODO`) para uma história futura concluir.
 6. **Given** um usuário existente **when** o administrador altera os dados básicos **then** o sistema atualiza os dados, atualiza as roles informadas e retorna os dados atualizados (**sem** alterar senha).
 7. **Given** que não existe usuário com o identificador informado **when** o administrador solicita a edição **then** o sistema recusa com "Usuário não encontrado".
 8. **Given** um usuário ativo **when** o administrador altera o status para inativo **then** o sistema marca o usuário como inativo **e** ele não consegue mais realizar login.
-9. **Given** qualquer endpoint desta feature **when** chamado **then** exige autenticação + autorização (Administrador/policy) e valida a entrada.
-10. **Given** qualquer operação **when** executada **then** registra logs estruturados **sem** expor senha ou dados sensíveis.
+9. **Given** qualquer endpoint desta feature **when** chamado sem autenticação ou sem a policy `Users.Manage` **then** o sistema responde 401/403 e não executa a operação.
+10. **Given** uma role informada que **não** existe no sistema **when** o administrador cadastra ou edita o usuário **then** o sistema recusa com erro de **Validation** ("Perfil informado não existe") e **não** cria/altera o usuário.
+11. **Given** qualquer endpoint desta feature **when** chamado com entrada inválida **then** o sistema responde com erro de validação descrevendo os campos.
+12. **Given** qualquer operação **when** executada **then** registra logs estruturados **sem** expor senha ou dados sensíveis.
 
 ## Requisitos não funcionais
 - **Performance:** cadastro ≤ 500 ms; edição ≤ 300 ms (condições normais, sem contar e-mail). Consultas por e-mail e login usam índices adequados.
@@ -98,11 +111,10 @@ Response (200 OK):
 { "id": "user-id", "name": "João Silva", "email": "joao.silva@empresa.com", "userName": "joao.silva", "roles": ["Supervisor"], "isActive": true }
 ```
 
-### Interface de envio de e-mail (porta na Application)
-A história sugere `IUserWelcomeEmailSender.SendWelcomeEmailAsync(email, userName, temporaryPassword, ct)`, com uma
-implementação temporária na Infrastructure que **apenas registra log** (sem expor a senha) e contém um `TODO` para a
-história futura concluir o envio real. *Nota de arquitetura:* o produto já possui a porta `IEmailSender` (AZ-12094);
-em `/approve-architecture` decidir entre reutilizá-la ou introduzir a porta específica de boas-vindas.
+### Interface de envio de e-mail (porta na Application) — **decidido**
+Porta **dedicada** `IUserWelcomeEmailSender.SendWelcomeEmailAsync(email, userName, temporaryPassword, ct)` na Application,
+com implementação temporária na Infrastructure que **apenas registra log** (sem expor a senha) e contém um `TODO` para a
+história futura concluir o envio real. Mantém a `IEmailSender` genérica (AZ-12094) separada do contrato específico de boas-vindas.
 
 ## Dependências
 - ASP.NET Core Identity + tabelas do Identity (já criadas na AZ-12094).
@@ -111,21 +123,34 @@ em `/approve-architecture` decidir entre reutilizá-la ou introduzir a porta esp
 - Serviço/interface de envio de e-mail (boas-vindas) — implementação real em história futura.
 - Provedor de configuração segura para secrets; middleware de autorização; roles/policies do sistema.
 
-## Riscos e premissas
-- **Premissa:** as roles informadas no cadastro/edição **já existem** no sistema (a história não cria roles novas). *A confirmar* o comportamento quando uma role inexistente é informada — padrão proposto: recusar com erro de validação.
-- **Premissa:** "Status ativo/inativo" será modelado como flag no `ApplicationUser` (ex.: `IsActive`), e o gate de login (inativo não autentica) será aplicado no fluxo de autenticação existente (AZ-12094). *A confirmar* na arquitetura.
-- **Premissa:** "Nome" é um atributo de perfil adicionado ao `ApplicationUser` (o Identity padrão não tem `Name`). *A confirmar.*
-- **Risco:** transação envolvendo criação de usuário + roles no Identity — garantir atomicidade via Unit of Work / escopo transacional para não criar usuário parcial.
-- **Risco:** vazar senha temporária em log/response — mitigado mantendo-a só em memória e fora de logs; o response apenas sinaliza `temporaryPasswordGenerated`.
+## Premissas (confirmadas no refinamento)
+- Roles informadas **já existem**; role inexistente → erro de **Validation** (feature não cria roles).
+- Status ativo/inativo = flag **`IsActive`** no `ApplicationUser`; gate de login (AZ-12094) recusa inativos.
+- **`Name`** adicionado ao `ApplicationUser` (perfil); o Identity padrão não possui esse atributo.
+- Autorização por **policy nomeada `Users.Manage`** (não role literal no controller).
+- E-mail de boas-vindas via **porta dedicada `IUserWelcomeEmailSender`** (impl. temporária com `TODO`).
+
+## Riscos
+- **Atomicidade usuário + roles:** criação envolve duas operações no Identity — garantir escopo transacional (Unit of Work) para não criar usuário parcial em caso de falha na associação de roles.
+- **Vazamento de senha temporária:** mantida só em memória e fora de logs; o response apenas sinaliza `temporaryPasswordGenerated`.
+- **Alteração de e-mail/login na edição:** trocar e-mail/login reabre o risco de colisão de unicidade e re-normalização no Identity — a edição deve revalidar unicidade contra **outros** usuários.
+- **Impacto na AZ-12094:** o gate de `IsActive` no login altera o fluxo de autenticação já entregue — exige teste de regressão do login.
 
 ## Questões em aberto
-- [ ] Reutilizar a porta `IEmailSender` existente ou criar `IUserWelcomeEmailSender` dedicada? — padrão proposto: porta dedicada de boas-vindas (alinha com o contrato da história), implementação temporária com `TODO`.
-- [ ] Role inexistente no cadastro/edição → erro de validação (proposto) ou criar a role? — padrão proposto: **erro de validação**.
-- [ ] Política de autorização: role fixa "Administrador" ou policy nomeada (ex.: `Users.Manage`)? — padrão proposto: **policy nomeada** mapeada para a role administrativa.
+- Nenhuma bloqueante. (As 4 decisões de design foram resolvidas no refinamento de 2026-06-25.)
+- A confirmar com produto, **sem bloquear arquitetura:** mensagens exatas de erro (i18n) e se "Operador/Supervisor" são as roles iniciais do seed.
 
 ## Tasks existentes no tracker
 Nenhuma task-filha cadastrada para o AZ-12114 no momento do import. As atividades serão derivadas no
-`/brainstorm-story`/`/approve-architecture` e poderão ser escritas de volta com `/sync-tasks`.
+`/approve-architecture` e poderão ser escritas de volta com `/sync-tasks`.
+
+## Histórico de refinamento
+- **2026-06-25** — Refinamento (`/brainstorm-story`). História já chegou rica do tracker (regras, NFRs, BDD). 4 decisões de design fechadas com o usuário:
+  1. **Autorização** → policy nomeada `Users.Manage` (não role literal).
+  2. **E-mail de boas-vindas** → porta dedicada `IUserWelcomeEmailSender` (impl. temporária com `TODO`).
+  3. **Ativo/inativo** → flag `IsActive` no `ApplicationUser` + gate no login.
+  4. **Role inexistente** → recusar com erro de Validation.
+  Critérios de aceite ampliados (authz 401/403, role inexistente, validação de entrada) e seção de Regras de negócio adicionada. Status: **Pronta para arquitetura**.
 
 ---
 > Próximo: execute `/approve-architecture` → produz `docs/architecture/AZ-12114-cadastro-e-edicao-de-usuario.md`.
