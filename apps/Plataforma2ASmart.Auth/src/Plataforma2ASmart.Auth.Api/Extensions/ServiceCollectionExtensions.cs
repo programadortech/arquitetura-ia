@@ -4,7 +4,9 @@ using BuildingBlocks.Api;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Plataforma2ASmart.Auth.Api.Authentication;
 using Plataforma2ASmart.Auth.Api.Authorization;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -18,6 +20,24 @@ namespace Plataforma2ASmart.Auth.Api.Extensions;
 public static class ServiceCollectionExtensions
 {
     private const string ServiceName = "Plataforma2ASmart.Auth.Api";
+    public const string SpaCorsPolicy = "spa";
+
+    /// <summary>CORS com credenciais para o SPA (front separado) + opções do cookie httpOnly do refresh. ADR-P0003.</summary>
+    public static IServiceCollection AddSpaIntegration(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<RefreshCookieOptions>(configuration.GetSection(RefreshCookieOptions.SectionName));
+
+        var origins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+        services.AddCors(options => options.AddPolicy(SpaCorsPolicy, policy =>
+        {
+            if (origins.Length > 0)
+            {
+                policy.WithOrigins(origins).AllowCredentials();
+            }
+            policy.AllowAnyHeader().AllowAnyMethod();
+        }));
+        return services;
+    }
 
     public static IServiceCollection AddObservability(this IServiceCollection services)
     {

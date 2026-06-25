@@ -1,29 +1,49 @@
 using BuildingBlocks.Api;
 using BuildingBlocks.Application.Abstractions;
+using BuildingBlocks.Application.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
+using Plataforma2ASmart.Auth.Api.Authentication;
 using Plataforma2ASmart.Auth.Api.Common;
 using Plataforma2ASmart.Auth.Api.Contracts.Auth;
+using Plataforma2ASmart.Auth.Application.UseCases.Auth;
+using AppRefreshToken = Plataforma2ASmart.Auth.Application.UseCases.Auth.RefreshToken;
 
 namespace Plataforma2ASmart.Auth.Api.Controllers;
 
-/// <summary>Autenticação e gerenciamento de senha (AZ-12094). Controller fino: despacha e mapeia Result → envelope.</summary>
+/// <summary>Autenticação e gerenciamento de senha. Refresh token trafega por cookie httpOnly (ADR-P0003).</summary>
 [ApiController]
 [Route("api/auth")]
 [Tags("Autenticação")]
-public sealed class AuthController(IUseCaseDispatcher dispatcher) : ControllerBase
+public sealed class AuthController(IUseCaseDispatcher dispatcher, IOptions<RefreshCookieOptions> cookieOptions) : ControllerBase
 {
+    private readonly RefreshCookieOptions _cookie = cookieOptions.Value;
+
     [HttpPost("login")]
     [AllowAnonymous]
     [EnableRateLimiting("auth")]
     public async Task<IResult> Login([FromBody] LoginRequest body, CancellationToken ct)
-        => (await dispatcher.SendAsync(body.ToUseCase(), ct)).ToApiResult(HttpContext);
+        => CompleteAuth(await dispatcher.SendAsync(body.ToUseCase(), ct));
 
     [HttpPost("refresh-token")]
     [AllowAnonymous]
-    public async Task<IResult> RefreshToken([FromBody] RefreshTokenRequest body, CancellationToken ct)
-        => (await dispatcher.SendAsync(body.ToUseCase(), ct)).ToApiResult(HttpContext);
+    public async Task<IResult> RefreshToken(CancellationToken ct)
+    {
+        var token = Request.Cookies[_cookie.Name];
+        if (string.IsNullOrEmpty(token))
+        {
+            return Results.Unauthorized();
+        }
+
+        var result = await dispatcher.SendAsync(new AppRefreshToken.RefreshTokenRequest(token), ct);
+        if (result.IsFailure)
+        {
+            ClearRefreshCookie();
+        }
+        return CompleteAuth(result);
+    }
 
     [HttpPost("change-password")]
     [Authorize]
@@ -48,4 +68,35 @@ public sealed class AuthController(IUseCaseDispatcher dispatcher) : ControllerBa
     [EnableRateLimiting("auth")]
     public async Task<IResult> ResetPassword([FromBody] ResetPasswordRequest body, CancellationToken ct)
         => (await dispatcher.SendAsync(body.ToUseCase(), ct)).ToApiResult(HttpContext);
+
+    // Sucesso → grava o refresh no cookie httpOnly e devolve só o access token no corpo.
+    private IResult CompleteAuth(Result<AuthTokensResponse> result)
+    {
+        if (result.IsFailure)
+        {
+            return result.ToApiResult(HttpContext);
+        }
+        SetRefreshCookie(result.Value!.RefreshToken);
+        var body = new AuthAccessResponse(result.Value.AccessToken, result.Value.ExpiresAt);
+        return Result<AuthAccessResponse>.Success(body).ToApiResult(HttpContext);
+    }
+
+    private void SetRefreshCookie(string token) =>
+        Response.Cookies.Append(_cookie.Name, token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = _cookie.Secure,
+            SameSite = _cookie.SameSite,
+            Path = _cookie.Path,
+            Expires = DateTimeOffset.UtcNow.AddDays(_cookie.Days),
+            IsEssential = true,
+        });
+
+    private void ClearRefreshCookie() =>
+        Response.Cookies.Delete(_cookie.Name, new CookieOptions
+        {
+            Path = _cookie.Path,
+            Secure = _cookie.Secure,
+            SameSite = _cookie.SameSite,
+        });
 }

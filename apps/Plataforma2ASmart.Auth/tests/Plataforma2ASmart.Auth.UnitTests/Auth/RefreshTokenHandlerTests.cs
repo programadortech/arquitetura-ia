@@ -28,7 +28,7 @@ public class RefreshTokenHandlerTests
         _jwt.Generate(userId, user.Email, user.Roles).Returns(new AccessToken("novo", DateTimeOffset.UtcNow.AddMinutes(15)));
         _refreshTokens.IssueAsync(userId, Arg.Any<CancellationToken>()).Returns(new RefreshTokenIssued("novo-r", DateTimeOffset.UtcNow.AddDays(7)));
 
-        var result = await CreateHandler().HandleAsync(new RefreshTokenRequest("acc", "antigo"), CancellationToken.None);
+        var result = await CreateHandler().HandleAsync(new RefreshTokenRequest("antigo"), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
         await _refreshTokens.Received(1).RevokeAsync("antigo", Arg.Any<CancellationToken>());
@@ -40,7 +40,7 @@ public class RefreshTokenHandlerTests
     {
         _refreshTokens.ValidateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((Guid?)null);
 
-        var result = await CreateHandler().HandleAsync(new RefreshTokenRequest("a", "invalido"), CancellationToken.None);
+        var result = await CreateHandler().HandleAsync(new RefreshTokenRequest("invalido"), CancellationToken.None);
 
         result.IsFailure.Should().BeTrue();
         result.Errors[0].Type.Should().Be(ErrorType.Unauthorized);

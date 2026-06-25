@@ -7,7 +7,7 @@ using Plataforma2ASmart.Auth.Application.Ports.Authentication;
 namespace Plataforma2ASmart.Auth.Application.UseCases.Auth.RefreshToken;
 
 /// <summary>Renova o Access Token com um Refresh Token válido, rotacionando-o. AC #4–#5.</summary>
-public sealed record RefreshTokenRequest(string AccessToken, string RefreshToken)
+public sealed record RefreshTokenRequest(string RefreshToken)
     : IUseCaseRequest<Result<AuthTokensResponse>>;
 
 public sealed class RefreshTokenHandler(
