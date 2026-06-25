@@ -49,8 +49,11 @@ Ports isolam Identity/JWT/refresh/e-mail; **rate limiting** nativo por IP proteg
 - E-mail via `IEmailSender` + SMTP (dev) — provedor real pelo catálogo `docs/integrations/email`.
 
 ## 8. Plano de tasks
-Domain RefreshToken · ports · 5 use cases · Identity+AppDbContext · Jwt+RefreshTokenStore · SmtpEmailSender ·
-AuthController+contratos+JWT+rate limit · migração SQL Server · testes · observabilidade.
+Sincronizado no Azure DevOps como filhas da história **#12094** (`/sync-tasks`): #12131 Domain RefreshToken ·
+#12132 ports + AuthTokensResponse · #12133 Login · #12134 RefreshToken (rotação) · #12135 ChangePassword ·
+#12136 ForgotPassword · #12137 ResetPassword · #12138 ApplicationUser+AppDbContext · #12139 IdentityService ·
+#12140 JwtTokenGenerator · #12141 RefreshTokenStore · #12142 SmtpEmailSender+EfUnitOfWork ·
+#12143 AuthController+contratos+JWT+rate limit · #12144 migração SQL Server · #12145 testes · #12146 observabilidade/Polly.
 
 ---
 > Próximo: implementação por handler (consumindo BuildingBlocks); migração; testes. PR para `dev`.
