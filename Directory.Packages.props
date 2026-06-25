@@ -39,6 +39,8 @@
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.*" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.*" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.*" />
+    <!-- Geração do documento OpenAPI em build time (sem subir o servidor) — ADR-0032. -->
+    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.*" />
   </ItemGroup>
 
   <ItemGroup Label="Extensões base">

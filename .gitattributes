@@ -4,6 +4,9 @@
 # Shell scripts precisam de LF para rodar em Unix/CI
 *.sh text eol=lf
 
+# Contrato OpenAPI gerado: LF fixo p/ o gate de frescor não acusar diff Windows×Linux (ADR-0032)
+**/contracts/openapi.json text eol=lf
+
 # PowerShell e arquivos Windows usam CRLF
 *.ps1 text eol=crlf
 

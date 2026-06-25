@@ -16,7 +16,19 @@ builder.Services
 
 var app = builder.Build();
 
-await app.Services.SeedRolesAsync();
+// Durante a geração do contrato OpenAPI (build time, sem banco) NÃO semeamos — ver scripts/generate-openapi.ps1 (ADR-0032).
+if (Environment.GetEnvironmentVariable("OPENAPI_GENERATION") != "true")
+{
+    // Seed resiliente: falha de banco não derruba o startup — só registra.
+    try
+    {
+        await app.Services.SeedRolesAsync();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Falha ao semear roles no startup; siga e semeie quando o banco estiver disponível.");
+    }
+}
 
 app.UseApiPipeline();
 app.MapApiDocumentation();
