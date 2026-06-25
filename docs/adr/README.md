@@ -33,7 +33,8 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0028](0028-padroes-camada-api.md) | Padrões da camada de API (estilo Controllers/Minimal, composição enxuta, SRP, status codes) | Aceito |
 | [0029](0029-codigo-limpo-comentarios.md) | Código limpo — comentários só quando necessários | Aceito |
 | [0030](0030-monorepo-multiproduto.md) | Monorepo multi-produto (`apps/<Produto>/`) + biblioteca compartilhada BuildingBlocks | Aceito |
+| [0031](0031-fabrica-frontend-angular-repo-separado.md) | Fábrica de front-end (Angular) em repo separado + contrato OpenAPI→TS | Aceito |
 
 > ADRs específicos do produto Plataforma2A.Auth (0024/0026/0027) foram removidos junto com o produto (reset). O histórico permanece no git.
 >
-> Próximo número livre: **0031**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+> Próximo número livre: **0032**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
