@@ -12,6 +12,7 @@ builder.Services
     .AddApiServices()
     .AddApiDocumentation()
     .AddJwtAuthentication()
+    .AddSpaIntegration(builder.Configuration)
     .AddRateLimiting();
 
 var app = builder.Build();

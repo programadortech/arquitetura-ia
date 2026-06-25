@@ -1,7 +1,6 @@
 using AppChangePassword = Plataforma2ASmart.Auth.Application.UseCases.Auth.ChangePassword;
 using AppForgotPassword = Plataforma2ASmart.Auth.Application.UseCases.Auth.ForgotPassword;
 using AppLogin = Plataforma2ASmart.Auth.Application.UseCases.Auth.Login;
-using AppRefreshToken = Plataforma2ASmart.Auth.Application.UseCases.Auth.RefreshToken;
 using AppResetPassword = Plataforma2ASmart.Auth.Application.UseCases.Auth.ResetPassword;
 
 namespace Plataforma2ASmart.Auth.Api.Contracts.Auth;
@@ -11,10 +10,10 @@ public sealed record LoginRequest(string Email, string Password)
     public AppLogin.LoginRequest ToUseCase() => new(Email, Password);
 }
 
-public sealed record RefreshTokenRequest(string AccessToken, string RefreshToken)
-{
-    public AppRefreshToken.RefreshTokenRequest ToUseCase() => new(AccessToken, RefreshToken);
-}
+// O refresh token NÃO trafega no corpo: vai/volta por cookie httpOnly (ADR-P0003). Por isso não há RefreshTokenRequest.
+
+/// <summary>Corpo devolvido por login/refresh: só o access token (refresh fica no cookie httpOnly).</summary>
+public sealed record AuthAccessResponse(string AccessToken, DateTimeOffset ExpiresAt);
 
 // UserId não vem do corpo (segurança) — é injetado a partir do token no controller.
 public sealed record ChangePasswordRequest(string CurrentPassword, string NewPassword, string ConfirmNewPassword)

@@ -10,6 +10,7 @@ public static class WebApplicationExtensions
     {
         app.UseExceptionHandler();
         app.UseSerilogRequestLogging();
+        app.UseCors(ServiceCollectionExtensions.SpaCorsPolicy);
         app.UseRateLimiter();
         app.UseAuthentication();
         app.UseAuthorization();
