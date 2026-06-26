@@ -9,6 +9,7 @@ using Plataforma2ASmart.Auth.Api.Authentication;
 using Plataforma2ASmart.Auth.Api.Common;
 using Plataforma2ASmart.Auth.Api.Contracts.Auth;
 using Plataforma2ASmart.Auth.Application.UseCases.Auth;
+using AppLogout = Plataforma2ASmart.Auth.Application.UseCases.Auth.Logout;
 using AppRefreshToken = Plataforma2ASmart.Auth.Application.UseCases.Auth.RefreshToken;
 
 namespace Plataforma2ASmart.Auth.Api.Controllers;
@@ -43,6 +44,19 @@ public sealed class AuthController(IUseCaseDispatcher dispatcher, IOptions<Refre
             ClearRefreshCookie();
         }
         return CompleteAuth(result);
+    }
+
+    [HttpPost("logout")]
+    [AllowAnonymous]
+    public async Task<IResult> Logout(CancellationToken ct)
+    {
+        var token = Request.Cookies[_cookie.Name];
+        if (!string.IsNullOrEmpty(token))
+        {
+            await dispatcher.SendAsync(new AppLogout.LogoutRequest(token), ct);
+        }
+        ClearRefreshCookie();
+        return Results.NoContent();
     }
 
     [HttpPost("change-password")]

@@ -17,6 +17,8 @@ front consumir a API de outra origem com a sessão segura, o back-end precisa al
    devolver **apenas o access token** (`AuthAccessResponse`), que o front mantém em memória.
 2. **`/api/auth/refresh-token` lê o refresh do cookie** (não do corpo). Sem cookie → 401; refresh inválido → 401 e
    o cookie é **limpo**. A rotação atômica do refresh (AZ-12094) é preservada.
+2b. **`/api/auth/logout`** encerra a sessão: **revoga o refresh token no servidor** (pelo cookie) e **limpa o cookie**,
+   retornando **204**. Idempotente (sem cookie/invalidado → 204 mesmo assim). Sem logout, o refresh seguiria válido até expirar.
 3. **CORS com credenciais:** policy `spa` com origens por configuração (`Cors:AllowedOrigins`) + `AllowCredentials`.
 4. **Configuração por ambiente:** Development → `SameSite=Lax`, `Secure=false`, origem `http://localhost:4200`
    (same-site localhost, sem HTTPS). Staging/Production → `SameSite=None`, `Secure=true`, origem do SPA (tokenizada).
