@@ -13,6 +13,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Plataforma2ASmart.Auth.Infrastructure.Authentication;
 using Serilog;
+using Serilog.Sinks.OpenTelemetry;
 
 namespace Plataforma2ASmart.Auth.Api.Extensions;
 
@@ -39,19 +40,36 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddObservability(this IServiceCollection services)
+    public static IServiceCollection AddObservability(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSerilog(cfg => cfg.Enrich.FromLogContext().WriteTo.Console());
+        var otlpEndpoint = configuration["OpenTelemetry:Otlp:Endpoint"];
+        var hasOtlp = Uri.TryCreate(otlpEndpoint, UriKind.Absolute, out var otlpUri);
+
+        services.AddSerilog(cfg =>
+        {
+            cfg.Enrich.FromLogContext().WriteTo.Console();
+            // Logs também via OTLP (aparecem no dashboard junto com traces/métricas) quando há endpoint — ADR-0033.
+            if (hasOtlp)
+            {
+                cfg.WriteTo.OpenTelemetry(o =>
+                {
+                    o.Endpoint = otlpEndpoint!;
+                    o.Protocol = OtlpProtocol.Grpc;
+                    o.ResourceAttributes = new Dictionary<string, object> { ["service.name"] = ServiceName };
+                });
+            }
+        });
+
         services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService(ServiceName))
             .WithTracing(tracing => tracing
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
-                .AddOtlpExporter())
+                .AddOtlpExporter(o => { if (hasOtlp) { o.Endpoint = otlpUri!; } }))
             .WithMetrics(metrics => metrics
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
-                .AddOtlpExporter());
+                .AddOtlpExporter(o => { if (hasOtlp) { o.Endpoint = otlpUri!; } }));
         return services;
     }
 

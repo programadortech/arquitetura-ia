@@ -6,7 +6,7 @@ using Plataforma2ASmart.Auth.Infrastructure.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddObservability()
+    .AddObservability(builder.Configuration)
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddApiServices()

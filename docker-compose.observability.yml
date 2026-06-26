@@ -1,0 +1,16 @@
+# Observabilidade local (dev): .NET Aspire Dashboard — recebe OTLP e mostra traces + métricas + logs.
+# Subir:   docker compose -f docker-compose.observability.yml up -d
+# UI:      http://localhost:18888
+# Ingestão OTLP (gRPC): host 4317 -> container 18889 (os apps exportam para localhost:4317).
+# Ver ADR-0033 e docs/setup-local.md.
+services:
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    container_name: aspire-dashboard
+    environment:
+      # Dev only: dashboard sem login. NÃO use assim fora de localhost.
+      - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
+    ports:
+      - "18888:18888"   # UI
+      - "4317:18889"    # OTLP gRPC (ingestão)
+    restart: unless-stopped
