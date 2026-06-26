@@ -35,7 +35,8 @@ Numerados sequencialmente, imutáveis depois de Aceitos. Substitua em vez de edi
 | [0030](0030-monorepo-multiproduto.md) | Monorepo multi-produto (`apps/<Produto>/`) + biblioteca compartilhada BuildingBlocks | Aceito |
 | [0031](0031-fabrica-frontend-angular-repo-separado.md) | Fábrica de front-end (Angular) em repo separado + contrato OpenAPI→TS | Aceito |
 | [0032](0032-publicacao-contrato-openapi.md) | Publicação automática do contrato OpenAPI (build-time) versionado em `contracts/` | Aceito |
+| [0033](0033-observabilidade-local-aspire-logs-otlp.md) | Dashboard de observabilidade local (Aspire) + logs via OTLP | Aceito |
 
 > ADRs específicos do produto Plataforma2A.Auth (0024/0026/0027) foram removidos junto com o produto (reset). O histórico permanece no git.
 >
-> Próximo número livre: **0033**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.
+> Próximo número livre: **0034**. Adicione novos ADRs com `/approve-architecture` ou manualmente a partir do template.

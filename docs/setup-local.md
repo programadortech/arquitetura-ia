@@ -49,6 +49,18 @@ dotnet run --project src/Plataforma2A.Auth.Api
 dotnet test Plataforma2A.Auth.slnx
 ```
 
+## 6) Observabilidade — ver traces, métricas e logs (ADR-0033)
+`http://localhost:4317` é o endpoint de **ingestão** OTLP (gRPC), **não** uma tela — abrir no navegador não mostra
+nada. Para visualizar, suba o **dashboard** (precisa de Docker):
+```powershell
+docker compose -f docker-compose.observability.yml up -d
+```
+- **UI:** `http://localhost:18888` (traces + métricas + logs).
+- Ingestão OTLP em `localhost:4317` (a API exporta para lá por padrão — `OpenTelemetry:Otlp:Endpoint`).
+- Rode a API e chame alguns endpoints (`/health`, login) para gerar telemetria. Os **logs** também aparecem no
+  dashboard (sink OTLP do Serilog) **além** do console.
+- Parar: `docker compose -f docker-compose.observability.yml down`.
+
 ## Ambientes superiores (staging/production)
 Os `appsettings.{Staging,Production}.json` trazem **placeholders** (`#{JWT_SIGNING_KEY}#`, `#{DB_CONNECTION}#`,
 `#{SMTP_*}#`) que o **pipeline de deploy substitui** por variáveis de ambiente / secret store. Nada de segredo
