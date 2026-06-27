@@ -7,5 +7,6 @@ arquitetura (`/approve-architecture`). Importe do tracker com `/import-story <id
 |---|---|---|---|
 | [Autenticação e Gerenciamento de Senha](AZ-12094-autenticacao-e-gerenciamento-de-senha.md) | [AZ-12094](https://dev.azure.com/T-SystemsdoBrasil/Yamaha%20-%20Rollout/_workitems/edit/12094) | Em implementação | [✓](../architecture/AZ-12094-autenticacao-e-gerenciamento-de-senha.md) |
 | [Cadastro e Edição de Usuário](AZ-12114-cadastro-e-edicao-de-usuario.md) | [AZ-12114](https://dev.azure.com/T-SystemsdoBrasil/Yamaha%20-%20Rollout/_workitems/edit/12114) | Em implementação | [✓](../architecture/AZ-12114-cadastro-e-edicao-de-usuario.md) |
+| [Contas/Empresas (multi-tenant) + troca de conta](contas-multitenant-troca-de-conta.md) | — (2A Smart) | Rascunho | — |
 
 > `key` canônica: `AZ-<n>` (Azure DevOps) / `GH-<n>` (GitHub) / `GL-<n>` (GitLab). Fluxo: história → arquitetura → casos de uso → testes → PR.
